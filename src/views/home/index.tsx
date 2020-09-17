@@ -4,6 +4,7 @@ import React from 'react';
 import { views } from 'src/app';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/types';
+import { createBarcode } from 'src/utils/barcode';
 import { View } from '..';
 import styles from './style.module.less';
 
@@ -13,7 +14,7 @@ export const Home: React.FC = (props) => {
       title: 'Cajas',
       items: [
         { description: 'Pendientes de Cierre', count: 20, path: views[1].path },
-        { description: 'Pendientes de Devolución', count: 0 },
+        { description: 'Pendientes de Devolución', count: 0, path: views[2].path },
       ],
     },
     {

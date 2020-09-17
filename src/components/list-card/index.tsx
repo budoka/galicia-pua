@@ -1,12 +1,13 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Badge, Card } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 //import './style.less';
 import styles from './style.module.less';
 import { IListCardItem } from './types';
 import { Link } from 'react-router-dom';
+import bwipjs from 'bwip-js';
 
 interface ListCardProps {
   className?: string;

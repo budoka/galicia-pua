@@ -62,7 +62,8 @@ export const Sider: React.FC<SiderProps> = (props) => {
             title={
               <span>
                 {item.icon}
-                {showItemTitles ? title : ''}
+                {/*showItemTitles ? title : ''*/}
+                {!settings.collapsed ? title : ''}
               </span>
             }>
             {renderMenu((item as SiderParentItem).children)}

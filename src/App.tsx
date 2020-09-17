@@ -10,12 +10,13 @@ import { RootState } from 'src/reducers';
 import { getRoute, getUser } from 'src/utils/store';
 import { Home, View } from 'src/views';
 import { NotFound } from './views/not-found';
+import { Cajas } from './views/cajas';
 
 import 'src/app.less'; // last
 
 export const views: View[] = [
   { title: 'Inicio', path: '/inicio', component: <Home />, private: true, scope: 'inicio' },
-  { title: 'Buscar Legajo*', path: '/buscar-legajo', component: <NotFound />, private: true, scope: 'full' },
+  { title: 'Buscar Legajo*', path: '/buscar-legajo', component: <Cajas />, private: true, scope: 'full' },
   { title: 'Buscar Caja*', path: '/buscar-caja', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Ingresar Caja*', path: '/ingresar-caja', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Retirar Caja*', path: '/retirar-caja', component: <NotFound />, private: true, scope: 'full' },
