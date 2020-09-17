@@ -1,4 +1,4 @@
-import { store } from 'src/redux';
+import { store } from 'src/store';
 import { View } from 'src/views';
 import { views } from 'src/app';
 
@@ -50,7 +50,7 @@ export const hasViewPermission = () => {
   if (
     view &&
     getUser().permissions &&
-    (!view.permission || getUser().permissions!.includes('full') || getUser().permissions!.includes(view.permission!))
+    (!view.scope || getUser().permissions!.includes('full') || getUser().permissions!.includes(view.scope!))
   )
     return true;
   return false;

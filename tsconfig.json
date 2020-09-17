@@ -19,6 +19,6 @@
       "src/*": ["./src/*"]
     }
   },
-  "include": ["src"],
-  "files": ["src/types.d.ts"]
+  "include": ["src", "setup-tests.ts"],
+  "files": ["src/types/types.d.ts"]
 }

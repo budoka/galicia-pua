@@ -653,7 +653,7 @@ module.exports = function (webpackEnv) {
           resolveModuleNameModule: process.versions.pnp ? `${__dirname}/pnpTs.js` : undefined,
           resolveTypeReferenceDirectiveModule: process.versions.pnp ? `${__dirname}/pnpTs.js` : undefined,
           tsconfig: paths.appTsConfig,
-          reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*', '!**/src/setupProxy.*', '!**/src/setupTests.*'],
+          reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*', '!**/setup-proxy.*', '!**/setup-tests.*'],
           silent: true,
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,

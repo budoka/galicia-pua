@@ -1,6 +1,6 @@
 import { Action } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { RootState } from 'src/redux';
+import { RootState } from 'src/reducers';
 
 export * from './settings';
 

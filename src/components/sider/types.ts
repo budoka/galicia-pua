@@ -1,8 +1,14 @@
 import { View } from 'src/views';
 
-export interface Item {
-  view?: View;
-  title?: string;
+export interface SiderParentItem {
+  title: string;
+  children: SiderChildItem[];
   icon?: React.ReactNode;
-  children?: Item[];
 }
+
+export interface SiderChildItem {
+  view: View;
+  icon?: React.ReactNode;
+}
+
+export type SiderItem = SiderParentItem | SiderChildItem;

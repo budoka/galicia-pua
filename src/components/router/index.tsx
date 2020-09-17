@@ -20,9 +20,9 @@ export function Router(props: RouterProps) {
       .filter(
         (v) =>
           !getUser().permissions ||
-          !v.permission ||
+          !v.scope ||
           getUser().permissions!.includes('full') ||
-          getUser().permissions!.includes(v.permission!),
+          getUser().permissions!.includes(v.scope!),
       )
       .map((view) => {
         const key = getKey(view.path);
@@ -33,10 +33,10 @@ export function Router(props: RouterProps) {
             {view.component}
           </PrivateRoute>
         ) : (
-          <Route key={key} push exact path={view.path}>
-            {view.component}
-          </Route>
-        );
+            <Route key={key} push exact path={view.path}>
+              {view.component}
+            </Route>
+          );
       });
   };
 

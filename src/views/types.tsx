@@ -1,9 +1,9 @@
-export type Permission = 'full' | 'home';
+export type Scope = 'full' | 'inicio';
 
 export interface View {
   title: string;
-  path: string | string[];
+  path: string;
   component: JSX.Element;
   private: boolean;
-  permission?: Permission;
+  scope?: Scope;
 }

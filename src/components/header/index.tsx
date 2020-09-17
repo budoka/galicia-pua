@@ -5,7 +5,7 @@ import _ from 'lodash';
 import React, { useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCollapsed, setForcedCollapsed, setOrientation } from 'src/actions';
-import { RootState } from 'src/redux/reducers';
+import { RootState } from 'src/reducers';
 import { isMobile } from 'src/utils/mobile';
 import { useWindowSize } from 'src/utils/hooks';
 import styles from './style.module.less';
@@ -46,17 +46,17 @@ export const Header: React.FC<LayoutProps> = (props) => {
               }}
             />
           ) : (
-            <MenuFoldOutlined
-              className={styles.trigger}
-              onClick={() => {
-                if (settings.collapsed) {
-                  dispatch(setForcedCollapsed(false));
-                } else {
-                  dispatch(setForcedCollapsed(true));
-                }
-              }}
-            />
-          )
+              <MenuFoldOutlined
+                className={styles.trigger}
+                onClick={() => {
+                  if (settings.collapsed) {
+                    dispatch(setForcedCollapsed(false));
+                  } else {
+                    dispatch(setForcedCollapsed(true));
+                  }
+                }}
+              />
+            )
         ) : null}
       </div>
       <div className={styles.rightWrapper}>
