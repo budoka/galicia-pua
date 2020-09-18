@@ -1,7 +1,7 @@
 import { Button, Table } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { createPDF, IPDFData } from 'src/utils/barcode';
+import { createCajaPDF, IPDFData } from 'src/helpers/pdf';
 import styles from './style.module.less';
 
 interface IDataSource {
@@ -67,19 +67,16 @@ export const Cajas: React.FC = (props) => {
   const [data, setData] = useState(dataSource);
 
   const pdfData: IPDFData = {
-    destino: 'Archivo Central',
-    sector: 'SISTEMAS CENTRALES',
+    destino: 'Archivo Central OVERFLOWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+    sector: 'INGENIERÍA DE PROCESOS',
     centroDeCostos: '1241',
     numeroDeCaja: '1094942',
     descripcion:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur a lacinia est. Nunc et nulla id dolor malesuada volutpat. Ut sed purus blandit, lobortis purus in, ullamcorper justo. In ante massa, condimentum a ligula sit amet, porta tempus augue. Nunc enim augue, egestas quis bibendum et, scelerisque nec ex. Etiam velit nulla, lacinia ac libero a, efficitur dictum purus. Ut malesuada accumsan leo, sed pellentesque massa tristique interdum.' +
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur a lacinia est. Nunc et nulla id dolor malesuada volutpat. Ut sed purus blandit, lobortis purus in, ullamcorper justo. In ante massa, condimentum a ligula sit amet, porta tempus augue. Nunc enim augue, egestas quis bibendum et, scelerisque nec ex. Etiam velit nulla, lacinia ac libero a, efficitur dictum purus. Ut malesuada accumsan leo, sed pellentesque massa tristique interdum.',
-
-    codigoDeBarras: '0001094942',
     filename: 'Caratula',
   };
 
-  createPDF('code39', pdfData, 200);
+  createCajaPDF('code39', pdfData, 500);
 
   const updateData = () => {
     if (data === dataSource) setData(dataSource2);
