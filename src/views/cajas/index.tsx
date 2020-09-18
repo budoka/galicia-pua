@@ -1,6 +1,7 @@
 import { Button, Table } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
+import { createPDF, IPDFData } from 'src/utils/barcode';
 import styles from './style.module.less';
 
 interface IDataSource {
@@ -65,10 +66,20 @@ const columns: IColumn[] = [
 export const Cajas: React.FC = (props) => {
   const [data, setData] = useState(dataSource);
 
-  useEffect(() => {
-    //setData(data);
-    //console.log(data);
-  }, [data]);
+  const pdfData: IPDFData = {
+    destino: 'Archivo Central',
+    sector: 'SISTEMAS CENTRALES',
+    centroDeCostos: '1241',
+    numeroDeCaja: '1094942',
+    descripcion:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur a lacinia est. Nunc et nulla id dolor malesuada volutpat. Ut sed purus blandit, lobortis purus in, ullamcorper justo. In ante massa, condimentum a ligula sit amet, porta tempus augue. Nunc enim augue, egestas quis bibendum et, scelerisque nec ex. Etiam velit nulla, lacinia ac libero a, efficitur dictum purus. Ut malesuada accumsan leo, sed pellentesque massa tristique interdum.' +
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur a lacinia est. Nunc et nulla id dolor malesuada volutpat. Ut sed purus blandit, lobortis purus in, ullamcorper justo. In ante massa, condimentum a ligula sit amet, porta tempus augue. Nunc enim augue, egestas quis bibendum et, scelerisque nec ex. Etiam velit nulla, lacinia ac libero a, efficitur dictum purus. Ut malesuada accumsan leo, sed pellentesque massa tristique interdum.',
+
+    codigoDeBarras: '0001094942',
+    filename: 'Caratula',
+  };
+
+  createPDF('code39', pdfData, 400);
 
   const updateData = () => {
     if (data === dataSource) setData(dataSource2);
@@ -77,8 +88,6 @@ export const Cajas: React.FC = (props) => {
 
   const getColumns = (columns: IColumn[]) => {
     const columnsKeys = columns.map((column) => column.key);
-    console.log(columns);
-    console.log(columnsKeys);
 
     return columns.filter((column, index) => {
       return Object.keys(data[0]).indexOf(columnsKeys[index]) > -1;

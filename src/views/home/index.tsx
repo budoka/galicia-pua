@@ -4,7 +4,7 @@ import React from 'react';
 import { views } from 'src/app';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/types';
-import { createBarcode } from 'src/utils/barcode';
+import { createPDF } from 'src/utils/barcode';
 import { View } from '..';
 import styles from './style.module.less';
 
