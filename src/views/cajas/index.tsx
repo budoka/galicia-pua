@@ -79,7 +79,7 @@ export const Cajas: React.FC = (props) => {
     filename: 'Caratula',
   };
 
-  createPDF('code39', pdfData, 400);
+  createPDF('code39', pdfData, 200);
 
   const updateData = () => {
     if (data === dataSource) setData(dataSource2);

@@ -17,6 +17,8 @@ export function createPDF(format: string, data: IPDFData, width: number, scale: 
 
   const barcode = canvas.toDataURL('image/png');
 
+  if (width < 400) width = 400;
+  else if (width > 1600) width = 1600;
   const doc = new jsPDF('landscape', 'px', [width * scale, (width / 1.777) * scale], true);
 
   doc.context2d.scale(scale, scale);
@@ -28,9 +30,14 @@ export function createPDF(format: string, data: IPDFData, width: number, scale: 
   const titleFontSize = (width / 33.333) * scale;
   const paragraphFontSize = (width / 50) * scale;
   const barcodeSize = {
-    width: (canvas.width / 2.5) * scale,
-    height: (canvas.height / 2.5) * scale,
+    width: (canvas.width / (2.5 * (canvas.width / width))) * scale,
+    height: (canvas.height / (2.5 * (canvas.width / width))) * scale,
   };
+
+  console.log(canvas.width);
+  console.log(barcodeSize.width);
+  console.log(width);
+  console.log(canvas.width / width);
 
   doc.setLineWidth(borderLine);
   doc.setFontSize(titleFontSize);
@@ -87,10 +94,6 @@ export function createPDF(format: string, data: IPDFData, width: number, scale: 
   const descriptionText = descriptionLines.slice(0, maxLines - 1);
 
   if (hasEllipsis) descriptionText.push('...');
-
-  console.log(descriptionLines.length);
-  console.log('maxLines: ' + maxLines);
-  console.log(descriptionText);
 
   doc.text(descriptionText, centerX - centerX / 2, margin + centerY + doc.getFontSize() * (offSetY + initialOffSetY) + margin, {
     align: 'center',
