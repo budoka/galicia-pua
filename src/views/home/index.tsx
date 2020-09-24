@@ -1,11 +1,10 @@
 import { Col, Row } from 'antd';
 import _, { Dictionary } from 'lodash';
 import React from 'react';
-import { views } from 'src/app';
+import { views } from 'src/views';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/types';
 
-import { View } from '..';
 import styles from './style.module.less';
 
 export const Home: React.FC = (props) => {

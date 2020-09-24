@@ -33,10 +33,10 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
   });
 
   const setBadgeStatus = (count: number) => {
-    if (count == 0) return theme == 'dark' ? styles.badge_idle_dark : styles.badge_idle_light;
-    else if (count < 10) return theme == 'dark' ? styles.badge_low_dark : styles.badge_low_light;
-    else if (count < 50) return theme == 'dark' ? styles.badge_normal_dark : styles.badge_normal_light;
-    else return theme == 'dark' ? styles.badge_high_dark : styles.badge_high_light;
+    if (count == 0) return theme == 'dark' ? styles.badgeIdleDark : styles.badge_idleLight;
+    else if (count < 10) return theme == 'dark' ? styles.badgeLowDark : styles.badgeLowLight;
+    else if (count < 50) return theme == 'dark' ? styles.badgeNormalDark : styles.badgeNormalLight;
+    else return theme == 'dark' ? styles.badgeHighDark : styles.badgeHighLight;
   };
 
   const getBadgeClass = (count?: number) => {

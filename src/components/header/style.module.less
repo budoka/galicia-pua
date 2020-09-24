@@ -1,12 +1,15 @@
 /* header */
 
-@import (reference) '../../antd.less';
+@import '~src/styles/antd/antd.less';
+
+.wrapper {
+}
 
 .header {
   position: relative;
   z-index: 10;
   height: 100%;
-  //box-shadow: 0px 5px 6px rgba(0, 21, 41, 0.35);
+  // box-shadow: 2px 2px 6px 0px @shadow-color;
 
   padding: 0 !important;
   display: flex;
@@ -32,7 +35,7 @@
   align-items: center;
 }
 
-.triggerWrapper {
+.siderButtonWrapper {
   height: 100% !important;
 
   display: flex;
@@ -42,7 +45,7 @@
   align-items: center;
 }
 
-.trigger {
+.siderButton {
   font-size: 18px;
   line-height: 64px;
   padding: 0 24px;

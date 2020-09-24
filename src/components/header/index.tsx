@@ -1,69 +1,111 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Layout } from 'antd';
 import { LayoutProps } from 'antd/lib/layout';
+import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCollapsed, setForcedCollapsed, setOrientation } from 'src/actions';
+import { setButtonVisible, setCollapsed, setForcedCollapsed, setOrientation } from 'src/actions';
+import { UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
-import { isMobile } from 'src/utils/mobile';
 import { useWindowSize } from 'src/utils/hooks';
+import { isMobile } from 'src/utils/mobile';
+import { getScreenOrientation } from 'src/utils/screen';
 import styles from './style.module.less';
 
 const { Header: HeaderAnt } = Layout;
 
-export const Header: React.FC<LayoutProps> = (props) => {
+interface HeaderProps extends LayoutProps {
+  hideSiderButton?: boolean;
+}
+
+export const Header: React.FC<HeaderProps> = (props) => {
   const settings = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
   const size = useWindowSize();
 
-  useLayoutEffect(() => {
-    if (isMobile() && settings.orientation !== 'portrait' && size.height > size.width) {
+  const headerClassNames = classNames(UNSELECTABLE, props.className, styles.header);
+
+  useEffect(() => {
+    const orientation = getScreenOrientation(size);
+
+    if (orientation !== settings.orientation) dispatch(setOrientation(orientation));
+
+    if (size.width <= 600) {
+      if (settings.buttonVisible) dispatch(setButtonVisible(false));
+      if (!settings.collapsed) dispatch(setCollapsed(true));
+    } else {
+      if (!settings.buttonVisible) dispatch(setButtonVisible(true));
+
+      if (settings.forcedCollapsed) {
+        dispatch(setCollapsed(true));
+      } else if (settings.collapsed && !settings.forcedCollapsed) {
+        dispatch(setCollapsed(false));
+        dispatch(setButtonVisible(true));
+      } else if (!settings.collapsed) {
+      }
+    }
+
+    /* const device = settings.device;
+    const orientation = settings.orientation;
+    const collapsed = settings.collapsed;
+    const forcedCollapsed = settings.forcedCollapsed;
+
+
+    // if (settings.device === 'mobile' && orientation === 'portrait') dispatch(setForcedCollapsed(true));
+    //else dispatch(setForcedCollapsed(false));
+
+    if (device === 'mobile' && orientation !== 'portrait' && size.height > size.width) {
       dispatch(setOrientation('portrait'));
       dispatch(setCollapsed(true));
-    } else if (settings.orientation !== 'landscape' && size.width > size.height) {
+    } else if (orientation !== 'landscape' && size.width > size.height) {
       dispatch(setOrientation('landscape'));
-    } else if (settings.orientation === 'landscape' && settings.collapsed && !settings.forcedCollapsed && size.width > 600) {
+    } else if (orientation === 'landscape' && collapsed && !forcedCollapsed && size.width > 600) {
       dispatch(setForcedCollapsed(false));
-    } else if (settings.orientation === 'landscape' && !settings.collapsed && size.width <= 600) {
+    } else if (orientation === 'landscape' && !collapsed && size.width <= 600) {
       dispatch(setCollapsed(true));
-    }
-  }, [dispatch, settings.collapsed, settings.forcedCollapsed, settings.orientation, size]);
+    }*/
+  }, [settings.collapsed, settings.forcedCollapsed, settings.orientation, size]);
 
-  return (
-    <HeaderAnt className={`${styles.header} unselectable` + props.className}>
-      <div className={styles.triggerWrapper}>
-        {settings.orientation === 'landscape' ? (
-          settings.collapsed ? (
-            <MenuUnfoldOutlined
-              className={styles.trigger}
-              onClick={() => {
-                if (settings.collapsed) {
-                  dispatch(setForcedCollapsed(false));
-                } else {
-                  dispatch(setForcedCollapsed(true));
-                }
-              }}
-            />
-          ) : (
-              <MenuFoldOutlined
-                className={styles.trigger}
-                onClick={() => {
-                  if (settings.collapsed) {
-                    dispatch(setForcedCollapsed(false));
-                  } else {
-                    dispatch(setForcedCollapsed(true));
-                  }
-                }}
-              />
-            )
-        ) : null}
+  const collapseHandler = () => {
+    dispatch(setForcedCollapsed(!settings.forcedCollapsed));
+  };
+
+  const renderLogo = () => {
+    return (
+      <div className={styles.logoWrapper}>
+        <div className={styles.logo}>asddddddd</div>
       </div>
+    );
+  };
+
+  const renderSiderButton = () => {
+    return !props.hideSiderButton && settings.buttonVisible /*!(settings.device === 'mobile' && settings.orientation === 'portrait')*/ ? (
+      <div className={styles.siderButtonWrapper}>
+        {settings.collapsed ? (
+          <MenuUnfoldOutlined className={styles.siderButton} onClick={collapseHandler} />
+        ) : (
+          <MenuFoldOutlined className={styles.siderButton} onClick={collapseHandler} />
+        )}
+      </div>
+    ) : null;
+  };
+
+  const renderUserInfo = () => {
+    return (
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
           Usuario: <span className={styles.username}>{_.capitalize('MyUsername')}</span>
         </span>
       </div>
+    );
+  };
+
+  return (
+    <HeaderAnt className={headerClassNames}>
+      {renderLogo()}
+      {renderSiderButton()}
+      {renderUserInfo()}
     </HeaderAnt>
   );
 };

@@ -1,23 +1,24 @@
+import { Device, ScreenOrientation } from 'src/types';
+
 export enum Settings {
-  SIDER_COLLAPSED = 'Site/SIDER_COLLAPSED',
-  SIDER_FORCE_COLLAPSED = 'Site/SIDER_FORCE_COLLAPSED',
+  DEVICE_CHANGE = 'Site/DEVICE_CHANGE',
   ORIENTATION_CHANGE = 'Site/ORIENTATION_CHANGE',
+  SIDER_COLLAPSED = 'Site/SIDER_COLLAPSED',
+  SIDER_FORCED_COLLAPSED = 'Site/SIDER_FORCED_COLLAPSED',
+  SIDER_BUTTON_VISIBLED = 'Site/SIDER_BUTTON_VISIBLED',
 }
 
 export interface SettingsState {
-  orientation: 'portrait' | 'landscape' | undefined;
+  device: Device;
+  orientation: ScreenOrientation;
   collapsed: boolean;
   forcedCollapsed: boolean;
+  buttonVisible: boolean;
 }
 
-export interface SIDER_COLLAPSED {
-  type: typeof Settings.SIDER_COLLAPSED;
-  payload?: SettingsState['collapsed'];
-}
-
-export interface SIDER_FORCE_COLLAPSED {
-  type: typeof Settings.SIDER_FORCE_COLLAPSED;
-  payload: SettingsState['forcedCollapsed'];
+export interface DEVICE_CHANGE {
+  type: typeof Settings.DEVICE_CHANGE;
+  payload: SettingsState['device'];
 }
 
 export interface ORIENTATION_CHANGE {
@@ -25,4 +26,22 @@ export interface ORIENTATION_CHANGE {
   payload: SettingsState['orientation'];
 }
 
-export type SettingsActionTypes = SIDER_COLLAPSED | SIDER_FORCE_COLLAPSED | ORIENTATION_CHANGE;
+export interface SIDER_COLLAPSED {
+  type: typeof Settings.SIDER_COLLAPSED;
+  payload?: SettingsState['collapsed'];
+}
+
+export interface SIDER_FORCED_COLLAPSED {
+  type: typeof Settings.SIDER_FORCED_COLLAPSED;
+  payload: {
+    forcedCollapsed: SettingsState['forcedCollapsed'];
+    collapsed?: SettingsState['collapsed'];
+  };
+}
+
+export interface SIDER_BUTTON_VISIBLED {
+  type: typeof Settings.SIDER_BUTTON_VISIBLED;
+  payload: SettingsState['buttonVisible'];
+}
+
+export type SettingsActionTypes = DEVICE_CHANGE | ORIENTATION_CHANGE | SIDER_COLLAPSED | SIDER_FORCED_COLLAPSED | SIDER_BUTTON_VISIBLED;

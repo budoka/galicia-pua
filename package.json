@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/dark-theme": "^2.0.2",
     "antd": "^4.6.4",
+    "axios": "^0.20.0",
     "bwip-js": "^2.0.10",
     "camelcase": "^5.3.1",
     "classnames": "^2.2.6",
@@ -28,6 +29,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "semver": "6.3.0",
+    "ts-reflection": "^0.3.0",
+    "ts-transformer-keys": "^0.4.2",
     "typescript": "~3.7.2"
   },
   "devDependencies": {
@@ -88,7 +91,9 @@
     "sass-loader": "8.0.2",
     "style-loader": "0.23.1",
     "terser-webpack-plugin": "^4.2.1",
+    "ts-loader": "^8.0.4",
     "ts-pnp": "1.1.6",
+    "ttypescript": "^1.5.12",
     "url-loader": "2.3.0",
     "webpack": "4.42.0",
     "webpack-dev-server": "^3.11.0",
@@ -97,7 +102,7 @@
   },
   "scripts": {
     "start": "npm run dev",
-    "dev": "node scripts/start.js --max_old_space_size=4096 start",
+    "dev": "node --max_old_space_size=8192 --optimize_for_size --stack_size=4096 scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "serve": "npm run build && serve -s build",

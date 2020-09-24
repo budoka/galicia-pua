@@ -22,7 +22,6 @@ interface SiderProps extends SiderPropsAnt {
 }
 
 export const Sider: React.FC<SiderProps> = (props) => {
-  //console.log('sider');
   const settings = useSelector((state: RootState) => state.settings);
   const router = useSelector((state: RootState) => state.router);
   const [showItemTitles, setShowItemTitles] = useState(settings.collapsed);
@@ -62,7 +61,6 @@ export const Sider: React.FC<SiderProps> = (props) => {
             title={
               <span>
                 {item.icon}
-                {/*showItemTitles ? title : ''*/}
                 {!settings.collapsed ? title : ''}
               </span>
             }>

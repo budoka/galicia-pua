@@ -1,6 +1,6 @@
 import { store } from 'src/store';
 import { View } from 'src/views';
-import { views } from 'src/app';
+import { views } from 'src/views';
 
 export const getUser = () => {
   /*const token = store.getState().auth.token!;

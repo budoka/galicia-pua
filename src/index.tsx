@@ -1,14 +1,14 @@
-import { ConnectedRouter } from 'connected-react-router';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { history, persistor, store } from 'src/store';
-import App from 'src/app';
-import * as serviceWorker from './service-worker';
-import es from 'antd/lib/locale-provider/es_ES';
-import 'moment/locale/es';
+import { ConnectedRouter } from 'connected-react-router';
 import { ConfigProvider } from 'antd';
+import 'moment/locale/es';
+import es from 'antd/lib/locale-provider/es_ES';
+import { history, persistor, store } from 'src/store';
+import * as serviceWorker from 'src/service-worker';
+import App from 'src/components/app';
 
 ReactDOM.render(
   <Provider store={store}>
