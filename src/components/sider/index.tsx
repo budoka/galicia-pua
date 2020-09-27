@@ -1,16 +1,16 @@
+import React, { useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { LayoutProps, SiderProps as SiderPropsAnt } from 'antd/lib/layout';
+import { SiderProps as SiderPropsAnt } from 'antd/lib/layout';
 import { MenuMode } from 'antd/lib/menu';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import SubMenu from 'antd/lib/menu/SubMenu';
-import { time } from 'console';
-import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
-import { View } from 'src/views';
-import styles from './style.module.less';
 import { SiderItem, SiderChildItem, SiderParentItem } from './types';
+import styles from './style.module.less';
 
 const { Sider: SiderAnt } = Layout;
 
@@ -25,6 +25,12 @@ export const Sider: React.FC<SiderProps> = (props) => {
   const settings = useSelector((state: RootState) => state.settings);
   const router = useSelector((state: RootState) => state.router);
   const [showItemTitles, setShowItemTitles] = useState(settings.collapsed);
+
+  const siderClassNames = classNames(UNSELECTABLE, SHADOW, props.className, styles.sider);
+
+  useEffect(() => {
+    console.log('render sider');
+  });
 
   useEffect(() => {
     let ms = 300;
@@ -86,7 +92,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
   };
 
   return (
-    <SiderAnt className={`${styles.sider} unselectable` + props.className} trigger={null} collapsible={true} collapsed={settings.collapsed}>
+    <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
       <Menu
         theme={props.theme ?? 'light'}
         mode={props.mode ?? 'inline'}

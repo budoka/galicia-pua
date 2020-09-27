@@ -1,4 +1,6 @@
-/* home */
+/* boxes */
+
+@import '~src/styles/antd/antd.less';
 
 .content {
   width: 100%;
@@ -6,6 +8,18 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
+}
+
+.filterWrapper {
+  align-self: start;
+}
+
+.filter {
+  text-align: right;
+
+  .filterPlacerholder {
+    color: @primary-color;
+  }
 }
 
 .row {

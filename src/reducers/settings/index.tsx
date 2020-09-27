@@ -6,7 +6,7 @@ const initialState: SettingsState = {
   device: getDeviceType(),
   orientation: getScreenOrientation({ width: window.innerWidth, height: window.innerHeight }),
   collapsed: false,
-  forcedCollapsed: true,
+  forcedCollapsed: false,
   buttonVisible: true,
 };
 
@@ -33,7 +33,7 @@ export default function reducer(state = initialState, action: SettingsActionType
         collapsed: action.payload.collapsed ?? true,
         forcedCollapsed: action.payload.forcedCollapsed,
       };
-    case Settings.SIDER_BUTTON_VISIBLED:
+    case Settings.SIDER_BUTTON_VISIBILITY:
       return {
         ...state,
         buttonVisible: action.payload,

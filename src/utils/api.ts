@@ -22,9 +22,10 @@ export const data: IAPIDataCache = {
  * @param id Method/path id.
  */
 export function getAPIData(apiName: string, id: string): IAPIData {
-  if (data.cache[apiName]) {
+  const index = `${apiName}_${id}`;
+  if (data.cache[index]) {
     console.log('Cached!!!');
-    return data.cache[apiName];
+    return data.cache[index];
   }
 
   const api = _.find(apis, (api) => api.name === apiName);
@@ -37,7 +38,7 @@ export function getAPIData(apiName: string, id: string): IAPIData {
   if (!method) throw new APIError(`Method id: '${id}' not found.`);
 
   // Cache the value and return it.
-  return (data.cache[apiName] = { url, method });
+  return (data.cache[index] = { url, method });
 }
 
 /**

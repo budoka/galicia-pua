@@ -5,7 +5,7 @@ export enum Settings {
   ORIENTATION_CHANGE = 'Site/ORIENTATION_CHANGE',
   SIDER_COLLAPSED = 'Site/SIDER_COLLAPSED',
   SIDER_FORCED_COLLAPSED = 'Site/SIDER_FORCED_COLLAPSED',
-  SIDER_BUTTON_VISIBLED = 'Site/SIDER_BUTTON_VISIBLED',
+  SIDER_BUTTON_VISIBILITY = 'Site/SIDER_BUTTON_VISIBILITY',
 }
 
 export interface SettingsState {
@@ -40,7 +40,7 @@ export interface SIDER_FORCED_COLLAPSED {
 }
 
 export interface SIDER_BUTTON_VISIBLED {
-  type: typeof Settings.SIDER_BUTTON_VISIBLED;
+  type: typeof Settings.SIDER_BUTTON_VISIBILITY;
   payload: SettingsState['buttonVisible'];
 }
 

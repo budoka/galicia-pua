@@ -1,88 +1,128 @@
-import { BoxContent, BoxContentType, IBoxDataSet, IBoxDocument } from './interfaces';
-import { FetchableState } from 'src/actions/interfaces';
+import { RunnableState } from 'src/actions/interfaces';
+import { IBoxDataSet, BoxContentType } from './interfaces';
 
 export enum BoxData {
-  FETCHING = 'BoxData/FETCHING',
+  RUNNING = 'BoxData/RUNNING',
 
-  GET_SUCCESS = 'BoxData/GET_SUCCESS',
-  GET_FAILURE = 'BoxData/GET_FAILURE',
+  GET_BOX_SUCCESS = 'BoxData/GET_BOX_SUCCESS',
+  GET_BOX_FAILURE = 'BoxData/GET_BOX_FAILURE',
 
-  CREATE = 'BoxData/CREATE',
-  CLEAN = 'BoxData/CLEAN',
+  CREATE_BOX_SUCCESS = 'BoxData/CREATE_BOX_SUCCESS',
+  CREATE_BOX_FAILURE = 'BoxData/CREATE_BOX_FAILURE',
 
-  ADD_SUCCESS = 'BoxData/ADD_SUCCESS',
-  ADD_FAILURE = 'BoxData/ADD_FAILURE',
+  CLOSE_BOX_SUCCESS = 'BoxData/CLOSE_BOX_SUCCESS',
+  CLOSE_BOX_FAILURE = 'BoxData/CLOSE_BOX_FAILURE',
 
-  UPDATE_SUCCESS = 'BoxData/UPDATE_SUCCESS',
-  UPDATE_FAILURE = 'BoxData/UPDATE_FAILURE',
+  REMOVE_BOX_SUCCESS = 'BoxData/REMOVE_BOX_SUCCESS',
+  REMOVE_BOX_FAILURE = 'BoxData/REMOVE_BOX_FAILURE',
 
-  REMOVE_SUCCESS = 'BoxData/REMOVE_SUCCESS',
-  REMOVE_FAILURE = 'BoxData/REMOVE_FAILURE',
+  CREATE_LOCAL_CONTENT = 'BoxData/CREATE_LOCAL_CONTENT',
+  CLEAN_LOCAL_CONTENT = 'BoxData/CLEAN_LOCAL_CONTENT',
+
+  ADD_CONTENT_SUCCESS = 'BoxData/ADD_CONTENT_SUCCESS',
+  ADD_CONTENT_FAILURE = 'BoxData/ADD_CONTENT_FAILURE',
+
+  UPDATE_CONTENT_SUCCESS = 'BoxData/UPDATE_CONTENT_SUCCESS',
+  UPDATE_CONTENT_FAILURE = 'BoxData/UPDATE_CONTENT_FAILURE',
+
+  REMOVE_CONTENT_SUCCESS = 'BoxData/REMOVE_CONTENT_SUCCESS',
+  REMOVE_CONTENT_FAILURE = 'BoxData/REMOVE_CONTENT_FAILURE',
 }
 
-export interface BoxDataState extends FetchableState {
-  dataSet: IBoxDataSet;
+export type BoxDataState = IBoxDataSet & RunnableState;
+
+export interface RUNNING {
+  type: typeof BoxData.RUNNING;
+  payload: BoxDataState['isRunning'];
 }
 
-export interface FETCHING {
-  type: typeof BoxData.FETCHING;
-  payload: BoxDataState['isFetching'];
+export interface GET_BOX_SUCCESS {
+  type: typeof BoxData.GET_BOX_SUCCESS;
+  payload: BoxDataState;
 }
 
-export interface GET_SUCCESS {
-  type: typeof BoxData.GET_SUCCESS;
-  payload: BoxDataState['dataSet'];
+export interface GET_BOX_FAILURE {
+  type: typeof BoxData.GET_BOX_FAILURE;
 }
 
-export interface GET_FAILURE {
-  type: typeof BoxData.GET_FAILURE;
+export interface CREATE_BOX_SUCCESS {
+  type: typeof BoxData.CREATE_BOX_SUCCESS;
+  payload: BoxDataState['info']['id'];
 }
 
-export interface CREATE {
-  type: typeof BoxData.CREATE;
+export interface CREATE_BOX_FAILURE {
+  type: typeof BoxData.CREATE_BOX_FAILURE;
+}
+
+export interface CLOSE_BOX_SUCCESS {
+  type: typeof BoxData.CLOSE_BOX_SUCCESS;
+}
+
+export interface CLOSE_BOX_FAILURE {
+  type: typeof BoxData.CLOSE_BOX_FAILURE;
+}
+
+export interface REMOVE_BOX_SUCCESS {
+  type: typeof BoxData.REMOVE_BOX_SUCCESS;
+  payload: BoxDataState['info']['id'];
+}
+
+export interface REMOVE_BOX_FAILURE {
+  type: typeof BoxData.REMOVE_BOX_FAILURE;
+}
+
+export interface CREATE_LOCAL_CONTENT {
+  type: typeof BoxData.CREATE_LOCAL_CONTENT;
   payload: BoxContentType;
 }
 
-export interface CLEAN {
-  type: typeof BoxData.CLEAN;
+export interface CLEAN_LOCAL_CONTENT {
+  type: typeof BoxData.CLEAN_LOCAL_CONTENT;
 }
 
-export interface ADD_SUCCESS {
-  type: typeof BoxData.ADD_SUCCESS;
+export interface ADD_CONTENT_SUCCESS {
+  type: typeof BoxData.ADD_CONTENT_SUCCESS;
   payload: Exclude<BoxContentType, 'id'>;
 }
 
-export interface ADD_FAILURE {
-  type: typeof BoxData.ADD_FAILURE;
+export interface ADD_CONTENT_FAILURE {
+  type: typeof BoxData.ADD_CONTENT_FAILURE;
 }
 
-export interface UPDATE_SUCCESS {
-  type: typeof BoxData.UPDATE_SUCCESS;
+export interface UPDATE_CONTENT_SUCCESS {
+  type: typeof BoxData.UPDATE_CONTENT_SUCCESS;
   payload: BoxContentType;
 }
 
-export interface UPDATE_FAILURE {
-  type: typeof BoxData.UPDATE_FAILURE;
+export interface UPDATE_CONTENT_FAILURE {
+  type: typeof BoxData.UPDATE_CONTENT_FAILURE;
 }
 
-export interface REMOVE_SUCCESS {
-  type: typeof BoxData.REMOVE_SUCCESS;
-  payload: BoxContentType['id'][];
+export interface REMOVE_CONTENT_SUCCESS {
+  type: typeof BoxData.REMOVE_CONTENT_SUCCESS;
+  payload: BoxContentType['id'];
+  //payload: BoxContentType['id'];
 }
 
-export interface REMOVE_FAILURE {
-  type: typeof BoxData.REMOVE_FAILURE;
+export interface REMOVE_CONTENT_FAILURE {
+  type: typeof BoxData.REMOVE_CONTENT_FAILURE;
 }
 
 export type BoxDataActionTypes =
-  | FETCHING
-  | GET_SUCCESS
-  | GET_FAILURE
-  | CREATE
-  | CLEAN
-  | ADD_SUCCESS
-  | ADD_FAILURE
-  | UPDATE_SUCCESS
-  | UPDATE_FAILURE
-  | REMOVE_SUCCESS
-  | REMOVE_FAILURE;
+  | RUNNING
+  | GET_BOX_SUCCESS
+  | GET_BOX_FAILURE
+  | CREATE_BOX_SUCCESS
+  | CREATE_BOX_FAILURE
+  | CLOSE_BOX_SUCCESS
+  | CLOSE_BOX_FAILURE
+  | REMOVE_BOX_SUCCESS
+  | REMOVE_BOX_FAILURE
+  | CREATE_LOCAL_CONTENT
+  | CLEAN_LOCAL_CONTENT
+  | ADD_CONTENT_SUCCESS
+  | ADD_CONTENT_FAILURE
+  | UPDATE_CONTENT_SUCCESS
+  | UPDATE_CONTENT_FAILURE
+  | REMOVE_CONTENT_SUCCESS
+  | REMOVE_CONTENT_FAILURE;

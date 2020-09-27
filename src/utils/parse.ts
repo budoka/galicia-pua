@@ -26,21 +26,15 @@ export function parseObject2<S, T extends object = any>(source: S): T {
   return values;
 }
 
-interface Props {
-  id: string;
-  name: string;
-  age: number;
-}
-
 export function parseObject<S, T extends object>(source: S) {
   console.log('parseObject');
   const sKeys = Object.keys(source);
   const sValues = Object.values(source);
 
-  const keysOfProps = keys<Props>();
+  //const keysOfProps = keys<Props>();
   //const keysOfProps = propertiesOf<BoxTypeFilterAPIResponse>();
 
-  console.log(keysOfProps);
+  //console.log(keysOfProps);
   const raw = {} as ObjectLiteral;
 
   sKeys.map((key, index) => {

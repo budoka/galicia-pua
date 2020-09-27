@@ -22,22 +22,28 @@
   height: 100%;
   //width: 200px;
   flex: 0 1 auto;
-}
 
-.logo {
-  // background-color: green;
-  height: 100% !important;
-  flex: 0 1 auto;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
+  .logo {
+    // background-color: green;
+    height: 100% !important;
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+
+    .logoText {
+      min-width: 80px;
+      text-align: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+  }
 }
 
 .siderButtonWrapper {
   height: 100% !important;
-
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -72,10 +78,10 @@
 
   .right {
     margin-right: 20px;
-    color: white;
+    color: @primary-color !important;
 
     .username {
-      color: white;
+      color: @primary-color !important;
       //cursor: pointer;
 
       &:hover {
@@ -102,99 +108,3 @@
     }
   }
 }
-
-/*
-#flex-center() {
-  flex: 0 1 auto;
-  height: 100%;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.header {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  justify-content: left;
-}
-
-.header-logo-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-
-  a {
-    #flex-center();
-
-    .header-logo {
-      #flex-center();
-    }
-  }
-}
-
-/*
-#header();
-
-#header() {
-  #flex-center() {
-    flex: 0 1 auto;
-    height: 100%;
-
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .header {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-  }
-
-  .header-logo-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-
-    a {
-      #flex-center();
-
-      .header-logo {
-        #flex-center();
-      }
-    }
-  }
-
-  .header-menu {
-    #flex-center();
-
-    .header-menu-item {
-      #flex-center();
-      width: 110px;
-    }
-
-    .ant-menu-submenu-title {
-      #flex-center();
-      padding: 0;
-      width: 100%;
-    }
-  }
-
-  #header-menu-item() {
-    width: 110px;
-  }
-
-  .ant-menu.ant-menu-sub.ant-menu-vertical {
-    width: #header-menu-item[width];
-    min-width: #header-menu-item[width];
-  }
-}
-*/

@@ -31,5 +31,5 @@ export const setForcedCollapsed = (forcedCollapsed: SettingsState['forcedCollaps
 export const setButtonVisible = (buttonVisible: SettingsState['buttonVisible']) => (
   dispatch: (arg: SettingsActionTypes) => SettingsActionTypes,
 ) => {
-  dispatch({ type: Settings.SIDER_BUTTON_VISIBLED, payload: buttonVisible });
+  dispatch({ type: Settings.SIDER_BUTTON_VISIBILITY, payload: buttonVisible });
 };

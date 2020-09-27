@@ -4,11 +4,12 @@ import { getVar } from 'src/utils/environment';
 export enum API {
   TIPO_CAJA = 'tipoCaja',
   CAJA = 'caja',
+  PLANTILLAS = 'plantillas',
 }
 
 export const apis: IAPI[] = [
   {
-    name: 'tipoCaja',
+    name: API.TIPO_CAJA,
     url: getVar('TIPO_CAJA_API_URL'),
     method: [
       {
@@ -22,7 +23,7 @@ export const apis: IAPI[] = [
       },
       {
         id: 'tipoDeContenido',
-        verb: 'GET',
+        verb: 'POST',
         path: 'tipoDeContenido',
         headers: {
           accept: 'application/json',
@@ -32,11 +33,11 @@ export const apis: IAPI[] = [
     ],
   },
   {
-    name: 'caja',
+    name: API.CAJA,
     url: getVar('CAJA_API_URL'),
     method: [
       {
-        id: 'preview', // url/api/preview
+        id: 'preview',
         verb: 'POST',
         path: 'preview',
         headers: {
@@ -47,6 +48,33 @@ export const apis: IAPI[] = [
         data: {},
       },
       {
+        id: 'guardarCaja',
+        verb: 'POST',
+        path: 'guardarCaja',
+        headers: {
+          accept: 'application/json',
+          useQueryString: true,
+        },
+      },
+      {
+        id: 'cerrarCaja',
+        verb: 'POST',
+        path: 'cerrarCaja',
+        headers: {
+          accept: 'application/json',
+          useQueryString: true,
+        },
+      },
+      {
+        id: 'eliminarCaja',
+        verb: 'DELETE',
+        path: 'eliminarCaja',
+        headers: {
+          accept: 'application/json',
+          useQueryString: true,
+        },
+      },
+      {
         id: 'infoCaja',
         verb: 'GET',
         path: 'infoCaja',
@@ -54,6 +82,23 @@ export const apis: IAPI[] = [
           accept: 'application/json',
           useQueryString: true,
         },
+      },
+    ],
+  },
+  {
+    name: API.PLANTILLAS,
+    url: getVar('PLANTILLAS_API_URL'),
+    method: [
+      {
+        id: 'plantillasPorSector',
+        verb: 'POST',
+        path: 'plantillasPorSector',
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+          useQueryString: true,
+        },
+        data: {},
       },
     ],
   },

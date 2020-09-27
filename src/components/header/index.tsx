@@ -1,12 +1,13 @@
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Layout } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined, CompassFilled } from '@ant-design/icons';
+import { Button, Layout, Typography } from 'antd';
 import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { setButtonVisible, setCollapsed, setForcedCollapsed, setOrientation } from 'src/actions';
-import { UNSELECTABLE } from 'src/constants/constants';
+import { APP_TITLE, SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { useWindowSize } from 'src/utils/hooks';
 import { isMobile } from 'src/utils/mobile';
@@ -14,6 +15,7 @@ import { getScreenOrientation } from 'src/utils/screen';
 import styles from './style.module.less';
 
 const { Header: HeaderAnt } = Layout;
+const { Text, Link } = Typography;
 
 interface HeaderProps extends LayoutProps {
   hideSiderButton?: boolean;
@@ -24,7 +26,20 @@ export const Header: React.FC<HeaderProps> = (props) => {
   const dispatch = useDispatch();
   const size = useWindowSize();
 
-  const headerClassNames = classNames(UNSELECTABLE, props.className, styles.header);
+  const [rotate, setRotate] = useState(false);
+
+  const history = useHistory();
+
+  const headerClassNames = classNames(UNSELECTABLE, SHADOW, props.className, styles.header);
+
+  useEffect(() => {
+    setTimeout(
+      () => {
+        setRotate(!rotate);
+      },
+      rotate ? 2500 : 5000,
+    );
+  }, [rotate]);
 
   useEffect(() => {
     const orientation = getScreenOrientation(size);
@@ -45,36 +60,24 @@ export const Header: React.FC<HeaderProps> = (props) => {
       } else if (!settings.collapsed) {
       }
     }
-
-    /* const device = settings.device;
-    const orientation = settings.orientation;
-    const collapsed = settings.collapsed;
-    const forcedCollapsed = settings.forcedCollapsed;
-
-
-    // if (settings.device === 'mobile' && orientation === 'portrait') dispatch(setForcedCollapsed(true));
-    //else dispatch(setForcedCollapsed(false));
-
-    if (device === 'mobile' && orientation !== 'portrait' && size.height > size.width) {
-      dispatch(setOrientation('portrait'));
-      dispatch(setCollapsed(true));
-    } else if (orientation !== 'landscape' && size.width > size.height) {
-      dispatch(setOrientation('landscape'));
-    } else if (orientation === 'landscape' && collapsed && !forcedCollapsed && size.width > 600) {
-      dispatch(setForcedCollapsed(false));
-    } else if (orientation === 'landscape' && !collapsed && size.width <= 600) {
-      dispatch(setCollapsed(true));
-    }*/
   }, [settings.collapsed, settings.forcedCollapsed, settings.orientation, size]);
 
   const collapseHandler = () => {
     dispatch(setForcedCollapsed(!settings.forcedCollapsed));
   };
 
+  const redirectHome = () => {
+    history.push('/');
+  };
+
   const renderLogo = () => {
     return (
       <div className={styles.logoWrapper}>
-        <div className={styles.logo}>asddddddd</div>
+        <div className={styles.logo}>
+          <Button type="link" size="large" style={{ display: 'flex' }} onClick={redirectHome}>
+            <CompassFilled style={{ fontSize: '26px', minWidth: '50px' }} spin={rotate} /> {APP_TITLE}
+          </Button>
+        </div>
       </div>
     );
   };

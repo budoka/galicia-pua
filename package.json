@@ -4,12 +4,14 @@
   "private": true,
   "dependencies": {
     "@ant-design/dark-theme": "^2.0.2",
-    "antd": "^4.6.4",
+    "@azure/msal-browser": "^2.2.0",
+    "antd": "^4.6.5",
     "axios": "^0.20.0",
     "bwip-js": "^2.0.10",
     "camelcase": "^5.3.1",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.8.0",
+    "dayjs": "^1.8.36",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "file-loader": "4.3.0",
@@ -31,7 +33,7 @@
     "semver": "6.3.0",
     "ts-reflection": "^0.3.0",
     "ts-transformer-keys": "^0.4.2",
-    "typescript": "~3.7.2"
+    "typescript": "^4.0.3"
   },
   "devDependencies": {
     "@babel/core": "7.9.0",
@@ -41,7 +43,7 @@
     "@testing-library/user-event": "^7.1.2",
     "@types/bwip-js": "^1.7.0",
     "@types/classnames": "^2.2.10",
-    "@types/history": "^4.7.6",
+    "@types/history": "^4.7.8",
     "@types/jest": "^24.0.0",
     "@types/lodash": "^4.14.157",
     "@types/node": "^12.0.0",
@@ -90,7 +92,7 @@
     "resolve-url-loader": "3.1.1",
     "sass-loader": "8.0.2",
     "style-loader": "0.23.1",
-    "terser-webpack-plugin": "^4.2.1",
+    "terser-webpack-plugin": "^4.2.2",
     "ts-loader": "^8.0.4",
     "ts-pnp": "1.1.6",
     "ttypescript": "^1.5.12",

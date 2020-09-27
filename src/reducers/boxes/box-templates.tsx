@@ -1,29 +1,29 @@
 import { BoxTemplates, BoxTemplatesActionTypes, BoxTemplatesState } from 'src/actions/boxes/box-templates/types';
 
 const initialState: BoxTemplatesState = {
-  isFetching: false,
+  isRunning: false,
   template: { id: -1, columnsTemplate: [] },
 };
 
 export default function reducer(state = initialState, action: BoxTemplatesActionTypes): BoxTemplatesState {
   switch (action.type) {
-    case BoxTemplates.FETCHING:
+    case BoxTemplates.RUNNING:
       return {
         ...state,
-        isFetching: true,
+        isRunning: true,
       };
 
     case BoxTemplates.GET_SUCCESS:
       return {
         ...state,
-        isFetching: false,
+        isRunning: false,
         template: action.payload,
       };
 
     case BoxTemplates.GET_FAILURE:
       return {
         ...state,
-        isFetching: false,
+        isRunning: false,
         template: { id: -1, columnsTemplate: [] },
       };
 

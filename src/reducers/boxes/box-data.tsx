@@ -2,75 +2,74 @@ import _ from 'lodash';
 import { BoxData, BoxDataActionTypes, BoxDataState } from 'src/actions/boxes/box-data/types';
 
 const initialState: BoxDataState = {
-  isFetching: false,
-  dataSet: { content: [] },
+  isRunning: false,
+  info: {},
+  content: [],
 };
 
 export default function reducer(state = initialState, action: BoxDataActionTypes): BoxDataState {
   switch (action.type) {
-    case BoxData.FETCHING:
+    case BoxData.RUNNING:
       return {
         ...state,
-        isFetching: true,
+        isRunning: true,
       };
 
-    case BoxData.GET_SUCCESS:
+    case BoxData.GET_BOX_SUCCESS:
       return {
         ...state,
-        isFetching: false,
-        dataSet: { ...action.payload },
+        isRunning: false,
+        info: { ...action.payload.info },
+        content: { ...action.payload.content },
       };
 
-    case BoxData.GET_FAILURE:
+    case BoxData.GET_BOX_FAILURE:
       return {
         ...state,
-        isFetching: false,
+        isRunning: false,
       };
 
-    case BoxData.CREATE:
+    case BoxData.CREATE_LOCAL_CONTENT:
       return {
         ...state,
-        dataSet: { content: [...state.dataSet.content, action.payload] },
+        content: [...state.content, action.payload],
       };
 
-    case BoxData.CLEAN:
+    case BoxData.CLEAN_LOCAL_CONTENT:
       return {
         ...state,
-        dataSet: { content: state.dataSet.content.filter((e) => _.size(e) > 1) },
+        content: state.content.filter((e) => _.size(e) > 1),
       };
 
-    case BoxData.ADD_SUCCESS:
+    case BoxData.ADD_CONTENT_SUCCESS:
       return {
         ...state,
-        dataSet: {
-          content: state.dataSet.content.map((element, index, array) => {
-            if (array.length - 1 === index) return action.payload;
-            else return element;
-          }),
-        },
+        content: state.content.map((element, index, array) => {
+          if (array.length - 1 === index) return action.payload;
+          else return element;
+        }),
       };
 
-    case BoxData.ADD_FAILURE:
+    case BoxData.ADD_CONTENT_FAILURE:
       return {
         ...state,
-        dataSet: { content: state.dataSet.content.slice(0, -1) },
+        content: state.content.slice(0, -1),
       };
 
-    case BoxData.UPDATE_SUCCESS:
+    case BoxData.UPDATE_CONTENT_SUCCESS:
       return {
         ...state,
-        dataSet: {
-          content: state.dataSet.content.map((element) => {
-            if (element.id === action.payload.id) return action.payload;
-            else return element;
-          }),
-        },
+
+        content: state.content.map((element) => {
+          if (element.id === action.payload.id) return action.payload;
+          else return element;
+        }),
       };
 
-    case BoxData.REMOVE_SUCCESS:
+    case BoxData.REMOVE_CONTENT_SUCCESS:
       return {
         ...state,
-        dataSet: { content: _.reject(state.dataSet.content, (e) => _.includes(action.payload, e.id)) },
+        //content: _.reject(state.content, (e) => _.includes(action.payload, e.id)),
       };
 
     default:

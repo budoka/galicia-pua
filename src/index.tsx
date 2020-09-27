@@ -9,6 +9,10 @@ import es from 'antd/lib/locale-provider/es_ES';
 import { history, persistor, store } from 'src/store';
 import * as serviceWorker from 'src/service-worker';
 import App from 'src/components/app';
+//import 'src/components/app/app.less'; // last
+//import { SiderDemo } from './test';
+
+//ReactDOM.render(<SiderDemo />, document.getElementById('root'));
 
 ReactDOM.render(
   <Provider store={store}>
@@ -27,3 +31,11 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+window.store = () => store.getState();

@@ -12,7 +12,7 @@ export const history = createBrowserHistory();
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['boxes', 'settings'],
+  blacklist: ['boxes'],
 };
 
 const persistedReducer = persistReducer(persistConfig, createRootReducer(history));

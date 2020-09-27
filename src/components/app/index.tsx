@@ -4,9 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
 import { Switch } from 'react-router-dom';
+import { AuthModule } from 'src/auth/auth';
 import { Header, Router, Sider } from 'src/components';
 import { SiderItem } from 'src/components/sider/types';
+import { APP_TITLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
+import { isIE } from 'src/utils/browser';
 import { getRoute } from 'src/utils/store';
 import { views } from 'src/views';
 import './app.less'; // last
@@ -31,8 +34,20 @@ const items: SiderItem[] = [
 ];
 
 const App = () => {
+  const authModule: AuthModule = new AuthModule();
   const router = useSelector((state: RootState) => state.router);
   const [title, setTitle] = useState('');
+
+  /*useEffect(() => {
+    authModule.loadAuthModule();
+    const signInType = isIE() ? 'loginRedirect' : 'loginPopup';
+    authModule.login(signInType);
+    //authModule.attemptSsoSilent();
+  }, []);*/
+
+  useEffect(() => {
+    console.log('render app');
+  }, []);
 
   useEffect(() => {
     setTitle(getTitle());
@@ -45,11 +60,11 @@ const App = () => {
 
   return (
     <>
-      <Helmet titleTemplate="%s | PUA">
+      <Helmet titleTemplate={`%s | ${APP_TITLE}`}>
         <title>{title}</title>
       </Helmet>
       <Layout style={{ minHeight: '100vh' }}>
-        <Header className={'shadow'} />
+        <Header />
         <Layout>
           <Sider items={items} />
           <Switch>
