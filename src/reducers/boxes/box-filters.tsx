@@ -8,7 +8,6 @@ const initialState: BoxFiltersState = {
 };
 
 export default function reducer(state = initialState, action: BoxFiltersActionTypes): BoxFiltersState {
-  console.log(action);
   switch (action.type) {
     case BoxFilters.RUNNING:
       return {

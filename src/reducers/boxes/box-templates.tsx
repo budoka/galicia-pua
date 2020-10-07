@@ -2,7 +2,7 @@ import { BoxTemplates, BoxTemplatesActionTypes, BoxTemplatesState } from 'src/ac
 
 const initialState: BoxTemplatesState = {
   isRunning: false,
-  template: { id: -1, columnsTemplate: [] },
+  template: { id: undefined, columnsTemplate: [] },
 };
 
 export default function reducer(state = initialState, action: BoxTemplatesActionTypes): BoxTemplatesState {
@@ -24,7 +24,13 @@ export default function reducer(state = initialState, action: BoxTemplatesAction
       return {
         ...state,
         isRunning: false,
-        template: { id: -1, columnsTemplate: [] },
+      };
+
+    case BoxTemplates.CLEAR:
+      return {
+        ...state,
+        isRunning: false,
+        template: { id: undefined, columnsTemplate: [] },
       };
 
     default:

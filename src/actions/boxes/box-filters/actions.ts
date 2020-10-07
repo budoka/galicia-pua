@@ -79,8 +79,8 @@ export const getBoxTypes = (queryParams?: QueryParams): ThunkResult => async (di
       dispatch(failure());
     });
 
-  function running(fetch: BoxFiltersState['isRunning']): BoxFiltersActionTypes {
-    return { type: BoxFilters.RUNNING, payload: fetch };
+  function running(running: BoxFiltersState['isRunning']): BoxFiltersActionTypes {
+    return { type: BoxFilters.RUNNING, payload: running };
   }
 
   function success(boxTypes: BoxFiltersState['filter']['boxTypes']): BoxFiltersActionTypes {
@@ -107,11 +107,11 @@ export const getBoxContentTypes = (data: BoxTypeFilter): ThunkResult => async (d
 
   const endpoint = `${url}/${path}`;
 
-  const dataParsed: BoxContentTypeFilterAPIRequest = {
+  const dataRequest: BoxContentTypeFilterAPIRequest = {
     tipoCaja: data.value as string,
   };
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataParsed };
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest };
 
   const index = hashCode(config);
 
@@ -142,8 +142,8 @@ export const getBoxContentTypes = (data: BoxTypeFilter): ThunkResult => async (d
       dispatch(failure());
     });
 
-  function running(fetch: BoxFiltersState['isRunning']): BoxFiltersActionTypes {
-    return { type: BoxFilters.RUNNING, payload: fetch };
+  function running(running: BoxFiltersState['isRunning']): BoxFiltersActionTypes {
+    return { type: BoxFilters.RUNNING, payload: running };
   }
 
   function success(boxContentTypes: BoxFiltersState['filter']['boxContentTypes']): BoxFiltersActionTypes {
@@ -170,12 +170,12 @@ export const getDetailTemplateTypes = (data: DetailTemplateFilter): ThunkResult 
 
   const endpoint = `${url}/${path}`;
 
-  const dataParsed: DetailTemplateFilterAPIRequest = {
+  const dataRequest: DetailTemplateFilterAPIRequest = {
     //idSector: state.boxes.filters.selected.boxContentType?.value as string,
     idSector: 1243 /* data */,
   };
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataParsed };
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest };
 
   const index = hashCode(config);
 
@@ -206,8 +206,8 @@ export const getDetailTemplateTypes = (data: DetailTemplateFilter): ThunkResult 
       dispatch(failure());
     });
 
-  function running(fetch: BoxFiltersState['isRunning']): BoxFiltersActionTypes {
-    return { type: BoxFilters.RUNNING, payload: fetch };
+  function running(running: BoxFiltersState['isRunning']): BoxFiltersActionTypes {
+    return { type: BoxFilters.RUNNING, payload: running };
   }
 
   function success(detailTemplates: BoxFiltersState['filter']['detailTemplates']): BoxFiltersActionTypes {

@@ -5,6 +5,7 @@ export enum API {
   TIPO_CAJA = 'tipoCaja',
   CAJA = 'caja',
   PLANTILLAS = 'plantillas',
+  DOCUMENTO = 'documento',
 }
 
 export const apis: IAPI[] = [
@@ -93,6 +94,23 @@ export const apis: IAPI[] = [
         id: 'plantillasPorSector',
         verb: 'POST',
         path: 'plantillasPorSector',
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+          useQueryString: true,
+        },
+        data: {},
+      },
+    ],
+  },
+  {
+    name: API.DOCUMENTO,
+    url: getVar('DOCUMENTO_API_URL'),
+    method: [
+      {
+        id: 'guardarDocumento',
+        verb: 'POST',
+        path: 'guardarDocumento',
         headers: {
           'content-type': 'application/json',
           accept: 'application/json',

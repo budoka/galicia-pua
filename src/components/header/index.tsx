@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return (
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
-          Usuario: <span className={styles.username}>{_.capitalize('MyUsername')}</span>
+          Usuario: <span className={styles.username}>{'Oscar Gómez'}</span>
         </span>
       </div>
     );

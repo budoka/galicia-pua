@@ -38,12 +38,12 @@ const App = () => {
   const router = useSelector((state: RootState) => state.router);
   const [title, setTitle] = useState('');
 
-  /*useEffect(() => {
-    authModule.loadAuthModule();
+  useEffect(() => {
+    /* authModule.loadAuthModule();
     const signInType = isIE() ? 'loginRedirect' : 'loginPopup';
-    authModule.login(signInType);
-    //authModule.attemptSsoSilent();
-  }, []);*/
+    //authModule.login(signInType);
+    authModule.attemptSsoSilent();*/
+  }, []);
 
   useEffect(() => {
     console.log('render app');

@@ -1,9 +1,11 @@
 import _ from 'lodash';
+import { act } from 'react-dom/test-utils';
 import { BoxData, BoxDataActionTypes, BoxDataState } from 'src/actions/boxes/box-data/types';
 
 const initialState: BoxDataState = {
   isRunning: false,
-  info: {},
+  id: null,
+  info: null,
   content: [],
 };
 
@@ -19,7 +21,7 @@ export default function reducer(state = initialState, action: BoxDataActionTypes
       return {
         ...state,
         isRunning: false,
-        info: { ...action.payload.info },
+        info: { ...action.payload.info! },
         content: { ...action.payload.content },
       };
 
@@ -27,6 +29,18 @@ export default function reducer(state = initialState, action: BoxDataActionTypes
       return {
         ...state,
         isRunning: false,
+      };
+
+    case BoxData.CREATE_BOX_SUCCESS:
+      return {
+        ...state,
+        id: action.payload.id,
+        info: action.payload.info,
+      };
+
+    case BoxData.CREATE_BOX_FAILURE:
+      return {
+        ...state,
       };
 
     case BoxData.CREATE_LOCAL_CONTENT:
@@ -59,7 +73,6 @@ export default function reducer(state = initialState, action: BoxDataActionTypes
     case BoxData.UPDATE_CONTENT_SUCCESS:
       return {
         ...state,
-
         content: state.content.map((element) => {
           if (element.id === action.payload.id) return action.payload;
           else return element;

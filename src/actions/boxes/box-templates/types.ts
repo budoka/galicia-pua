@@ -6,6 +6,8 @@ export enum BoxTemplates {
 
   GET_SUCCESS = 'BoxTemplates/GET_SUCCESS',
   GET_FAILURE = 'BoxTemplates/GET_FAILURE',
+
+  CLEAR = 'BoxTemplates/CLEAR',
 }
 
 export interface BoxTemplatesState extends RunnableState {
@@ -26,4 +28,8 @@ export interface GET_FAILURE {
   type: typeof BoxTemplates.GET_FAILURE;
 }
 
-export type BoxTemplatesActionTypes = RUNNING | GET_SUCCESS | GET_FAILURE;
+export interface CLEAR {
+  type: typeof BoxTemplates.CLEAR;
+}
+
+export type BoxTemplatesActionTypes = RUNNING | GET_SUCCESS | GET_FAILURE | CLEAR;

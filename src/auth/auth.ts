@@ -101,6 +101,8 @@ export class AuthModule {
    * @param response
    */
   handleResponse(response: AuthenticationResult) {
+    console.log(response);
+
     if (response !== null) {
       this.account = response.account;
     } else {

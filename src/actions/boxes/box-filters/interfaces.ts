@@ -1,10 +1,6 @@
 import { LabeledValue } from 'antd/lib/select';
 
-/*export interface SelectValue {
-  key?: string;
-  value: string;
-  label: React.ReactNode;
-}*/
+///////////////////// Interfaces Front /////////////////////
 
 export interface BoxTypeFilter extends LabeledValue {
   // id: string;
@@ -21,23 +17,28 @@ export interface DetailTemplateFilter extends LabeledValue {
   //  description: string;
 }
 
-///////////////////// Request /////////////////////
-export interface BoxContentTypeFilterAPIRequest {
-  tipoCaja: string;
-}
+///////////////////// Interfaces Back /////////////////////
 
-export interface DetailTemplateFilterAPIRequest {
-  idSector: number;
-}
-
-///////////////////// Response /////////////////////
+// RESPONSE - https://tipos-de-caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/tipoCaja
 export interface BoxTypeFilterAPIResponse {
   id: number;
   descripcion: string;
 }
 
+// REQUEST - https://tipos-de-caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/tipoDeContenido
+export interface BoxContentTypeFilterAPIRequest {
+  tipoCaja: string;
+}
+
+// RESPONSE - https://tipos-de-caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/tipoDeContenido
 export type BoxContentTypeFilterAPIResponse = string;
 
+// REQUEST - https://plantillas-por-sector-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/plantillasPorSector
+export interface DetailTemplateFilterAPIRequest {
+  idSector: number;
+}
+
+// RESPONSE - https://plantillas-por-sector-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/plantillasPorSector
 export interface DetailTemplateFilterAPIResponse {
   id: number;
   descripcion: string;

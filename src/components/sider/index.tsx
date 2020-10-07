@@ -29,10 +29,6 @@ export const Sider: React.FC<SiderProps> = (props) => {
   const siderClassNames = classNames(UNSELECTABLE, SHADOW, props.className, styles.sider);
 
   useEffect(() => {
-    console.log('render sider');
-  });
-
-  useEffect(() => {
     let ms = 300;
 
     if (showItemTitles) ms = 0;

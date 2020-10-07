@@ -1,20 +1,28 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { ObjectLiteral } from 'src/interfaces';
 
-export interface BoxTemplate {
+///////////////////// Interfaces Front /////////////////////
+
+/*export interface BoxTemplate {
+  id?: number;
+  columnsTemplate: BoxColumn[];
+}*/
+
+export type BoxTemplate = BoxDocumentTemplate[] | BoxDetailTemplate[] | BoxLabelTemplate[];
+
+export interface BoxDocumentTemplate {
   id: number;
-  columnsTemplate: BoxColumnTemplate[];
+  description: string;
+  inclusions: BoxDocumentColumnTemplate[];
 }
 
 export interface BoxDocumentColumnTemplate {
-  id: number;
   title: string;
   dataType: string;
-  required: boolean;
-  templateId: number;
+  required: string;
 }
 
-export interface BoxDetailColumnTemplate {
+export interface BoxDetailTemplate {
   id: number;
   title: string;
   dataType: string;
@@ -27,74 +35,50 @@ export interface BoxDetailColumnTemplate {
 export interface BoxLabelTemplate {
   id: number;
   title: string;
+  legacy: number;
+  version: number;
 }
 
-export type BoxColumnTemplate = BoxDocumentColumnTemplate | BoxDetailColumnTemplate;
+///////////////////// Interfaces Back /////////////////////
 
-///////////////////// Request /////////////////////
+// REQUEST - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview
 export interface BoxTemplateAPIRequest {
   idCaja: number;
   tipoContenido: string;
   idPlantilla?: number;
 }
 
-///////////////////// Response /////////////////////
+// RESPONSE - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview
+export type BoxTemplateAPIResponse = BoxDocumentTemplateAPIResponse[] | BoxDetailTemplateAPIResponse[] | BoxLabelTemplateAPIResponse[];
+
+// RESPONSE - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview
 export interface BoxDocumentTemplateAPIResponse {
   id: number;
   descripcion: string;
   inclusiones: BoxDocumentColumnTemplateAPIResponse[];
 }
 
-export interface BoxDetailTemplateAPIResponse {
-  id: number;
+export interface BoxDocumentColumnTemplateAPIResponse {
   descripcion: string;
-  inclusiones: BoxDocumentColumnTemplateAPIResponse[];
+  tipoDato: string;
+  requerido: string;
 }
 
+// RESPONSE - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview
+export interface BoxDetailTemplateAPIResponse {
+  id: number;
+  titulo: string;
+  tipo: string;
+  opcional: boolean;
+  orden: number;
+  longitud: number;
+  idPlantilla: number;
+}
+
+// RESPONSE - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview
 export interface BoxLabelTemplateAPIResponse {
   id: number;
   descripcion: string;
+  legacy: number;
+  version: number;
 }
-
-export interface BoxDocumentColumnTemplateAPIResponse {
-  id: number;
-  titulo: string;
-  tipo: string;
-  opcional: boolean;
-  orden: number;
-  longitud: number;
-  idPlantilla: number;
-}
-
-export interface BoxDetailColumnTemplateAPIResponse {
-  id: number;
-  titulo: string;
-  tipo: string;
-  opcional: boolean;
-  orden: number;
-  longitud: number;
-  idPlantilla: number;
-}
-
-/// DATA
-export interface BoxDocumentDataAPIResponse {
-  id: number;
-  idTipoDocumento: number;
-  dniCuitTitular: number;
-  nombreTitular: string;
-  numeroProducto: null;
-  detalle: string;
-  fechaDocumental: Dayjs;
-  fechaCierre: Dayjs;
-  claveExterna: string;
-  fechaDesde: Dayjs;
-  fechaHasta: Dayjs;
-  idSectorPropietario: number;
-  tipoDocumental: string;
-}
-
-/*export interface BoxColumnDocumentTemplateAPIResponse {
-  id: number;
-  descripcion: string;
-  inclusiones: [];
-}*/

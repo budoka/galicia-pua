@@ -1,5 +1,5 @@
 import { RunnableState } from 'src/actions/interfaces';
-import { IBoxDataSet, BoxContentType } from './interfaces';
+import { Box, BoxContent } from './interfaces';
 
 export enum BoxData {
   RUNNING = 'BoxData/RUNNING',
@@ -29,7 +29,7 @@ export enum BoxData {
   REMOVE_CONTENT_FAILURE = 'BoxData/REMOVE_CONTENT_FAILURE',
 }
 
-export type BoxDataState = IBoxDataSet & RunnableState;
+export type BoxDataState = Box & RunnableState;
 
 export interface RUNNING {
   type: typeof BoxData.RUNNING;
@@ -47,7 +47,7 @@ export interface GET_BOX_FAILURE {
 
 export interface CREATE_BOX_SUCCESS {
   type: typeof BoxData.CREATE_BOX_SUCCESS;
-  payload: BoxDataState['info']['id'];
+  payload: Box;
 }
 
 export interface CREATE_BOX_FAILURE {
@@ -64,7 +64,7 @@ export interface CLOSE_BOX_FAILURE {
 
 export interface REMOVE_BOX_SUCCESS {
   type: typeof BoxData.REMOVE_BOX_SUCCESS;
-  payload: BoxDataState['info']['id'];
+  payload: BoxDataState['id'];
 }
 
 export interface REMOVE_BOX_FAILURE {
@@ -73,7 +73,7 @@ export interface REMOVE_BOX_FAILURE {
 
 export interface CREATE_LOCAL_CONTENT {
   type: typeof BoxData.CREATE_LOCAL_CONTENT;
-  payload: BoxContentType;
+  payload: BoxContent;
 }
 
 export interface CLEAN_LOCAL_CONTENT {
@@ -82,7 +82,7 @@ export interface CLEAN_LOCAL_CONTENT {
 
 export interface ADD_CONTENT_SUCCESS {
   type: typeof BoxData.ADD_CONTENT_SUCCESS;
-  payload: Exclude<BoxContentType, 'id'>;
+  payload: Exclude<BoxContent, 'id'>;
 }
 
 export interface ADD_CONTENT_FAILURE {
@@ -91,7 +91,7 @@ export interface ADD_CONTENT_FAILURE {
 
 export interface UPDATE_CONTENT_SUCCESS {
   type: typeof BoxData.UPDATE_CONTENT_SUCCESS;
-  payload: BoxContentType;
+  payload: BoxContent;
 }
 
 export interface UPDATE_CONTENT_FAILURE {
@@ -100,8 +100,7 @@ export interface UPDATE_CONTENT_FAILURE {
 
 export interface REMOVE_CONTENT_SUCCESS {
   type: typeof BoxData.REMOVE_CONTENT_SUCCESS;
-  payload: BoxContentType['id'];
-  //payload: BoxContentType['id'];
+  payload: BoxContent['id'];
 }
 
 export interface REMOVE_CONTENT_FAILURE {
