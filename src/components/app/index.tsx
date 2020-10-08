@@ -8,7 +8,7 @@ import { Header, Router, Sider } from 'src/components';
 import { SiderItem } from 'src/components/sider/types';
 import { APP_TITLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
-import { getRoute } from 'src/utils/store';
+import { getRoute } from 'src/utils/history';
 import { views } from 'src/views';
 import './style.less'; // last
 
@@ -46,16 +46,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    console.log('render app');
-  }, []);
-
-  useEffect(() => {
     setTitle(getTitle());
+    console.log(getTitle());
   }, [router.location.pathname]);
 
   const getTitle = () => {
     const view = views.find((v) => v.path === getRoute());
-    return view ? view.title : '';
+    const title = view ? view.title : views[views.length - 1].title;
+    return title;
   };
 
   return (

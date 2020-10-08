@@ -23,8 +23,8 @@ export function Router(props: RouterProps) {
       )
       .map((view, index) => {
         const key = index;
-        //const key = getKey(view.path);
-        console.log(view);
+        // const key = getKey(view.path);
+        // console.log(view);
 
         return view.private ? (
           <PrivateRoute key={key} exact path={view.path}>
@@ -38,14 +38,5 @@ export function Router(props: RouterProps) {
       });
   };
 
-  const renderNotFoundView = () => {
-    return <Route key={'404'} component={NotFound} />;
-  };
-
-  return (
-    <Switch>
-      {renderViews(props.views)}
-      {/*renderNotFoundView()*/}
-    </Switch>
-  );
+  return <Switch>{renderViews(props.views)}</Switch>;
 }

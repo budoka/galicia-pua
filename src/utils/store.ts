@@ -1,6 +1,5 @@
-import { store } from 'src/store';
-import { View } from 'src/views';
-import { views } from 'src/views';
+import { View, views } from 'src/views';
+import { getRoute } from './history';
 
 export const getUser = () => {
   /*const token = store.getState().auth.token!;
@@ -12,12 +11,7 @@ export const getUser = () => {
 
   return { user, token, permissions };
 };
-
-export const getRoute = () => {
-  //console.log(store.getState().router.location);
-  return store.getState().router.location.pathname;
-};
-
+/*
 export const isValidRoute = () => {
   const currentPath = getRoute();
 
@@ -25,8 +19,9 @@ export const isValidRoute = () => {
   const isValid = Boolean(view);
 
   return isValid;
-};
+};*/
 
+/*
 export const isPrivatedRoute = () => {
   const currentPath = getRoute();
 
@@ -34,7 +29,7 @@ export const isPrivatedRoute = () => {
   const isPrivated = Boolean(view && view.private);
 
   return isPrivated;
-};
+};*/
 
 const isRoute = (path: View['path']) => {
   const currentPath = getRoute();
@@ -42,7 +37,7 @@ const isRoute = (path: View['path']) => {
   //console.log(`# Current path: ${currentPath}, path: ${path}`);
   return currentPath === path;
 };
-
+/*
 export const hasViewPermission = () => {
   const currentPath = getRoute();
   const view = views.find((view) => view.path === currentPath);
@@ -55,3 +50,4 @@ export const hasViewPermission = () => {
     return true;
   return false;
 };
+*/

@@ -1,6 +1,13 @@
 import { history } from 'src/store';
 
 /**
+ * Get current route (location pathname).
+ */
+export const getRoute = () => {
+  return history.location.pathname;
+};
+
+/**
  * Go to home page.
  */
 export function goHome() {
@@ -24,6 +31,6 @@ export function goTo(path: string) {
 /**
  * Replace the current page.
  */
-export function replacePage(path: string) {
+export function replaceRoute(path: string) {
   history.replace(path);
 }
