@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ObjectLiteral, QueryParams } from 'src/interfaces';
 import { ThunkResult } from 'src/actions';
 import { PreviewCajaAction, PreviewCajaActionTypes, PreviewCajaState } from './types';
-import { API, apis } from 'src/services/api-data';
+import { API, apis } from 'src/services/apis-data';
 import { getAPIData } from 'src/utils/api';
 
 import { FiltrosCajaState } from '../caja-filtros';

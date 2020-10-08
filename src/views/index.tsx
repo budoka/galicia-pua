@@ -13,6 +13,7 @@ export const views: View[] = [
   { title: 'Buscar Caja*', path: '/buscar-caja2', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Buscar Legajo / Doc*', path: '/buscar-legajo-doc', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Buscar Pedidos*', path: '/buscar-pedidos', component: <NotFound />, private: true, scope: 'full' },
+  { title: 'No encontrado', path: undefined, component: <NotFound />, private: false, scope: 'full' },
 ];
 
 export * from 'src/views/types';

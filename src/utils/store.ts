@@ -38,7 +38,7 @@ export const isPrivatedRoute = () => {
 
 const isRoute = (path: View['path']) => {
   const currentPath = getRoute();
-  path = path[0] !== '/' ? '/' + path : path;
+  path = path![0] !== '/' ? '/' + path : path;
   //console.log(`# Current path: ${currentPath}, path: ${path}`);
   return currentPath === path;
 };

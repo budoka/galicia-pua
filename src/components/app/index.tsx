@@ -3,16 +3,16 @@ import { Layout } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector } from 'react-redux';
-import { Switch } from 'react-router-dom';
 import { AuthModule } from 'src/auth/auth';
 import { Header, Router, Sider } from 'src/components';
 import { SiderItem } from 'src/components/sider/types';
 import { APP_TITLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
-import { isIE } from 'src/utils/browser';
 import { getRoute } from 'src/utils/store';
 import { views } from 'src/views';
-import './app.less'; // last
+import './style.less'; // last
+
+const { Content } = Layout;
 
 const items: SiderItem[] = [
   { view: views[0], icon: <HomeOutlined /> },
@@ -67,9 +67,9 @@ const App = () => {
         <Header />
         <Layout>
           <Sider items={items} />
-          <Switch>
+          <Content>
             <Router views={views} />
-          </Switch>
+          </Content>
         </Layout>
       </Layout>
     </>

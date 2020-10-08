@@ -69,11 +69,10 @@ export const Sider: React.FC<SiderProps> = (props) => {
             {renderMenu((item as SiderParentItem).children)}
           </SubMenu>
         );
-      } else {
+      } else if ((item as SiderChildItem).view.path) {
         // SiderChildItem
-        key = (item as SiderChildItem).view.path;
+        key = path = (item as SiderChildItem).view.path!;
         title = (item as SiderChildItem).view.title;
-        path = (item as SiderChildItem).view.path;
 
         return (
           <Menu.Item key={key}>

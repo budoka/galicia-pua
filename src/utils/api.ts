@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { APIError } from 'src/exceptions';
 import { Dictionary, IAPIMethod } from 'src/interfaces';
-import { apis } from 'src/services/api-data';
+import { apis } from 'src/services/apis-data';
 
 export interface IAPIDataCache {
   cache: Dictionary<IAPIData>;

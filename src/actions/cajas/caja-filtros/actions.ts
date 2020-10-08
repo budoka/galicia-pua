@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ThunkResult } from 'src/actions';
 import { IRequestCache } from 'src/actions/interfaces';
 import { Dictionary, QueryParams } from 'src/interfaces';
-import { API } from 'src/services/api-data';
+import { API } from 'src/services/apis-data';
 import { getAPIData, IAPIData } from 'src/utils/api';
 import { parseObject } from 'src/utils/parse';
 import { hashCode } from 'src/utils/string';
