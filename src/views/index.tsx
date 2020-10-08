@@ -1,14 +1,14 @@
 import React from 'react';
 import { View } from 'src/views/types';
-import { Home } from 'src/views/home';
+import { Inicio } from 'src/views/inicio';
 import { NotFound } from 'src/views/not-found';
-import { Boxes } from 'src/views/boxes';
+import { Cajas } from 'src/views/cajas';
 
 export const views: View[] = [
-  { title: 'Inicio', path: '/inicio', component: <Home />, private: true, scope: 'inicio' },
+  { title: 'Inicio', path: '/', component: <Inicio />, private: true, scope: 'inicio' },
   { title: 'Buscar Legajo*', path: '/buscar-legajo', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Buscar Caja*', path: '/buscar-caja', component: <NotFound />, private: true, scope: 'full' },
-  { title: 'Ingresar Caja', path: '/ingresar-caja', component: <Boxes />, private: true, scope: 'full' },
+  { title: 'Ingresar Caja', path: '/ingresar-caja', component: <Cajas />, private: true, scope: 'full' },
   { title: 'Retirar Caja*', path: '/retirar-caja', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Buscar Caja*', path: '/buscar-caja2', component: <NotFound />, private: true, scope: 'full' },
   { title: 'Buscar Legajo / Doc*', path: '/buscar-legajo-doc', component: <NotFound />, private: true, scope: 'full' },

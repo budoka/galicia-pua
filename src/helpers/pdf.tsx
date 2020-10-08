@@ -103,8 +103,8 @@ export function createCajaPDF(format: string, data: IPDFData, width: number, sca
   doc.text(`Nro. de Caja:`, x, y, { align: 'right' });
   x = centerX + margin / 2;
   y = margin + doc.getFontSize() * (offSetY + initialOffSetY);
-  const boxNumberText = getTrimmedText(doc, data.numeroDeCaja, titleFontSize, centerX - margin * 4, doc.getFontSize());
-  doc.text(boxNumberText, x, y);
+  const cajaNumberText = getTrimmedText(doc, data.numeroDeCaja, titleFontSize, centerX - margin * 4, doc.getFontSize());
+  doc.text(cajaNumberText, x, y);
 
   // Descripción
   offSetY = 0;

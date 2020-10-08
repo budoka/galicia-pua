@@ -1,4 +1,3 @@
-import { BoxTypeFilter, BoxTypeFilterAPIResponse } from 'src/actions/boxes/box-filters/interfaces';
 import { ObjectLiteral } from 'src/interfaces';
 // import { propertiesOf } from 'ts-reflection';
 
@@ -32,7 +31,7 @@ export function parseObject<S, T extends object>(source: S) {
   const sValues = Object.values(source);
 
   //const keysOfProps = keys<Props>();
-  //const keysOfProps = propertiesOf<BoxTypeFilterAPIResponse>();
+  //const keysOfProps = propertiesOf<CajaTypeFilterAPIResponse>();
 
   //console.log(keysOfProps);
   const raw = {} as ObjectLiteral;

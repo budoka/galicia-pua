@@ -5,13 +5,14 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { setButtonVisible, setCollapsed, setForcedCollapsed, setOrientation } from 'src/actions';
 import { APP_TITLE, SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
+import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
 import { isMobile } from 'src/utils/mobile';
 import { getScreenOrientation } from 'src/utils/screen';
+
 import styles from './style.module.less';
 
 const { Header: HeaderAnt } = Layout;
@@ -27,8 +28,6 @@ export const Header: React.FC<HeaderProps> = (props) => {
   const size = useWindowSize();
 
   const [rotate, setRotate] = useState(false);
-
-  const history = useHistory();
 
   const headerClassNames = classNames(UNSELECTABLE, SHADOW, props.className, styles.header);
 
@@ -66,15 +65,11 @@ export const Header: React.FC<HeaderProps> = (props) => {
     dispatch(setForcedCollapsed(!settings.forcedCollapsed));
   };
 
-  const redirectHome = () => {
-    history.push('/');
-  };
-
   const renderLogo = () => {
     return (
       <div className={styles.logoWrapper}>
         <div className={styles.logo}>
-          <Button type="link" size="large" style={{ display: 'flex' }} onClick={redirectHome}>
+          <Button type="link" size="large" style={{ display: 'flex' }} onClick={goHome}>
             <CompassFilled style={{ fontSize: '26px', minWidth: '50px' }} spin={rotate} /> {APP_TITLE}
           </Button>
         </div>

@@ -24,7 +24,7 @@ export const data: IAPIDataCache = {
 export function getAPIData(apiName: string, id: string): IAPIData {
   const index = `${apiName}_${id}`;
   if (data.cache[index]) {
-    console.log('Cached!!!');
+    // console.log('Cached!!!');
     return data.cache[index];
   }
 

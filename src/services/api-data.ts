@@ -77,7 +77,7 @@ export const apis: IAPI[] = [
       },
       {
         id: 'infoCaja',
-        verb: 'GET',
+        verb: 'POST',
         path: 'infoCaja',
         headers: {
           accept: 'application/json',

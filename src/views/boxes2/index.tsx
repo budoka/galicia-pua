@@ -3,21 +3,21 @@ import { ColumnType } from 'antd/lib/table';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getBoxTemplates } from 'src/actions/boxes/box-templates';
+//import { getCajaPreviews } from 'src/actions/cajas/caja-previews';
 import { EditableTable } from 'src/components/editable-table';
 import { createCajaPDF, IPDFData } from 'src/helpers/pdf';
 import styles from './style.module.less';
 
 interface IDataSet {
-  data: IBoxObject[];
+  data: ICajaObject[];
 }
 
-interface IBoxObject {
+interface ICajaObject {
   key: string;
-  [key: string]: IBoxColumnObject | string;
+  [key: string]: ICajaColumnObject | string;
 }
 
-interface IBoxColumnObject {
+interface ICajaColumnObject {
   id: number;
   value: string;
 }
@@ -91,7 +91,7 @@ const set2: IDataSet = {
   ],
 };
 
-const columns: IColumn<IBoxObject>[] = [
+const columns: IColumn<ICajaObject>[] = [
   {
     key: 'col1',
     dataIndex: '1',
@@ -128,7 +128,7 @@ const columns: IColumn<IBoxObject>[] = [
   },
 ];
 
-export const Boxes: React.FC = (props) => {
+export const Cajas: React.FC = (props) => {
   const dispatch = useDispatch();
 
   const [dataSet, setDataSet] = useState<IDataSet>();
@@ -146,7 +146,7 @@ export const Boxes: React.FC = (props) => {
   // createCajaPDF('code39', pdfData, 500);
 
   const updateData = () => {
-    dispatch(getBoxTemplates);
+    //  dispatch(getCajaPreviews);
     if (dataSet === set1) {
       /*const mappedData = set2.data.map((row) => {
         const props = Object.keys(row);
@@ -156,7 +156,7 @@ export const Boxes: React.FC = (props) => {
       setDataSet(set2);
     } else setDataSet(set1);
   };
-  const getColumns = (columns: IColumn<IBoxObject>[]) => {
+  const getColumns = (columns: IColumn<ICajaObject>[]) => {
     if (!dataSet || dataSet.data.length === 0) return [];
 
     const columnsKeys = columns.map((column) => column.key);
@@ -180,7 +180,7 @@ export const Boxes: React.FC = (props) => {
       <Button type={'primary'} onClick={updateData}>
         Toggle
       </Button>
-      <EditableTable<IBoxObject> dataSource={dataSet && dataSet.data} columns={getColumns(columns)} />
+      <EditableTable<ICajaObject> dataSource={dataSet && dataSet.data} columns={getColumns(columns)} />
     </div>
   );
 };

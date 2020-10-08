@@ -51,7 +51,7 @@ const App = () => {
 
   useEffect(() => {
     setTitle(getTitle());
-  }, [router]);
+  }, [router.location.pathname]);
 
   const getTitle = () => {
     const view = views.find((v) => v.path === getRoute());

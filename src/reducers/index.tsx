@@ -1,11 +1,11 @@
 import { connectRouter } from 'connected-react-router';
 import { History } from 'history';
 import { combineReducers } from 'redux';
-import boxes from 'src/reducers/boxes';
+import cajas from 'src/reducers/cajas';
 import settings from 'src/reducers/settings';
 
 const reducers = {
-  boxes,
+  cajas,
   settings,
 };
 

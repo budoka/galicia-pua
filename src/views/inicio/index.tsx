@@ -7,7 +7,7 @@ import { IListCard } from 'src/components/list-card/types';
 
 import styles from './style.module.less';
 
-export const Home: React.FC = (props) => {
+export const Inicio: React.FC = (props) => {
   const cards: IListCard[] = [
     {
       title: 'Cajas',

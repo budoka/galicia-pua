@@ -10,8 +10,9 @@ import { useSelector } from 'react-redux';
 
 // Column extension
 export interface IColumn<RecordType> extends ColumnType<RecordType> {
-  dataType: 'texto' | 'entero' | 'fecha';
-  required: boolean;
+  dataType: 'texto' | 'entero' | 'fecha' | 'boolean';
+  renderType?: 'text' | 'list' | 'checkbox';
+  required?: boolean;
   length?: number;
   order?: number;
 }
@@ -19,7 +20,7 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
 interface EditableTableProps<RecordType> extends TableProps<RecordType> {}
 
 export const EditableTable = <RecordType extends object = any>(props: EditableTableProps<RecordType>) => {
-  const boxes = useSelector((state: RootState) => state.boxes);
+  const cajas = useSelector((state: RootState) => state.cajas);
 
   const [form] = Form.useForm();
 
@@ -37,7 +38,7 @@ export const EditableTable = <RecordType extends object = any>(props: EditableTa
         <Table
           {...props}
           bordered
-          loading={boxes.templates.isRunning}
+          //loading={cajas.preview.preview}
           pagination={{ position: ['bottomLeft'] }} /*components={components}*/
         />
       </Form>
