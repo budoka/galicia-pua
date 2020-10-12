@@ -2,7 +2,7 @@ import { FileOutlined, HomeOutlined, InboxOutlined, ShoppingCartOutlined } from 
 import { Layout } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { AuthModule } from 'src/auth/auth';
 import { Header, Router, Sider } from 'src/components';
 import { SiderItem } from 'src/components/sider/types';
@@ -10,6 +10,7 @@ import { APP_TITLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { getRoute } from 'src/utils/history';
 import { views } from 'src/views';
+
 import './style.less'; // last
 
 const { Content } = Layout;
@@ -47,7 +48,6 @@ const App = () => {
 
   useEffect(() => {
     setTitle(getTitle());
-    console.log(getTitle());
   }, [router.location.pathname]);
 
   const getTitle = () => {

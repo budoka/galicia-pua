@@ -1,5 +1,5 @@
 import { RunnableState } from 'src/actions/interfaces';
-import { FiltroTipoPlantillaResponse, FiltroTipoCajaResponse, FiltroTipoContenidoCajaResponse, Filtro } from './interfaces';
+import { FiltroTipoPlantillaResponse, FiltroTipoCajaResponse, FiltroTipoContenidoCajaResponse, Elemento } from './interfaces';
 
 export enum FiltrosCajaAction {
   RUNNING_FILTER = 'FiltrosCajaAction/RUNNING_FILTER',
@@ -23,14 +23,14 @@ export interface FiltrosCajaState extends RunnableState {
     /* tiposCaja: FiltroTipoCajaResponse[];
     tiposContenidoCaja: FiltroTipoContenidoCajaResponse[];
     tiposPlantilla: FiltroTipoPlantillaResponse[];*/
-    tiposCaja: Filtro[];
-    tiposContenidoCaja: Filtro[];
-    tiposPlantilla: Filtro[];
+    tiposCaja: Elemento[];
+    tiposContenidoCaja: Elemento[];
+    tiposPlantilla: Elemento[];
   };
   seleccionado: {
-    tipoCaja: Filtro | null;
-    tipoContenidoCaja: Filtro | null;
-    tipoPlantilla: Filtro | null;
+    tipoCaja: Elemento | null;
+    tipoContenidoCaja: Elemento | null;
+    tipoPlantilla: Elemento | null;
     /* tipoCaja: FiltroTipoCajaResponse | null;
     tipoContenidoCaja: FiltroTipoContenidoCajaResponse | null;
     tipoPlantilla: FiltroTipoPlantillaResponse | null;*/

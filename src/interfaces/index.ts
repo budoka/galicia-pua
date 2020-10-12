@@ -1,5 +1,10 @@
 import { HttpVerb } from 'src/types';
 
+export interface IElement {
+  key: React.Key;
+  [key: string]: any;
+}
+
 export interface Size {
   width: number;
   height: number;

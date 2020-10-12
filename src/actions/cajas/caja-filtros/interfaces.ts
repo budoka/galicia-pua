@@ -2,7 +2,7 @@ import { LabeledValue, OptionProps, SelectValue } from 'antd/lib/select';
 
 ///////////////////// Interfaces Front /////////////////////
 
-export interface Filtro {
+export interface Elemento {
   id: number | string;
   descripcion: string;
 }
@@ -10,7 +10,7 @@ export interface Filtro {
 ///////////////////// Interfaces Back /////////////////////
 
 // RESPONSE - https://tipos-de-caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/tipoCaja
-export interface FiltroTipoCajaResponse extends Filtro {
+export interface FiltroTipoCajaResponse extends Elemento {
   //id: number;
   // descripcion: string;
 }
@@ -22,7 +22,7 @@ export interface FiltroTipoContenidoCajaRequest {
 
 // RESPONSE - https://tipos-de-caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/tipoDeContenido
 export type FiltroTipoContenidoCajaResponseV1 = string;
-export interface FiltroTipoContenidoCajaResponse extends Filtro {
+export interface FiltroTipoContenidoCajaResponse extends Elemento {
   //id: number;
   // descripcion: string;
 }
@@ -43,6 +43,6 @@ export interface FiltroTipoPlantillaResponse {
 // export type FiltroCaja = FiltroTipoCajaResponse | FiltroTipoContenidoCajaResponse | FiltroPlantillaRequest extends SelectValue;
 
 declare module 'antd/lib/select' {
-  export interface OptionProps extends Filtro {}
+  export interface OptionProps extends Elemento {}
   // export interface OptionProps extends FiltroTipoCajaResponse, FiltroTipoContenidoCajaResponse, FiltroPlantillaRequest
 }

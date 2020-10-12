@@ -1,0 +1,46 @@
+/* editableTable */
+
+@import (reference) '~antd/dist/antd.dark.less';
+
+.tableWrapper {
+  width: 100% !important;
+  align-self: flex-start;
+  //padding: 20px;
+  //height: 100% !important;
+}
+
+.titleRecords {
+  cursor: default !important;
+
+  span {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.cellActions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.buttonSave:focus,
+.buttonSave:hover {
+  color: @green-6 !important;
+}
+
+.buttonDelete:focus,
+.buttonDelete:hover,
+.buttonCancel:focus,
+.buttonCancel:hover {
+  color: @red-6 !important;
+}
+
+.tableWrapper {
+  background-color: red;
+  width: 50% !important;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}

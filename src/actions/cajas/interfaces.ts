@@ -1,5 +1,7 @@
 ///////////////////// Interfaces Front /////////////////////
 
+import { IElement } from 'src/interfaces';
+
 export interface Caja {
   id: number | null; // id
   info: InfoCaja | null; // demás propiedades
@@ -30,7 +32,7 @@ export interface InfoCaja {
 
 export type ContenidoCaja = CajaDocumento | CajaDetalle | CajaEtiqueta;
 
-export interface CajaDocumento {
+export interface CajaDocumento extends IElement {
   id: number | null;
   idTipoDocumento: number | null;
   tipoDocumental: string | null;
@@ -46,7 +48,7 @@ export interface CajaDocumento {
   fechaHasta: string | null;
 }
 
-export interface CajaDetalle {
+export interface CajaDetalle extends IElement {
   id: number;
   detalle: CajaDetalleColumna[];
 }
@@ -56,7 +58,7 @@ export interface CajaDetalleColumna {
   valor: string;
 }
 
-export interface CajaEtiqueta {
+export interface CajaEtiqueta extends IElement {
   id: number; // Se va a quitar
   idEtiqueta: number;
 }

@@ -27,14 +27,15 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
 }
 
 export interface EditableTableProps<RecordType> extends TableProps<RecordType> {
-  hasKeyColumn?: boolean;
+  hasIdColumn?: boolean;
   hasActionColumn?: boolean;
 }
 
-const keyColumn = {
-  key: 'key',
-  dataIndex: 'key',
-  title: '#',
+const idColumn = {
+  key: 'id',
+  dataIndex: 'id',
+  title: 'ID',
+  align: 'center',
   sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
 } as IColumn<any>;
 
@@ -42,35 +43,30 @@ const actionColumn = {
   key: 'actions',
   dataIndex: 'actions',
   title: 'Acciones',
-  fixed: 'right',
-  width: 100,
+  align: 'center',
 } as IColumn<any>;
 
 export const EditableTable = <RecordType extends IElement = IElement>(props: EditableTableProps<RecordType>) => {
   const [form] = Form.useForm();
-  const [data, setData] = useState(props.dataSource);
-  const [editingRow, setEditingRow] = useState<React.Key>();
+  const [data, setData] = useState(props.dataSource ?? []);
+  const [editingRows, setEditingRows] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<React.Key[]>([]);
 
-  useEffect(() => {
-    //buildColumns(props.c)
-    console.log('aaa');
-  });
-
   const buildColumns = (columns: ColumnsType<RecordType> | undefined) => {
+    // console.log('building columns...');
+
     if (!columns || columns.length === 0) return;
 
-    if (props.hasKeyColumn) addColumn(keyColumn, 'start');
+    if (props.hasIdColumn) addColumn(idColumn, 'start');
     if (props.hasActionColumn) addColumn(actionColumn, 'end');
 
     columns = (columns as IColumn<RecordType>[]).map((col) => {
       return {
         ...col,
-        align: col.align ?? 'center',
         render: col.render
           ? col.render
           : (value, record, index) => {
-              if (col.key === 'key') return props.dataSource!.indexOf(record) + 1;
+              if (col.key === 'id') return props.dataSource!.indexOf(record) + 1;
               else if (col.key === 'actions') return renderActions(record);
               else if (!value) return '-';
               else return value;
@@ -79,8 +75,9 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
           ({
             dataIndex: col.dataIndex,
             record,
-            editing: col.forceEditing || (col.editable && isEditing(record)),
+            editing: col.forceEditing || isEditing(record),
             inputType: col.inputType,
+            // title: col.title,
           } as EditableCellProps<RecordType>),
       } as IColumn<RecordType>;
     });
@@ -97,21 +94,69 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
     }
   };
 
-  const isEditing = (record: IElement) => record.key === editingRow;
+  /*const buildColumns = useCallback((columns: ColumnsType<RecordType> | undefined) => {
+    // console.log('building columns...');
 
-  const editRow = (record: IElement) => {
-    setEditingRow(record.key);
+    if (!columns || columns.length === 0) return;
+
+    if (props.hasIdColumn) addColumn(idColumn, 'start');
+    if (props.hasActionColumn) addColumn(actionColumn, 'end');
+
+    columns = (columns as IColumn<RecordType>[]).map((col) => {
+      return {
+        ...col,
+        render: col.render
+          ? col.render
+          : (value, record, index) => {
+              if (col.key === 'id') return props.dataSource!.indexOf(record) + 1;
+              else if (col.key === 'actions') return renderActions(record);
+              else if (!value) return '-';
+              else return value;
+            },
+        onCell: (record: RecordType) =>
+          ({
+            dataIndex: col.dataIndex,
+            record,
+            editing: col.forceEditing || isEditing(record),
+            inputType: col.inputType,
+            // title: col.title,
+          } as EditableCellProps<RecordType>),
+      } as IColumn<RecordType>;
+    });
+
+    console.table(columns);
+
+    return columns;
+
+    function addColumn(column: IColumn<RecordType>, addTo: 'start' | 'end') {
+      console.log('addColumn: ' + addTo);
+
+      if (addTo === 'start') columns = [column, ...columns!];
+      else columns = [...columns!, column];
+    }
+  }, []);*/
+
+  const isEditing = (record: IElement) => {
+    return editingRows.indexOf(record.id) > -1;
+  };
+
+  const edit = (record: IElement) => {
+    console.log([...editingRows, record.key]);
+    setEditingRows([...editingRows, record.key]);
     form.setFieldsValue({ ...record });
   };
 
-  const cancelRow = () => setEditingRow('');
+  const cancel = () => {
+    const [_, ...keys] = editingRows;
+    setEditingRows(keys);
+  };
 
-  const saveRow = async (key: React.Key) => {
+  /*const save = async (key: React.Key) => {
     try {
-      const row = (await form.validateFields()) as RecordType;
+      const row = (await form.validateFields()) as IElement;
 
-      const newData = [...data!];
-      const index = newData.findIndex((element) => key === element.id);
+      const newData = [...data];
+      const index = newData.findIndex(element => key === element.id);
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -119,16 +164,16 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
           ...row,
         });
         setData(newData);
-        setEditingRow('');
+        setEditingKey('');
       } else {
         newData.push(row);
         setData(newData);
-        setEditingRow('');
+        setEditingKey('');
       }
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
     }
-  };
+  };*/
 
   const renderTotal = (total: number) => {
     return `Total: ${total}`;
@@ -142,7 +187,7 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
           type="link"
           style={{ padding: 0, width: '50%' }}
           onClick={() => {
-            editRow(record);
+            edit(record);
           }}>
           Editar
         </Button>
@@ -174,7 +219,7 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
           type="link"
           style={{ padding: 0, width: '50%' }}
           onClick={() => {
-            saveRow(record.key);
+            // saveRow(record);
           }}>
           Guardar
         </Button>
@@ -188,7 +233,7 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
           type="link"
           style={{ padding: 0, width: '50%' }}
           onClick={() => {
-            cancelRow();
+            //  cancelRow(record);
           }}>
           Cancelar
         </Button>
@@ -215,8 +260,8 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
   };
 
   return (
-    <div className={`${styles.tableWrapper}`}>
-      <Form className={'tableForm'} form={form} component={false}>
+    <div /*className={' unselectable'}*/>
+      <Form form={form} component={false}>
         <Table
           {...props}
           components={{
@@ -226,12 +271,10 @@ export const EditableTable = <RecordType extends IElement = IElement>(props: Edi
           }}
           pagination={{
             position: ['bottomCenter'],
-            //hideOnSinglePage: true,
+            hideOnSinglePage: true,
             showTotal: (total, range) => renderTotal(total),
           }}
           columns={buildColumns(props.columns) as ColumnType<RecordType>[]}
-          scroll={{ x: 1500, y: 300 }}
-          //columns={buildColumns(props.columns) as ColumnType<RecordType>[]}
         />
       </Form>
     </div>
