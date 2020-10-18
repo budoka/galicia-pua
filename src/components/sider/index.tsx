@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
 import { SiderProps as SiderPropsAnt } from 'antd/lib/layout';
 import { MenuMode } from 'antd/lib/menu';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import SubMenu from 'antd/lib/menu/SubMenu';
 import classNames from 'classnames';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { setOpenMenu } from 'src/actions';
+import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
-import { SiderItem, SiderChildItem, SiderParentItem } from './types';
+import { history } from 'src/store';
 import styles from './style.module.less';
+import { SiderChildItem, SiderItem, SiderParentItem } from './types';
 
 const { Sider: SiderAnt } = Layout;
 
@@ -22,25 +24,26 @@ interface SiderProps extends SiderPropsAnt {
 }
 
 export const Sider: React.FC<SiderProps> = (props) => {
+  const siderClassNames = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.sider);
+
+  const dispatch = useDispatch();
   const settings = useSelector((state: RootState) => state.settings);
   const router = useSelector((state: RootState) => state.router);
-  const [showItemTitles, setShowItemTitles] = useState(settings.collapsed);
-
-  const siderClassNames = classNames(UNSELECTABLE, SHADOW, props.className, styles.sider);
 
   useEffect(() => {
-    let ms = 300;
+    const menu = !settings.collapsed
+      ? (props.items as SiderParentItem[]).find((i) => i.children && i.children.some((c) => c.view.path! === history.location.pathname!))
+          ?.title!
+      : undefined;
 
-    if (showItemTitles) ms = 0;
+    !settings.collapsed && dispatch(setOpenMenu(menu));
+  }, [router.location.pathname, settings.collapsed]);
 
-    const timeout = setTimeout(() => {
-      setShowItemTitles(!settings.collapsed);
-    }, ms);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [settings.collapsed]);
+  const onOpenChange = (currentMenu: any) => {
+    if (currentMenu.length > 0) {
+      dispatch(setOpenMenu(currentMenu[currentMenu.length - 1]));
+    } else dispatch(setOpenMenu());
+  };
 
   const renderMenu = (items: SiderItem[]) => {
     const isParentItem = (item: SiderItem) => {
@@ -82,18 +85,21 @@ export const Sider: React.FC<SiderProps> = (props) => {
             </Link>
           </Menu.Item>
         );
-      }
+      } else return undefined;
     });
   };
 
   return (
     <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
       <Menu
+        selectedKeys={[history.location.pathname]}
+        openKeys={settings.openMenu ? [settings.openMenu] : []}
+        onOpenChange={onOpenChange}
+        onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
+          dispatch(setOpenMenu());
+        }}
         theme={props.theme ?? 'light'}
-        mode={props.mode ?? 'inline'}
-        selectedKeys={[router.location.pathname]}
-        /*defaultOpenKeys={!settings.collapsed ? ['Administración'] : []}*/
-      >
+        mode={props.mode ?? 'inline'}>
         {renderMenu(props.items)}
       </Menu>
     </SiderAnt>

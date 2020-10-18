@@ -15,17 +15,17 @@ export default function reducer(state = initialState, action: SettingsActionType
     case Settings.DEVICE_CHANGE:
       return {
         ...state,
-        device: action.payload,
+        device: action.device,
       };
     case Settings.ORIENTATION_CHANGE:
       return {
         ...state,
-        orientation: action.payload,
+        orientation: action.orientation,
       };
     case Settings.SIDER_COLLAPSED:
       return {
         ...state,
-        collapsed: action.payload || !state.collapsed,
+        collapsed: action.collapsed || !state.collapsed,
       };
     case Settings.SIDER_FORCED_COLLAPSED:
       return {
@@ -36,7 +36,12 @@ export default function reducer(state = initialState, action: SettingsActionType
     case Settings.SIDER_BUTTON_VISIBILITY:
       return {
         ...state,
-        buttonVisible: action.payload,
+        buttonVisible: action.buttonVisible,
+      };
+    case Settings.SIDER_OPEN_MENU:
+      return {
+        ...state,
+        openMenu: action.openMenu,
       };
     default:
       return state;

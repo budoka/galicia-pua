@@ -1,0 +1,41 @@
+/* app */
+
+@import (reference) '~src/styles/antd/antd.less';
+
+@header-height: 64px;
+
+body {
+  overflow: hidden !important;
+}
+
+.header {
+  height: @header-height !important;
+}
+
+.layout {
+  position: relative;
+  top: @header-height;
+  min-height: calc(100vh - @header-height);
+  max-height: calc(100vh - @header-height);
+  height: calc(100vh - @header-height);
+}
+
+.content {
+  display: flex;
+  overflow: auto scroll !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px @gray-2;
+  background: @gray-2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: @gray-4;
+  background: @primary-4;
+}

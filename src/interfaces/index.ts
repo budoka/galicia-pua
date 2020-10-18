@@ -1,5 +1,8 @@
 import { HttpVerb } from 'src/types';
 
+export interface BasicComponenetProps<HTMLElement>
+  extends React.DetailedHTMLProps<React.HTMLAttributes<Exclude<HTMLElement, 'unselectable'>>, Exclude<HTMLElement, 'unselectable'>> {}
+
 export interface IElement {
   key: React.Key;
   [key: string]: any;

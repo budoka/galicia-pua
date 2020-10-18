@@ -1,18 +1,16 @@
-/* app.less */
+/* global */
 
 @import '~src/styles/antd/antd.less';
 
-#root {
-  overflow-x: hidden !important;
-  margin-right: calc(-1 * (100vw - 100%)) !important;
+.fixed {
+  position: fixed;
+  z-index: 10;
 }
 
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  padding: 20px;
-  width: 100%;
+.sticky {
+  position: sticky;
+  z-index: 10;
+  top: 0; /* required */
 }
 
 .unselectable {
@@ -31,8 +29,4 @@
 
 .shadow {
   box-shadow: 2px 2px 5px 0px @shadow-color;
-}
-
-.rc-virtual-list-scrollbar {
-  //  display: flex;
 }

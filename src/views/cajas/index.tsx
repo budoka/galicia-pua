@@ -1,9 +1,10 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Breadcrumb, Checkbox, Divider, Select } from 'antd';
-import { LabeledValue, OptionProps } from 'antd/lib/select';
+import { Breadcrumb, Select } from 'antd';
+import { LabeledValue } from 'antd/lib/select';
 import _ from 'lodash';
 import { parse } from 'query-string';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ColumnsType } from 'rc-table/lib/interface';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
@@ -17,12 +18,7 @@ import {
   setTipoContenidoCajaSeleccionado,
   setTipoPlantillaSeleccionado,
 } from 'src/actions';
-import {
-  Elemento,
-  FiltroPlantillaRequest,
-  FiltroTipoCajaResponse,
-  FiltroTipoContenidoCajaResponse,
-} from 'src/actions/cajas/caja-filtros/interfaces';
+import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
 import {
   PreviewCajaDetalleResponse,
   PreviewCajaDocumentoResponse,
@@ -30,14 +26,81 @@ import {
 } from 'src/actions/cajas/caja-preview/interfaces';
 import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
 import { EditableTable, IColumn } from 'src/components/editable-table';
-import { CAJA_DETALLE, CAJA_ETIQUETA } from 'src/constants/constants';
-import { IElement } from 'src/interfaces';
+import { Wrapper } from 'src/components/wrapper';
+import { CAJA_DETALLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { deleteProps } from 'src/utils/object';
 import { compare } from 'src/utils/string';
 import styles from './style.module.less';
 
 const { Option } = Select;
+
+const _columns = [
+  {
+    key: 'a',
+    dataIndex: 'a',
+    title: 'a',
+    width: 300,
+    minWidth: 50,
+    editable: true,
+    dataType: 'texto',
+    inputType: 'text',
+  },
+  {
+    key: 'b',
+    dataIndex: 'b',
+    title: 'b',
+    width: 300,
+    minWidth: 50,
+    inputType: 'select',
+    editable: true,
+  } as IColumn<ContenidoCaja>,
+  {
+    key: 'c',
+    dataIndex: 'c',
+    title: 'c',
+    width: 300,
+    minWidth: 50,
+    // editable: true,
+    inputType: 'checkbox',
+  },
+  {
+    key: 'd',
+    dataIndex: 'd',
+    title: 'd',
+    width: 300,
+    minWidth: 50,
+    editable: true,
+  },
+  {
+    key: 'e',
+    dataIndex: 'e',
+    title: 'd',
+    width: 300,
+    minWidth: 50,
+    editable: true,
+  },
+  {
+    key: 'f',
+    dataIndex: 'f',
+    title: 'd',
+    width: 300,
+    minWidth: 50,
+    editable: true,
+  },
+  {
+    key: 'g',
+    dataIndex: 'g',
+    title: 'd',
+    width: 300,
+    minWidth: 50,
+    editable: true,
+  },
+];
+
+const _data = new Array(1000).fill('').map((e, i) => {
+  return { key: `${i + 1}A`, a: 'a', b: 'b' };
+}) as any[];
 
 export const Cajas: React.FC = (props) => {
   const dispatch = useDispatch();
@@ -50,10 +113,10 @@ export const Cajas: React.FC = (props) => {
   const tipoPlantillaRef = useRef<Select<LabeledValue>>(null);
 
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<number>(-1); // Es el filtro con focus
-  const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
-  const [dataSource, setDataSource] = useState<ContenidoCaja[]>([]);
+  const [columns, setColumns] = useState(_columns);
+  const [dataSource, setDataSource] = useState(_data);
 
-  /* useEffect(() => {
+  /* useEffect(() => { 
     console.log('rendering');
   });*/
 
@@ -348,30 +411,35 @@ export const Cajas: React.FC = (props) => {
   }, [cajas.filtros.seleccionado, cajas.preview.preview]);*/
 
   const renderTable = () => {
-    return _.isEmpty(cajas.preview.preview) ? null : (
-      <>
-        <Divider />
-        <EditableTable<ContenidoCaja>
-          // rowKey={'id'}
-          columns={columns}
-          dataSource={dataSource}
-          size={'small'}
-          loading={cajas.preview.isRunning}
-          //hasKeyColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-          //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-          hasKeyColumn={true}
-          hasActionColumn={true}
-          // scroll={{ x: 1500, y: 300 }}
-        />
-      </>
+    return (
+      <EditableTable<ContenidoCaja>
+        // rowKey={'id'}
+        size={'small'}
+        columns={columns as ColumnsType<ContenidoCaja>}
+        dataSource={dataSource}
+        loading={cajas.preview.isRunning}
+        //hasKeyColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
+        //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
+        hasKeyColumn={true}
+        hasActionColumn={true}
+        scroll={{ x: 1200 /*, y: 300*/ }}
+        onColumnChange={setColumns}
+        onDataChange={setDataSource}
+        bordered
+        pagination={{ pageSize: 20 }}
+      />
     );
   };
 
+  useEffect(() => {
+    console.log('render cajas');
+  });
+
   return (
-    <div className={`wrapper unselectable ${styles.content}`}>
+    <Wrapper unselectable direction="column" horizontal="center">
       {renderfiltros()}
       {renderTable()}
       {/*renderActionButtons()*/}
-    </div>
+    </Wrapper>
   );
 };

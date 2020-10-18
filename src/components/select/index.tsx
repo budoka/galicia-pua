@@ -17,14 +17,12 @@ interface SelectProps<SelectValue> extends SelectPropsAnt<SelectValue> {
 }
 
 export const Select: React.FC<SelectProps<SelectValue>> = (props) => {
-  const { className, wrapperClassName } = props;
-
-  const wrapperClass = classNames(styles.wrapper, {
-    [`${wrapperClassName}`]: wrapperClassName,
+  const wrapperClassName = classNames(styles.wrapper, {
+    [`${props.wrapperClassName}`]: props.wrapperClassName,
   });
 
-  const contentClass = classNames(styles.content, {
-    [`${className}`]: className,
+  const contentClassName = classNames(styles.content, {
+    [`${props.className}`]: props.className,
   });
 
   function onChange(value: string) {
@@ -32,9 +30,9 @@ export const Select: React.FC<SelectProps<SelectValue>> = (props) => {
   }
 
   return (
-    <div className={wrapperClass}>
+    <div className={wrapperClassName}>
       <SelectAnt
-        className={contentClass}
+        className={contentClassName}
         optionFilterProp="children"
         onChange={onChange}
         filterOption={(input, option) =>

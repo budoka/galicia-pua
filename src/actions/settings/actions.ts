@@ -1,20 +1,20 @@
 import { Settings, SettingsActionTypes, SettingsState } from './types';
 
 export const setDevice = (device: SettingsState['device']) => (dispatch: (arg: SettingsActionTypes) => SettingsActionTypes) => {
-  dispatch({ type: Settings.DEVICE_CHANGE, payload: device });
+  dispatch({ type: Settings.DEVICE_CHANGE, device: device });
 };
 
 export const setOrientation = (orientation: SettingsState['orientation']) => (
   dispatch: (arg: SettingsActionTypes) => SettingsActionTypes,
 ) => {
-  dispatch({ type: Settings.ORIENTATION_CHANGE, payload: orientation });
+  dispatch({ type: Settings.ORIENTATION_CHANGE, orientation });
 };
 
 export const setCollapsed = (collapsed?: SettingsState['collapsed']) => (dispatch: (arg: SettingsActionTypes) => SettingsActionTypes) => {
   dispatch(success());
 
   function success(): SettingsActionTypes {
-    return { type: Settings.SIDER_COLLAPSED, payload: collapsed };
+    return { type: Settings.SIDER_COLLAPSED, collapsed };
   }
 };
 
@@ -31,5 +31,9 @@ export const setForcedCollapsed = (forcedCollapsed: SettingsState['forcedCollaps
 export const setButtonVisible = (buttonVisible: SettingsState['buttonVisible']) => (
   dispatch: (arg: SettingsActionTypes) => SettingsActionTypes,
 ) => {
-  dispatch({ type: Settings.SIDER_BUTTON_VISIBILITY, payload: buttonVisible });
+  dispatch({ type: Settings.SIDER_BUTTON_VISIBILITY, buttonVisible });
+};
+
+export const setOpenMenu = (openMenu?: SettingsState['openMenu']) => (dispatch: (arg: SettingsActionTypes) => SettingsActionTypes) => {
+  dispatch({ type: Settings.SIDER_OPEN_MENU, openMenu });
 };

@@ -2,7 +2,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import React from 'react';
 import classNames from 'classnames';
-import './style.less';
+import styles from './style.module.less';
 
 interface LoadingProps {
   center?: boolean;
@@ -21,7 +21,7 @@ export const Loading: React.FC<LoadingProps> = (props) => {
 
   var wrapperClass = classNames({
     [`${wrapperClassName}`]: wrapperClassName,
-    'loading-center': center,
+    [`${styles.center}`]: center,
   });
 
   var innerClass = classNames({

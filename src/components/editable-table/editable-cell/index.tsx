@@ -1,15 +1,13 @@
 import { Checkbox, Input, Select } from 'antd';
 import Form from 'antd/lib/form';
-import Column from 'antd/lib/table/Column';
 import React, { useEffect, useRef } from 'react';
-
-import { IElement } from 'src/interfaces';
+import { BasicComponenetProps, IElement } from 'src/interfaces';
 import { DataType, InputType } from '..';
-import './style.less';
+import styles from './style.module.less';
 
 const { Option } = Select;
 
-export interface EditableCellProps<RecordType> extends React.HTMLAttributes<HTMLElement> {
+export interface EditableCellProps<RecordType> extends BasicComponenetProps<HTMLTableDataCellElement> {
   dataIndex: string;
   // index: number;
   // title: any;
@@ -24,6 +22,7 @@ export interface EditableCellProps<RecordType> extends React.HTMLAttributes<HTML
   message?: string;
   transform?: (value: any) => any;
   children: React.ReactNode;
+  shouldFocus?: boolean;
 }
 
 export const EditableCell /*: React.FC<EditableCellProps<object>>*/ = <RecordType extends object = any>(
@@ -44,14 +43,14 @@ export const EditableCell /*: React.FC<EditableCellProps<object>>*/ = <RecordTyp
     pattern,
     message,
     transform,
+    shouldFocus,
     ...restProps
   } = props;
 
   const inputRef = useRef<Input>(null);
 
   useEffect(() => {
-    //if (props.dataIndex === 'name') inputRef?.current?.focus();
-    // console.log('focus');
+    if (shouldFocus) inputRef?.current?.focus();
   }, [props.editing]);
 
   const renderOptions = (options: IElement[]) => {
@@ -77,32 +76,19 @@ export const EditableCell /*: React.FC<EditableCellProps<object>>*/ = <RecordTyp
   };*/
 
   const renderCheckbox = () => {
-    return <Checkbox checked={true} onChange={() => {}} />;
+    return <Checkbox className={styles.input} checked={true} onChange={() => {}} />;
   };
 
   const renderSelect = (options: IElement[]) => {
     return (
-      <Select showSearch showAction={['focus', 'click']} style={{ flex: '1 0 auto', width: '97%', textAlign: 'center', paddingTop: 1 }}>
+      <Select className={styles.input} showSearch showAction={['focus', 'click']}>
         {renderOptions(options)}
       </Select>
     );
   };
 
   const renderText = () => {
-    return (
-      <Input
-        ref={inputRef}
-        style={{
-          padding: 0,
-          paddingLeft: 25,
-          paddingRight: 25,
-          paddingTop: 1,
-          textAlign: 'center',
-          width: '97%',
-          backgroundColor: 'transparent',
-        }}
-      />
-    );
+    return <Input className={styles.input} ref={inputRef} />;
   };
 
   const renderInput = (inputType: InputType, options?: any[]) => {
@@ -123,6 +109,7 @@ export const EditableCell /*: React.FC<EditableCellProps<object>>*/ = <RecordTyp
       {/*console.log(children)*/}
       {editing ? (
         <Form.Item
+          className={styles.formItem}
           name={dataIndex}
           hasFeedback={hasFeedback}
           rules={[{ required, pattern, message, transform }]}

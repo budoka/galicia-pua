@@ -1,22 +1,18 @@
-import { MenuFoldOutlined, MenuUnfoldOutlined, CompassFilled } from '@ant-design/icons';
-import { Button, Layout, Typography } from 'antd';
+import { CompassFilled, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { Button, Layout } from 'antd';
 import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
-import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setButtonVisible, setCollapsed, setForcedCollapsed, setOrientation } from 'src/actions';
-import { APP_TITLE, SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { setButtonVisible, setCollapsed, setForcedCollapsed, setOpenMenu, setOrientation } from 'src/actions';
+import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
-import { isMobile } from 'src/utils/mobile';
 import { getScreenOrientation } from 'src/utils/screen';
-
 import styles from './style.module.less';
 
 const { Header: HeaderAnt } = Layout;
-const { Text, Link } = Typography;
 
 interface HeaderProps extends LayoutProps {
   hideSiderButton?: boolean;
@@ -29,7 +25,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   const [rotate, setRotate] = useState(false);
 
-  const headerClassNames = classNames(UNSELECTABLE, SHADOW, props.className, styles.header);
+  const headerClassName = classNames(FIXED, UNSELECTABLE, SHADOW, props.className, styles.header);
 
   useEffect(() => {
     setTimeout(
@@ -47,21 +43,22 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
     if (size.width <= 600) {
       if (settings.buttonVisible) dispatch(setButtonVisible(false));
-      if (!settings.collapsed) dispatch(setCollapsed(true));
+      if (!settings.collapsed) handleCollapsed(true);
     } else {
       if (!settings.buttonVisible) dispatch(setButtonVisible(true));
 
-      if (settings.forcedCollapsed) {
-        dispatch(setCollapsed(true));
-      } else if (settings.collapsed && !settings.forcedCollapsed) {
-        dispatch(setCollapsed(false));
-        dispatch(setButtonVisible(true));
-      } else if (!settings.collapsed) {
-      }
+      if (settings.forcedCollapsed) handleCollapsed(true);
+      else if (settings.collapsed && !settings.forcedCollapsed) handleCollapsed(false);
     }
   }, [settings.collapsed, settings.forcedCollapsed, settings.orientation, size]);
 
-  const collapseHandler = () => {
+  const handleCollapsed = (collapsed: boolean) => {
+    collapsed ? dispatch(setOpenMenu()) : dispatch(setButtonVisible(true));
+    dispatch(setCollapsed(collapsed));
+  };
+
+  const handleForcedCollapsed = () => {
+    dispatch(setOpenMenu());
     dispatch(setForcedCollapsed(!settings.forcedCollapsed));
   };
 
@@ -81,9 +78,9 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return !props.hideSiderButton && settings.buttonVisible /*!(settings.device === 'mobile' && settings.orientation === 'portrait')*/ ? (
       <div className={styles.siderButtonWrapper}>
         {settings.collapsed ? (
-          <MenuUnfoldOutlined className={styles.siderButton} onClick={collapseHandler} />
+          <MenuUnfoldOutlined className={styles.siderButton} onClick={handleForcedCollapsed} />
         ) : (
-          <MenuFoldOutlined className={styles.siderButton} onClick={collapseHandler} />
+          <MenuFoldOutlined className={styles.siderButton} onClick={handleForcedCollapsed} />
         )}
       </div>
     ) : null;
@@ -100,7 +97,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
   };
 
   return (
-    <HeaderAnt className={headerClassNames}>
+    <HeaderAnt className={headerClassName}>
       {renderLogo()}
       {renderSiderButton()}
       {renderUserInfo()}

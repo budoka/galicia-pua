@@ -1,12 +1,11 @@
 import { Button, Result } from 'antd';
 import React from 'react';
-import { history } from 'src/store';
+import { Wrapper } from 'src/components/wrapper';
 import { goHome } from 'src/utils/history';
-import styles from './style.module.less';
 
 export const Unavailable: React.FC = (props) => {
   return (
-    <div className={`wrapper unselectable ${styles.content}`}>
+    <Wrapper unselectable>
       <Result
         status="500"
         title="500"
@@ -17,6 +16,6 @@ export const Unavailable: React.FC = (props) => {
           </Button>
         }
       />
-    </div>
+    </Wrapper>
   );
 };

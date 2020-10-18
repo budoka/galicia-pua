@@ -1,4 +1,6 @@
 export const APP_TITLE = 'Portal Unificado';
+export const FIXED = 'fixed';
+export const STICKY = 'sticky';
 export const UNSELECTABLE = 'unselectable';
 export const SHADOW = 'shadow';
 

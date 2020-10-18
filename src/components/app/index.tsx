@@ -2,16 +2,19 @@ import { FileOutlined, HomeOutlined, InboxOutlined, ShoppingCartOutlined } from 
 import { Layout } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setOpenMenu } from 'src/actions';
 import { AuthModule } from 'src/auth/auth';
-import { Header, Router, Sider } from 'src/components';
-import { SiderItem } from 'src/components/sider/types';
+import { Header } from 'src/components/header';
+import { Router } from 'src/components/router';
+import { Sider } from 'src/components/sider';
+import { SiderItem, SiderParentItem } from 'src/components/sider/types';
 import { APP_TITLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { getRoute } from 'src/utils/history';
 import { views } from 'src/views';
-
-import './style.less'; // last
+import styles from './style.module.less';
+import { history } from 'src/store';
 
 const { Content } = Layout;
 
@@ -35,16 +38,8 @@ const items: SiderItem[] = [
 ];
 
 const App = () => {
-  const authModule: AuthModule = new AuthModule();
   const router = useSelector((state: RootState) => state.router);
   const [title, setTitle] = useState('');
-
-  useEffect(() => {
-    /* authModule.loadAuthModule();
-    const signInType = isIE() ? 'loginRedirect' : 'loginPopup';
-    //authModule.login(signInType);
-    authModule.attemptSsoSilent();*/
-  }, []);
 
   useEffect(() => {
     setTitle(getTitle());
@@ -61,11 +56,11 @@ const App = () => {
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>
         <title>{title}</title>
       </Helmet>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Header />
-        <Layout>
+      <Layout style={{ height: '100vh' }}>
+        <Header className={styles.header} />
+        <Layout className={styles.layout}>
           <Sider items={items} />
-          <Content>
+          <Content className={styles.content}>
             <Router views={views} />
           </Content>
         </Layout>

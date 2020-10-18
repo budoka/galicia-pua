@@ -1,10 +1,8 @@
-import { Col, Row } from 'antd';
-import _, { Dictionary } from 'lodash';
 import React from 'react';
-import { views } from 'src/views';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/types';
-
+import { Wrapper } from 'src/components/wrapper';
+import { views } from 'src/views';
 import styles from './style.module.less';
 
 export const Inicio: React.FC = (props) => {
@@ -30,7 +28,7 @@ export const Inicio: React.FC = (props) => {
       ],
     },
     {
-      title: 'X',
+      title: 'Otros',
       items: [],
     },
   ];
@@ -38,23 +36,23 @@ export const Inicio: React.FC = (props) => {
   const renderCards = () => {
     return cards.map((card, index) => {
       return (
-        <Col key={index} flex={'1 1 430px'}>
-          <ListCard
-            header={card.title ? <span className={styles.card_header}>{card.title}</span> : null}
-            headerStyle={{
-              textAlign: 'center',
-            }}
-            items={card.items}
-            showZero
-          />
-        </Col>
+        <ListCard
+          key={index}
+          className={styles.card}
+          header={card.title ? <span className={styles.header}>{card.title}</span> : null}
+          headerStyle={{
+            textAlign: 'center',
+          }}
+          items={card.items}
+          showZero
+        />
       );
     });
   };
 
   return (
-    <div className={`wrapper unselectable ${styles.content}`}>
-      <Row gutter={[16, 16]}>{renderCards()}</Row>
-    </div>
+    <Wrapper className={styles.wrapper} unselectable direction="row" horizontal="center">
+      {renderCards()}
+    </Wrapper>
   );
 };
