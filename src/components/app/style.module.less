@@ -1,8 +1,11 @@
 /* app */
 
-@import (reference) '~src/styles/antd/antd.less';
+@import (reference) '~src/styles/global.less';
 
+/* Header bar height */
 @header-height: 64px;
+/* Footer bar height */
+@footer-height: 48px;
 
 body {
   overflow: hidden !important;
@@ -12,18 +15,29 @@ body {
   height: @header-height !important;
 }
 
-.layout {
+.main {
   position: relative;
   top: @header-height;
+  /*  min-height: calc(100vh - @header-height);
+  max-height: calc(100vh - @header-height);
+  height: calc(100vh - @header-height);*/
   min-height: calc(100vh - @header-height);
   max-height: calc(100vh - @header-height);
-  height: calc(100vh - @header-height);
+  height: calc(100vh- @header-height);
 }
 
 .content {
   display: flex;
+  flex-direction: column !important;
   overflow: auto scroll !important;
 }
+
+/*.wrapper {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+}*/
 
 ::-webkit-scrollbar {
   width: 12px;

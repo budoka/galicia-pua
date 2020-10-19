@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/types';
@@ -6,6 +7,8 @@ import { views } from 'src/views';
 import styles from './style.module.less';
 
 export const Inicio: React.FC = (props) => {
+  const className = classNames('wrapper', styles.wrapper, styles.header);
+
   const cards: IListCard[] = [
     {
       title: 'Cajas',
@@ -51,7 +54,7 @@ export const Inicio: React.FC = (props) => {
   };
 
   return (
-    <Wrapper className={styles.wrapper} unselectable direction="row" horizontal="center">
+    <Wrapper contentWrapper className={className} unselectable direction="row" horizontal="center">
       {renderCards()}
     </Wrapper>
   );

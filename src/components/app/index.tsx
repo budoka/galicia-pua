@@ -15,6 +15,7 @@ import { getRoute } from 'src/utils/history';
 import { views } from 'src/views';
 import styles from './style.module.less';
 import { history } from 'src/store';
+import { Footer } from '../footer';
 
 const { Content } = Layout;
 
@@ -58,10 +59,11 @@ const App = () => {
       </Helmet>
       <Layout style={{ height: '100vh' }}>
         <Header className={styles.header} />
-        <Layout className={styles.layout}>
+        <Layout className={styles.main}>
           <Sider items={items} />
           <Content className={styles.content}>
             <Router views={views} />
+            <Footer />
           </Content>
         </Layout>
       </Layout>

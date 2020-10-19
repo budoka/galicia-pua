@@ -30,6 +30,8 @@ const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 
 const postcssNormalize = require('postcss-normalize');
 
+const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const darkTheme = require('@ant-design/dark-theme').default;
 
 const appPackageJson = require(paths.appPackageJson);
@@ -647,7 +649,13 @@ module.exports = function (webpackEnv) {
       // solution that requires the user to opt into importing specific locales.
       // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
       // You can remove this if you don't use Moment.js:
+
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      /* Editado por Facu - Begin */
+      new AntdDayjsWebpackPlugin(),
+      //  new BundleAnalyzerPlugin(),
+      /* Editado por Facu - End */
+
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the webpack build.
       isEnvProduction &&

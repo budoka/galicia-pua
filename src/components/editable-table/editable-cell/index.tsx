@@ -1,6 +1,6 @@
 import { Checkbox, Input, Select } from 'antd';
 import Form from 'antd/lib/form';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { BasicComponenetProps, IElement } from 'src/interfaces';
 import { DataType, InputType } from '..';
 import styles from './style.module.less';
@@ -53,6 +53,10 @@ export const EditableCell /*: React.FC<EditableCellProps<object>>*/ = <RecordTyp
     if (shouldFocus) inputRef?.current?.focus();
   }, [props.editing]);
 
+  useEffect(() => {
+    console.table(restProps);
+  }, [restProps]);
+
   const renderOptions = (options: IElement[]) => {
     return options.map((option, index) => (
       <Option
@@ -104,21 +108,44 @@ export const EditableCell /*: React.FC<EditableCellProps<object>>*/ = <RecordTyp
     }
   };
 
-  return (
+  const renderCell = useMemo(() => {
+    // console.log('renderCell');
+    // console.table(restProps);
+    return (
+      <td {...restProps}>
+        {/*console.log(children)*/}
+        {editing ? (
+          <Form.Item
+            className={styles.formItem}
+            name={dataIndex}
+            hasFeedback={hasFeedback}
+            rules={[{ required, pattern, message, transform }]}
+            style={{ margin: 0, padding: 0 /*, minWidth, width*/ }}>
+            {renderInput(inputType!, ['aa', 'bb', 'cc'])}
+          </Form.Item>
+        ) : (
+          children
+        )}
+      </td>
+    );
+  }, [restProps, editing, dataIndex, hasFeedback, inputType]);
+
+  return <>{renderCell}</>;
+  /* return (
     <td {...restProps}>
-      {/*console.log(children)*/}
+
       {editing ? (
         <Form.Item
           className={styles.formItem}
           name={dataIndex}
           hasFeedback={hasFeedback}
           rules={[{ required, pattern, message, transform }]}
-          style={{ margin: 0, padding: 0 /*, minWidth, width*/ }}>
+          style={{ margin: 0, padding: 0}}>
           {renderInput(inputType!, ['aa', 'bb', 'cc'])}
         </Form.Item>
       ) : (
         children
       )}
     </td>
-  );
+  );*/
 };

@@ -12,6 +12,7 @@ import styles from './style.module.less';
 import { useKeyPress } from 'src/utils/hooks';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { Wrapper } from '../wrapper';
 
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
 export type InputType = 'text' | 'select' | 'checkbox';
@@ -61,10 +62,6 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
     //maxWidth: 210,
   } as IColumn<RecordType>;
 
-  const wrapperClass = classNames(styles.wrapper, {
-    [`${props.wrapperClassName}`]: props.wrapperClassName,
-  });
-
   const [form] = Form.useForm();
   const [data, setData] = useState<RecordType[]>(props.dataSource ?? []);
 
@@ -101,7 +98,8 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
     columns = (columns as IColumn<RecordType>[]).map((col, index) => {
       return {
         ...col,
-        align: 'center',
+        // align: 'center',
+        title: index,
         onHeaderCell: (column: IColumn<RecordType>) => ({
           //width: col.width,
           width: column.width,
@@ -431,7 +429,7 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
   };
 
   return (
-    <div className={`${styles.tableWrapper}`}>
+    <Wrapper className={styles.tableWrapper} unselectable direction="column" horizontal="center">
       {props.noTitle ? undefined : renderHeader()}
       <Form form={form} component={false}>
         <Table
@@ -470,6 +468,6 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
           rowSelection={props.noRowSelection ? undefined : rowSelection}
         />
       </Form>
-    </div>
+    </Wrapper>
   );
 };

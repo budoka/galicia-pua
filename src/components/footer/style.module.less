@@ -1,14 +1,19 @@
 /* footer */
 
-@import (reference) '~src/styles/antd/antd.less';
+@import (reference) '~src/styles/global.less';
+@import (reference) '~src/components/app/style.module.less';
 
 .footer {
-  //background-color: @layout-header-background !important;
-  height: 50px;
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
+  display: flex;
+  background-color: @primary-3 !important;
+  min-height: @footer-height !important;
+  max-height: @footer-height !important;
+  height: @footer-height !important;
+  //flex: 1 1 100% !important;
+  align-self: flex-end;
+  width: 100%;
 }
-
+/*
 .logoWrapper {
   height: 100%;
   flex: 0 1 auto;
@@ -28,3 +33,4 @@
     }
   }
 }
+*/

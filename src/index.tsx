@@ -1,13 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ConnectedRouter } from 'connected-react-router';
 import { ConfigProvider } from 'antd';
-import 'moment/locale/es';
 import es from 'antd/lib/locale-provider/es_ES';
-import { history, persistor, store } from 'src/store';
+import 'dayjs/locale/es';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import * as serviceWorker from 'src/service-worker';
+import { history, persistor, store } from 'src/store';
 import App from 'src/components/app';
 import 'src/styles/global.less'; // last
 

@@ -10,7 +10,7 @@ type Vertical = 'top' | 'middle' | 'bottom';
 type Visible = 'auto' | 'show' | 'hide';
 
 interface WrapperProps extends Omit<BasicComponenetProps<HTMLDivElement>, 'unselectable'> {
-  overwriteClassName?: boolean;
+  contentWrapper?: boolean;
   unselectable?: boolean;
   direction?: Direction;
   horizontal?: Horizontal;
@@ -23,7 +23,7 @@ interface WrapperProps extends Omit<BasicComponenetProps<HTMLDivElement>, 'unsel
 
 export const Wrapper: React.FC<WrapperProps> = (props) => {
   const className = classNames(
-    !props.overwriteClassName && styles.wrapper,
+    props.contentWrapper && styles.wrapper,
     props.className,
     props.unselectable && 'unselectable',
     props.direction ? styles[props.direction] : styles.column,

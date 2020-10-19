@@ -55,7 +55,7 @@ const _columns = [
     inputType: 'select',
     editable: true,
   } as IColumn<ContenidoCaja>,
-  {
+  /* {
     key: 'c',
     dataIndex: 'c',
     title: 'c',
@@ -95,10 +95,10 @@ const _columns = [
     width: 300,
     minWidth: 50,
     editable: true,
-  },
+  },*/
 ];
 
-const _data = new Array(1000).fill('').map((e, i) => {
+const _data = new Array(1).fill('').map((e, i) => {
   return { key: `${i + 1}A`, a: 'a', b: 'b' };
 }) as any[];
 
@@ -412,7 +412,7 @@ export const Cajas: React.FC = (props) => {
 
   const renderTable = () => {
     return (
-      <EditableTable<ContenidoCaja>
+      /*_.isEmpty(cajas.preview.preview) ? null :*/ <EditableTable<ContenidoCaja>
         // rowKey={'id'}
         size={'small'}
         columns={columns as ColumnsType<ContenidoCaja>}
@@ -422,7 +422,8 @@ export const Cajas: React.FC = (props) => {
         //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
         hasKeyColumn={true}
         hasActionColumn={true}
-        scroll={{ x: 1200 /*, y: 300*/ }}
+        // scroll={{ x: 600 /*, y: 300*/ }}
+        scroll={{ x: 'max-content' }}
         onColumnChange={setColumns}
         onDataChange={setDataSource}
         bordered
@@ -436,7 +437,7 @@ export const Cajas: React.FC = (props) => {
   });
 
   return (
-    <Wrapper unselectable direction="column" horizontal="center">
+    <Wrapper contentWrapper unselectable direction="column" horizontal="center">
       {renderfiltros()}
       {renderTable()}
       {/*renderActionButtons()*/}
