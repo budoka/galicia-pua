@@ -36,5 +36,9 @@ export const Wrapper: React.FC<WrapperProps> = (props) => {
     props.sticky && 'sticky',
   );
 
-  return <div className={className}>{props.children}</div>;
+  return (
+    <div className={className} style={props.style}>
+      {props.children}
+    </div>
+  );
 };

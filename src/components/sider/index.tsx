@@ -36,7 +36,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
           ?.title!
       : undefined;
 
-    !settings.collapsed && dispatch(setOpenMenu(menu));
+    !settings.collapsed && menu !== settings.openMenu && dispatch(setOpenMenu(menu));
   }, [router.location.pathname, settings.collapsed]);
 
   const onOpenChange = (currentMenu: any) => {
@@ -96,7 +96,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
         openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
-          dispatch(setOpenMenu());
+          settings.collapsed && dispatch(setOpenMenu());
         }}
         theme={props.theme ?? 'light'}
         mode={props.mode ?? 'inline'}>

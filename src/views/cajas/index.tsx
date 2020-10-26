@@ -1,5 +1,5 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Breadcrumb, Select } from 'antd';
+import { Breadcrumb, Button, Select } from 'antd';
 import { LabeledValue } from 'antd/lib/select';
 import _ from 'lodash';
 import { parse } from 'query-string';
@@ -25,7 +25,7 @@ import {
   PreviewCajaEtiquetaResponse,
 } from 'src/actions/cajas/caja-preview/interfaces';
 import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
-import { EditableTable, IColumn } from 'src/components/editable-table';
+import { EditableTable, IColumn } from 'src/components/editable-table/index.tsx';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
@@ -40,7 +40,7 @@ const _columns = [
     key: 'a',
     dataIndex: 'a',
     title: 'a',
-    width: 300,
+    width: 200,
     minWidth: 50,
     editable: true,
     dataType: 'texto',
@@ -50,56 +50,57 @@ const _columns = [
     key: 'b',
     dataIndex: 'b',
     title: 'b',
-    width: 300,
+    width: 200,
     minWidth: 50,
-    inputType: 'select',
+    //   inputType: 'select',
     editable: true,
   } as IColumn<ContenidoCaja>,
-  /* {
+  {
     key: 'c',
     dataIndex: 'c',
     title: 'c',
-    width: 300,
+    width: 200,
     minWidth: 50,
     // editable: true,
-    inputType: 'checkbox',
+    //  inputType: 'checkbox',
+    editable: true,
   },
   {
     key: 'd',
     dataIndex: 'd',
     title: 'd',
-    width: 300,
+    width: 200,
     minWidth: 50,
     editable: true,
   },
   {
     key: 'e',
     dataIndex: 'e',
-    title: 'd',
-    width: 300,
+    title: 'e',
+    width: 200,
     minWidth: 50,
     editable: true,
   },
   {
     key: 'f',
     dataIndex: 'f',
-    title: 'd',
-    width: 300,
+    title: 'f',
+    width: 200,
     minWidth: 50,
     editable: true,
   },
   {
     key: 'g',
     dataIndex: 'g',
-    title: 'd',
-    width: 300,
+    title: 'g',
+    width: 400,
     minWidth: 50,
     editable: true,
-  },*/
+  },
 ];
 
-const _data = new Array(1).fill('').map((e, i) => {
-  return { key: `${i + 1}A`, a: 'a', b: 'b' };
+const _data = new Array(100).fill('').map((e, i) => {
+  return { key: `${i + 1}`, a: 'a', b: 'b' };
 }) as any[];
 
 export const Cajas: React.FC = (props) => {
@@ -120,6 +121,8 @@ export const Cajas: React.FC = (props) => {
     console.log('rendering');
   });*/
 
+  useEffect(() => console.log('render cajas'));
+
   // Ocultar pop-up filtro seleccionado.
   useEffect(() => {
     //console.log(cajas.filtros.seleccionado);
@@ -128,8 +131,9 @@ export const Cajas: React.FC = (props) => {
   useEffect(() => {
     const idCaja = parse(history.location.search, { parseNumbers: true }).id as number;
     //console.log(idCaja);
-    dispatch(getTiposCaja());
-    dispatch(getCaja(idCaja));
+
+    // dispatch(getTiposCaja());
+    // dispatch(getCaja(idCaja));
   }, []);
 
   // Ocultar pop-up filtro seleccionado.
@@ -414,30 +418,35 @@ export const Cajas: React.FC = (props) => {
     return (
       /*_.isEmpty(cajas.preview.preview) ? null :*/ <EditableTable<ContenidoCaja>
         // rowKey={'id'}
+        bordered
         size={'small'}
+        //scroll={{ x: 'max-content' }}
         columns={columns as ColumnsType<ContenidoCaja>}
         dataSource={dataSource}
         loading={cajas.preview.isRunning}
+        moreColumns={{ key: true, actions: true }}
+        sortable={false}
+        pagination={{ pageSize: 20 }}
+        style={{ width: '80vw' }}
+        setData={setDataSource}
         //hasKeyColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
         //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-        hasKeyColumn={true}
-        hasActionColumn={true}
-        // scroll={{ x: 600 /*, y: 300*/ }}
-        scroll={{ x: 'max-content' }}
-        onColumnChange={setColumns}
-        onDataChange={setDataSource}
-        bordered
-        pagination={{ pageSize: 20 }}
+        scroll={{ x: 600, y: 300 }}
       />
     );
   };
 
-  useEffect(() => {
-    console.log('render cajas');
-  });
-
   return (
     <Wrapper contentWrapper unselectable direction="column" horizontal="center">
+      <Button
+        onClick={() => {
+          const _data = new Array(100).fill('').map((e, i) => {
+            return { key: `${i + 1}`, a: Math.random() * 1000, b: Math.random() * 1000 };
+          }) as any[];
+          setDataSource(_data);
+        }}>
+        Update Data
+      </Button>
       {renderfiltros()}
       {renderTable()}
       {/*renderActionButtons()*/}

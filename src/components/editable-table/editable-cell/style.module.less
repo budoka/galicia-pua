@@ -2,15 +2,6 @@
 
 @import (reference) '~src/styles/global.less';
 
-.formItem {
-  div {
-    // height: 22px !important;
-    min-height: 22px !important;
-  }
-
-  // style: { padding: col.align || 'center' ? '0px 18px' : undefined },
-}
-
 #inputStyle {
   height: 22px !important;
   min-height: 22px !important;
@@ -20,39 +11,67 @@
   border-radius: 0% !important;
   background-color: transparent !important;
   box-shadow: none !important;
-}
-
-/* Fix Input - Non border */
-input.input {
-  margin-top: 1px !important;
-}
-
-.input {
-  #inputStyle();
-
   text-align: center !important;
-  width: 90% !important;
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
+}
 
-  :global .ant-form-item-control-input-content {
-    margin-top: 0px !important;
-  }
-
-  :global .ant-select-selector,
-  :global .ant-select-selection-search-input {
-    #inputStyle();
-    // top: 0.5px;
-    // margin-top: -1px !important;
-    line-height: 22.5px !important;
-    min-height: 22.5px !important;
-    //margin-bottom: -1px !important;
-  }
-  /* Fix Select - Text centered */
-  :global .ant-select-selection-item {
-    padding: 0px 18px !important;
+.formItem {
+  div {
     line-height: 22px !important;
     min-height: 22px !important;
-    //margin-top: 5px !important;
+    max-height: 22px !important;
+  }
+
+  :global .ant-col.ant-form-item-control {
+    :global .ant-form-item-explain {
+      display: none;
+    }
+  }
+
+  .input {
+    #inputStyle();
+
+    width: 90% !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+
+    :global .ant-form-item-control-input-content {
+      margin-top: 0px !important;
+    }
+
+    :global .ant-select-selector,
+    :global .ant-select-selection-search,
+    :global .ant-select-selection-search-input {
+      #inputStyle();
+      line-height: 22.5px !important;
+      min-height: 22.5px !important;
+      max-height: 22.5px !important;
+    }
+
+    :global .ant-select-selection-search {
+      right: 11px !important;
+    }
+
+    :global .ant-select-selection-item {
+      padding: 0px 18px !important;
+      line-height: 22px !important;
+      min-height: 22px !important;
+      max-height: 22px !important;
+    }
+  }
+
+  &:global.ant-form-item-has-feedback {
+    :global .ant-select-arrow {
+      right: 20px !important;
+    }
+  }
+}
+
+input.input {
+  padding: 0 18px !important;
+}
+
+.option {
+  :global .ant-select-item-option-content {
+    text-align: center !important;
   }
 }

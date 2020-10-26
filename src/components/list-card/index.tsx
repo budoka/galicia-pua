@@ -5,7 +5,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
-import { IListCardItem } from './types';
+import { IListCardItem } from './interfaces';
 
 interface ListCardProps {
   className?: string;
@@ -35,33 +35,30 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
 
   const linkWrapper = (children: React.ReactNode, url: string) => {
     return (
-      <div className={styles.linkWrapper}>
-        {url ? (
-          <Link to={url} className={styles.link}>
-            {children}
-          </Link>
-        ) : (
-          children
-        )}
-      </div>
+      <Link to={url} className={styles.link}>
+        {children}
+      </Link>
     );
   };
 
-  const renderChildren = () => {
+  const renderCard = (item: IListCardItem) => {
+    return (
+      <Card.Grid className={styles.cardGrid}>
+        <span>{item.description}</span>
+        {item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={props.showZero} />}
+      </Card.Grid>
+    );
+  };
+
+  const renderCards = () => {
     const { items } = props;
     return items
       ? items.map((item, index) => {
           return (
             <Card key={index} type="inner" className={styles.card}>
-              {linkWrapper(
-                <Card.Grid className={styles.cardGrid}>
-                  <>
-                    <span>{item.description}</span>
-                    {item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={props.showZero} />}
-                  </>
-                </Card.Grid>,
-                item.path!,
-              )}
+              <div className={styles.cardContent}>
+                {item.path && item.count ? linkWrapper(renderCard(item), item.path) : renderCard(item)}
+              </div>
             </Card>
           );
         })
@@ -70,7 +67,7 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
 
   return (
     <Card className={className} title={props.header} headStyle={props.headerStyle}>
-      {renderChildren()}
+      {renderCards()}
     </Card>
   );
 };

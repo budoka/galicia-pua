@@ -160,7 +160,7 @@ export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccion
 
   if (isRunning) return;
 
-  const apiName = API.PLANTILLAS;
+  const apiName = API.PLANTILLAS_SECTOR;
   const idMethod = 'plantillasPorSector';
   const api = getAPIData(apiName, idMethod);
 

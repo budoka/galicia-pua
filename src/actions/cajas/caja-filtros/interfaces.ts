@@ -42,7 +42,8 @@ export interface FiltroTipoPlantillaResponse {
 
 // export type FiltroCaja = FiltroTipoCajaResponse | FiltroTipoContenidoCajaResponse | FiltroPlantillaRequest extends SelectValue;
 
+/*
 declare module 'antd/lib/select' {
   export interface OptionProps extends Elemento {}
   // export interface OptionProps extends FiltroTipoCajaResponse, FiltroTipoContenidoCajaResponse, FiltroPlantillaRequest
-}
+}*/

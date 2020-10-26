@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenMenu } from 'src/actions';
-import { AuthModule } from 'src/auth/auth';
+import { useAzureAuth } from 'src/auth/azure/useAzureAuth.tsx';
 import { Header } from 'src/components/header';
 import { Router } from 'src/components/router';
 import { Sider } from 'src/components/sider';
@@ -16,6 +16,7 @@ import { views } from 'src/views';
 import styles from './style.module.less';
 import { history } from 'src/store';
 import { Footer } from '../footer';
+import { Loading } from '../loading';
 
 const { Content } = Layout;
 
@@ -39,6 +40,7 @@ const items: SiderItem[] = [
 ];
 
 const App = () => {
+  const auth = useAzureAuth();
   const router = useSelector((state: RootState) => state.router);
   const [title, setTitle] = useState('');
 
@@ -52,7 +54,9 @@ const App = () => {
     return title;
   };
 
-  return (
+  return auth.accessToken ? (
+    <Loading style={{ height: '100vh' }} size={26} text={'Cargando...'} />
+  ) : (
     <>
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>
         <title>{title}</title>

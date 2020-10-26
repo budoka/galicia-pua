@@ -5,11 +5,11 @@ import { goHome } from 'src/utils/history';
 
 export const NotFound: React.FC = (props) => {
   return (
-    <Wrapper unselectable>
+    <Wrapper contentWrapper unselectable>
       <Result
         status="404"
         title="404"
-        subTitle="La página no existe."
+        subTitle="El contenido no existe."
         extra={
           <Button type="primary" onClick={goHome}>
             Ir al Inicio

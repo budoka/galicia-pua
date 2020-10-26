@@ -2,19 +2,18 @@ import _ from 'lodash';
 import { APIError } from 'src/exceptions';
 import { Dictionary, IAPIMethod } from 'src/interfaces';
 import { apis } from 'src/services/apis-data';
-
-export interface IAPIDataCache {
-  cache: Dictionary<IAPIData>;
-}
+import { getVar } from './environment';
 
 export interface IAPIData {
   url: string;
   method: IAPIMethod;
 }
 
-export const data: IAPIDataCache = {
-  cache: {},
-};
+export interface IAPIDataCache {
+  cache: Dictionary<IAPIData>;
+}
+
+export const cache: Dictionary<IAPIData> = {};
 
 /**
  * Get the data of an API from an array of APIs.
@@ -23,9 +22,9 @@ export const data: IAPIDataCache = {
  */
 export function getAPIData(apiName: string, id: string): IAPIData {
   const index = `${apiName}_${id}`;
-  if (data.cache[index]) {
+  if (cache[index]) {
     // console.log('Cached!!!');
-    return data.cache[index];
+    return cache[index];
   }
 
   const api = _.find(apis, (api) => api.name === apiName);
@@ -38,7 +37,7 @@ export function getAPIData(apiName: string, id: string): IAPIData {
   if (!method) throw new APIError(`Method id: '${id}' not found.`);
 
   // Cache the value and return it.
-  return (data.cache[index] = { url, method });
+  return (cache[index] = { url, method });
 }
 
 /**
@@ -53,4 +52,17 @@ export function getAPIURL(apiName: string) {
   const url = api.url;
 
   return url;
+}
+
+/**
+ * Build the url of an API.
+ * @param apiName API name.
+ */
+export function buildAPIUrl(apiName: string) {
+  const PREFIX_API = 'API_';
+  const prefix = getVar(PREFIX_API + 'PREFIX');
+  const suffix = getVar(PREFIX_API + 'SUFFIX');
+  apiName = getVar(PREFIX_API + apiName);
+
+  return prefix + apiName + suffix;
 }

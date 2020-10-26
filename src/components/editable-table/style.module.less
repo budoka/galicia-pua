@@ -5,20 +5,39 @@
 .tableWrapper {
   width: 100%;
 
+  :global .ant-table-container::before {
+    width: 0px !important;
+    // transition: width 0.3s ease, box-shadow 0.3s ease !important;
+  }
+
+  :global .ant-table-ping-left {
+    :global .ant-table-container::before {
+      width: 30px !important;
+    }
+  }
+
   .tableStyle {
     display: flex;
     padding: 4px 8px;
   }
 
   .tableHeader {
-    .tableStyle();
-    width: 100%;
+    display: flex;
     justify-content: space-between;
+    width: 100%;
   }
 
   .tableHeaderLeft {
     .tableStyle();
     justify-content: flex-start;
+    > * {
+      margin: 0 4px;
+    }
+
+    > button {
+      width: 85px;
+      padding: 0;
+    }
   }
 
   .tableHeaderRight {
@@ -72,17 +91,18 @@
     justify-content: center !important;
     align-items: center !important;
     height: 100%;
-
     position: relative;
-    &:hover:after,
-    &:focus:after {
-      width: 100%;
-      left: 0;
-      background-color: @primary-4;
-    }
   }
 
-  span:after {
+  &:hover::after,
+  &:active::after,
+  &:focus::after {
+    width: 100%;
+    left: 0;
+    background-color: @primary-4;
+  }
+
+  &::after {
     content: '';
     display: block;
     position: absolute;

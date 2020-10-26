@@ -5,6 +5,8 @@ import { parseValue } from './parse';
 
 dotenv.config();
 
+const PREFIX_REACT_APP = 'REACT_APP_';
+
 export interface EnvironmentData {
   cache: Dictionary<any>;
   env?: string;
@@ -26,8 +28,7 @@ export function getVar(variableName: string) {
   // Check if the variable is cached and return it.
   if (environmentData.cache[variableName]) return environmentData.cache[variableName];
 
-  const PREFIX = 'REACT_APP_';
-  let value: string | number | boolean | undefined = process.env[PREFIX + variableName];
+  let value: string | number | boolean | undefined = process.env[PREFIX_REACT_APP + variableName];
 
   if (value === undefined) throw new EnviromentError(`Unable to get environment variable: '${variableName}'.`);
 

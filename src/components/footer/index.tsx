@@ -17,7 +17,7 @@ export const Footer: React.FC<LayoutProps> = (props) => {
   return (
     <FooterAnt {...props} className={className}>
       <Wrapper className={styles.logoWrapper}>
-        <Link to="/">Footer</Link>
+        <Link to="#">Footer</Link>
       </Wrapper>
     </FooterAnt>
   );

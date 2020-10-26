@@ -1,3 +1,5 @@
+// import './wdyr.ts';
+
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ConnectedRouter } from 'connected-react-router';
@@ -10,6 +12,14 @@ import * as serviceWorker from 'src/service-worker';
 import { history, persistor, store } from 'src/store';
 import App from 'src/components/app';
 import 'src/styles/global.less'; // last
+
+if (process.env.NODE_ENV !== 'production') {
+  const whyDidYouRender = require('@welldone-software/why-did-you-render');
+  whyDidYouRender(React, {
+    // trackAllPureComponents: true,
+    // trackExtraHooks: [[ReactRedux, 'useSelector']],
+  });
+}
 
 ReactDOM.render(
   <Provider store={store}>
