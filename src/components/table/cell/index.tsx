@@ -2,29 +2,28 @@ import { Checkbox, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { BasicComponenetProps, IElement } from 'src/interfaces';
-import { DataType, InputType } from '..';
+import { InputType } from '..';
 import styles from './style.module.less';
 
 const { Option } = Select;
 
-export interface EditableCellProps extends BasicComponenetProps<HTMLTableDataCellElement> {
+export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElement> {
   dataIndex: string;
   editing: boolean;
-  dataType?: DataType;
   inputType?: InputType;
-  length?: number;
+  hasFocus?: boolean;
   hasFeedback?: boolean;
   rules?: Rule[];
-  children: React.ReactNode;
-  hasFocus?: boolean;
 }
 
-export const EditableCell = (props: EditableCellProps) => {
-  const { dataIndex, className, /*style,*/ editing, hasFocus, rules, hasFeedback, inputType, children } = props;
+export const Cell = (props: ICellProps) => {
+  const { className, style, dataIndex, editing, inputType, hasFocus, hasFeedback, rules, children } = props;
 
   const inputRef = useRef<Input>(null);
 
-  const style = useMemo(() => ({ ...props.style }), [props.style]);
+  useEffect(() => {
+    console.log('rendering cell');
+  });
 
   /*useEffect(() => {
     console.log('rendering cell');
@@ -33,6 +32,31 @@ export const EditableCell = (props: EditableCellProps) => {
   useEffect(() => {
     if (props.hasFocus) inputRef?.current?.focus();
   }, [editing, hasFocus]);
+
+  const scrollOnFocus = () => {
+    const parent = document.querySelector('.ant-table-body table')!;
+    const parentX = parent.getBoundingClientRect().x;
+
+    const child = document.querySelector('.ant-table-body')!;
+    const childX = child.getBoundingClientRect().x;
+    const childW = child.getBoundingClientRect().width;
+
+    const input = inputRef.current?.input!.closest('td.ant-table-cell')!;
+    const inputX = input.getBoundingClientRect().x;
+    const inputW = input.getBoundingClientRect().width;
+
+    //console.log(parentX + ' -- ' + childX + ' -- ' + inputX);
+    //console.log(parentX + ' -- ' + (childW - 210) + ' -- ' + inputW);
+
+    const verticalScrollbarWidth = 12;
+    const actionColumnWidth = 210;
+
+    const delta = inputX - (childW - actionColumnWidth - inputW) - (childX - verticalScrollbarWidth);
+
+    const offSetParent = childX - parentX;
+
+    child.scrollTo({ behavior: 'auto', left: Math.ceil(offSetParent + delta) });
+  };
 
   const renderOptions = (options: IElement[]) => {
     return options.map((option, index) => (
@@ -55,36 +79,7 @@ export const EditableCell = (props: EditableCellProps) => {
   };
 
   const renderText = () => {
-    return (
-      <Input
-        className={styles.input}
-        ref={inputRef}
-        onFocus={(e) => {
-          const parent = document.querySelector('.ant-table-body table')!;
-          const parentX = parent.getBoundingClientRect().x;
-
-          const child = document.querySelector('.ant-table-body')!;
-          const childX = child.getBoundingClientRect().x;
-          const childW = child.getBoundingClientRect().width;
-
-          const input = inputRef.current?.input!.closest('td.ant-table-cell')!;
-          const inputX = input.getBoundingClientRect().x;
-          const inputW = input.getBoundingClientRect().width;
-
-          //console.log(parentX + ' -- ' + childX + ' -- ' + inputX);
-          //console.log(parentX + ' -- ' + (childW - 210) + ' -- ' + inputW);
-
-          const verticalScrollbarWidth = 12;
-          const actionColumnWidth = 210;
-
-          const delta = inputX - (childW - actionColumnWidth - inputW) - (childX - verticalScrollbarWidth);
-
-          const offSetParent = childX - parentX;
-
-          child.scrollTo({ behavior: 'auto', left: Math.ceil(offSetParent + delta) });
-        }}
-      />
-    );
+    return <Input className={styles.input} ref={inputRef} onFocus={scrollOnFocus} />;
   };
 
   const renderInput = (inputType: InputType, options?: IElement[]) => {
@@ -115,7 +110,3 @@ export const EditableCell = (props: EditableCellProps) => {
     </td>
   );
 };
-
-const MemoizedEditableCell = React.memo(EditableCell, () => false);
-
-export { MemoizedEditableCell };

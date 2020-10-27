@@ -25,7 +25,7 @@ import {
   PreviewCajaEtiquetaResponse,
 } from 'src/actions/cajas/caja-preview/interfaces';
 import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
-import { EditableTable, IColumn } from 'src/components/editable-table/index.tsx';
+import { Table, IColumn } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
@@ -41,28 +41,27 @@ const _columns = [
     dataIndex: 'a',
     title: 'a',
     width: 200,
-    minWidth: 50,
     editable: true,
     dataType: 'texto',
     inputType: 'text',
+    rules: [{ max: 5 }],
   },
   {
     key: 'b',
     dataIndex: 'b',
     title: 'b',
     width: 200,
-    minWidth: 50,
+    style: {},
     //   inputType: 'select',
     editable: true,
-  } as IColumn<ContenidoCaja>,
+  },
   {
     key: 'c',
     dataIndex: 'c',
     title: 'c',
     width: 200,
-    minWidth: 50,
-    // editable: true,
-    //  inputType: 'checkbox',
+
+    inputType: 'checkbox',
     editable: true,
   },
   {
@@ -70,7 +69,6 @@ const _columns = [
     dataIndex: 'd',
     title: 'd',
     width: 200,
-    minWidth: 50,
     editable: true,
   },
   {
@@ -78,7 +76,6 @@ const _columns = [
     dataIndex: 'e',
     title: 'e',
     width: 200,
-    minWidth: 50,
     editable: true,
   },
   {
@@ -86,7 +83,6 @@ const _columns = [
     dataIndex: 'f',
     title: 'f',
     width: 200,
-    minWidth: 50,
     editable: true,
   },
   {
@@ -94,16 +90,22 @@ const _columns = [
     dataIndex: 'g',
     title: 'g',
     width: 400,
-    minWidth: 50,
     editable: true,
   },
-];
+  {
+    key: 'h',
+    dataIndex: 'h',
+    title: 'h',
+    width: 400,
+    editable: true,
+  },
+] as IColumn<ContenidoCaja>[];
 
 const _data = new Array(100).fill('').map((e, i) => {
-  return { key: `${i + 1}`, a: 'a', b: 'b' };
+  return { key: `${i + 1}`, a: 'a', b: 'b', c: 'c', d: 'd', e: 'e', f: 'f', g: 'g', h: 'h' };
 }) as any[];
 
-export const Cajas: React.FC = (props) => {
+export const IngresarCaja: React.FC = (props) => {
   const dispatch = useDispatch();
   const cajas = useSelector((state: RootState) => state.cajas);
 
@@ -132,8 +134,8 @@ export const Cajas: React.FC = (props) => {
     const idCaja = parse(history.location.search, { parseNumbers: true }).id as number;
     //console.log(idCaja);
 
-    // dispatch(getTiposCaja());
-    // dispatch(getCaja(idCaja));
+    dispatch(getTiposCaja());
+    dispatch(getCaja(idCaja));
   }, []);
 
   // Ocultar pop-up filtro seleccionado.
@@ -302,7 +304,7 @@ export const Cajas: React.FC = (props) => {
     ));
   };
 
-  const renderfiltros = () => {
+  const renderFiltro = () => {
     return (
       <div className={styles.filterWrapper}>
         <Breadcrumb separator={<CaretRightOutlined />}>
@@ -414,41 +416,30 @@ export const Cajas: React.FC = (props) => {
     );
   }, [cajas.filtros.seleccionado, cajas.preview.preview]);*/
 
-  const renderTable = () => {
+  const Tabla = React.useMemo(() => {
     return (
-      /*_.isEmpty(cajas.preview.preview) ? null :*/ <EditableTable<ContenidoCaja>
-        // rowKey={'id'}
+      /*_.isEmpty(cajas.preview.preview) ? null :*/ <Table<ContenidoCaja>
         bordered
         size={'small'}
-        //scroll={{ x: 'max-content' }}
         columns={columns as ColumnsType<ContenidoCaja>}
         dataSource={dataSource}
         loading={cajas.preview.isRunning}
-        moreColumns={{ key: true, actions: true }}
+        extraColumns={{ key: true, actions: true }}
         sortable={false}
         pagination={{ pageSize: 20 }}
-        style={{ width: '80vw' }}
+        // style={{ width: '100%' }}
         setData={setDataSource}
         //hasKeyColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
         //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-        scroll={{ x: 600, y: 300 }}
+        scroll={{ y: 300 }}
       />
     );
-  };
+  }, [cajas.preview.isRunning, columns, dataSource]);
 
   return (
     <Wrapper contentWrapper unselectable direction="column" horizontal="center">
-      <Button
-        onClick={() => {
-          const _data = new Array(100).fill('').map((e, i) => {
-            return { key: `${i + 1}`, a: Math.random() * 1000, b: Math.random() * 1000 };
-          }) as any[];
-          setDataSource(_data);
-        }}>
-        Update Data
-      </Button>
-      {renderfiltros()}
-      {renderTable()}
+      {renderFiltro()}
+      {Tabla}
       {/*renderActionButtons()*/}
     </Wrapper>
   );

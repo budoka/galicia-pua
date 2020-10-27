@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Resizable } from 'react-resizable';
 import styles from './style.module.less';
 
-export const EditableColumn = (props: any) => {
+export const Column = (props: any) => {
   const { onResize, width, ...restProps } = props;
 
   // useEffect(() => console.log('render col'));

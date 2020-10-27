@@ -15,9 +15,11 @@ import 'src/styles/global.less'; // last
 
 if (process.env.NODE_ENV !== 'production') {
   const whyDidYouRender = require('@welldone-software/why-did-you-render');
+  const ReactRedux = require('react-redux/lib');
   whyDidYouRender(React, {
-    // trackAllPureComponents: true,
-    // trackExtraHooks: [[ReactRedux, 'useSelector']],
+    /*trackAllPureComponents: true,
+    trackHooks: true,
+    trackExtraHooks: [[ReactRedux, 'useSelector']],*/
   });
 }
 

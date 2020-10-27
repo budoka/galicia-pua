@@ -1,81 +1,78 @@
 import { Button, Form, Popconfirm } from 'antd';
-import Table, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
+import { Rule } from 'antd/lib/form';
+import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { SorterResult } from 'antd/lib/table/interface';
 import _ from 'lodash';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
+import { ResizeCallbackData } from 'react-resizable';
 import { IElement } from 'src/interfaces';
 import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
-import { EditableCell, EditableCellProps, MemoizedEditableCell } from './editable-cell';
-import { EditableColumn } from './editable-column';
+import { Cell, ICellProps } from './cell';
+import { Column } from './column';
 import styles from './style.module.less';
 
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
 export type InputType = 'text' | 'select' | 'checkbox';
-export type CurrentAction = 'idle' | 'adding' | 'editing';
+export type State = 'idle' | 'adding' | 'editing' | 'deleting';
+export type Position = 'header' | 'footer' | 'both';
 
 // Column properties
 export interface IColumn<RecordType> extends ColumnType<RecordType> {
-  forceEditing?: boolean;
   editable?: boolean;
+  forceEditing?: boolean;
   dataType?: DataType;
   inputType?: InputType;
-  required?: boolean;
-  length?: number;
-  order?: number;
-  minWidth?: number;
-  maxWidth?: number;
+  rules?: Rule[];
+  // required?: boolean;
+  // order?: number;
+  style?: CSSProperties;
 }
 
 // Table properties
-export interface EditableTableProps<RecordType> extends TableProps<RecordType> {
-  moreColumns?: { key?: boolean; actions?: boolean };
-  moreActions?: ReactNode; // [{actions: ReactNode, position: ['header' | 'footer']}]
-  setData?: React.Dispatch<React.SetStateAction<RecordType[]>>;
-
-  sortable: boolean;
-  noTitle?: boolean;
-  noEditableCell?: boolean;
+export interface ITableProps<RecordType> extends TableProps<RecordType> {
+  sortable?: boolean;
   noRowSelection?: boolean;
   noPagination?: boolean;
+  extraColumns?: { key?: boolean; actions?: boolean };
+  extraActions?: { actions: ReactNode; position: Position }[];
+  setData?: React.Dispatch<React.SetStateAction<RecordType[]>>;
 }
 
-export const EditableTable = <RecordType extends IElement = any>(props: EditableTableProps<RecordType>) => {
-  const keyColumn = {
-    key: 'key',
-    dataIndex: 'key',
-    title: '#',
-    minWidth: 60,
-    width: 60,
-    sorter: props.sortable && { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
-  } as IColumn<RecordType>;
+const keyColumn = {
+  key: 'key',
+  dataIndex: 'key',
+  title: '#',
+  minWidth: 60,
+  width: 60,
+  // sorter: props.sortable && { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
+} as IColumn<any>;
 
-  const actionColumn = {
-    key: 'actions',
-    dataIndex: 'actions',
-    title: 'Acciones',
-    fixed: 'right',
-    width: 210,
-    //minWidth: 210,
-    //maxWidth: 210,
-  } as IColumn<RecordType>;
+const actionColumn = {
+  key: 'actions',
+  dataIndex: 'actions',
+  title: 'Acciones',
+  fixed: 'right',
+  width: 210,
+  //minWidth: 210,
+  //maxWidth: 210,
+} as IColumn<any>;
 
-  useEffect(() => console.log('render table'));
-
+export const Table = <RecordType extends IElement = any>(props: ITableProps<RecordType>) => {
   const [form] = Form.useForm();
+
   const [selectedRows, setSelectedRows] = useState<React.Key[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState<number | undefined>((props.pagination && props.pagination.pageSize) || 10);
   const [refresh, setRefresh] = useState(false);
-  const [editingRow, setEditingRow] = useState<React.Key>();
-  const [currentAction, setCurrentAction] = useState<CurrentAction>('idle');
+  const [editingRow, setEditingRow] = useState<{ previous?: React.Key; current?: React.Key }>();
+  const [state, setState] = useState<{ previous?: State; current?: State }>({ current: 'idle' });
   const [sort, setSort] = useState<SorterResult<RecordType>[]>([]);
 
-  const dataSource = props.dataSource ?? [];
+  const { dataSource: _dataSource, columns: _columns, setData, extraColumns: moreColumns, sortable, ...restProps } = props;
 
-  const columns = buildColumns(props.columns);
-
-  const { setData } = props;
+  const dataSource = _dataSource ?? [];
+  const columns = buildColumns(_columns);
 
   function buildColumns(columns: ColumnsType<RecordType> | undefined) {
     console.log('buildColumns ...');
@@ -85,44 +82,57 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
     // Create a dictionary to check if key and actions columns already exist.
     const columnsDict = _.keyBy(columns, 'key');
 
-    if (props.moreColumns?.key && columns && !columnsDict['key']) columns = [keyColumn, ...columns];
-    if (props.moreColumns?.actions && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
+    if (props.extraColumns?.key && columns && !columnsDict['key']) columns = [keyColumn, ...columns];
+    if (props.extraColumns?.actions && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
 
     let isInputFocused = false;
 
     columns = (columns as IColumn<RecordType>[]).map((col, index) => {
       return {
         ...col,
-        // key: index + 5,
         align: 'center',
-        /*   shouldCellUpdate: (record, prevRecord) => {
-          console.log(record);
-          console.log(prevRecord);
-          return record !== prevRecord;
-        },*/
-        onHeaderCell: (column: IColumn<RecordType>) => ({
-          //width: col.width,
-          width: column.width,
-          style: { fontWeight: 'bold' },
-          // style: { minWidth: col.minWidth, maxWidth: col.maxWidth },
-          // onResize: handleColumnResize(index),
-        }),
+        shouldCellUpdate: (record, prevRecord) => {
+          // Update cell when a record was deleted.
+          if (state.previous === 'deleting') return true;
+
+          const isEditing = record.key === editingRow?.current || record.key === editingRow?.previous;
+
+          const isActionColumn = col.dataIndex === 'actions';
+          const shouldUpdateAction =
+            isActionColumn &&
+            (state.current === 'adding' || state.current === 'editing' || state.previous === 'adding' || state.previous === 'editing');
+
+          if (shouldUpdateAction) return true;
+
+          const columnName = col.dataIndex! as string;
+          const prevValue = prevRecord[columnName];
+          const nextValue = record[columnName];
+
+          const shouldUpdate = prevValue !== nextValue || isEditing;
+
+          return shouldUpdate;
+        },
+        onHeaderCell: (column: IColumn<RecordType>) => {
+          return {
+            //width: col.width,
+            width: column.width,
+            style: { fontWeight: 'bold' },
+            // style: { minWidth: col.minWidth, maxWidth: col.maxWidth },
+          };
+        },
         onCell: (record: RecordType) => {
           const shouldFocusInput = !isInputFocused && col.editable && isEditing(record);
           if (shouldFocusInput) isInputFocused = true;
 
           return {
-            key: index,
+            key: col.dataIndex,
             dataIndex: col.dataIndex,
             editing: col.forceEditing || (col.editable && isEditing(record)),
             inputType: col.inputType,
             hasFocus: shouldFocusInput,
-            rules: [{ required: true }],
+            rules: col.rules,
             hasFeedback: true,
-            style: undefined,
-            //className:
-            // style: { padding: col.align || 'center' ? '0px 18px' : undefined },
-          } as EditableCellProps;
+          } as ICellProps;
         },
         render: col.render
           ? col.render
@@ -138,8 +148,12 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
     return columns;
   }
 
+  useEffect(() => {
+    if (state.current === 'idle') form.resetFields();
+  }, [state]);
+
   const isEditing = (record: RecordType) => {
-    return record.key === editingRow;
+    return record.key === editingRow?.current;
   };
 
   const handleAddRecord = () => {
@@ -162,8 +176,8 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
 
         setData([...dataSource, record]);
         setSelectedRows([key]);
-        setEditingRow(key);
-        setCurrentAction('adding');
+        // setEditingRow(key);
+        setState({ previous: state.current, current: 'adding' });
       })
       .catch((error) => {
         //console.log(error);
@@ -183,17 +197,27 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
       const records = [...dataSource];
       records[index] = { ...records[index], ...record };
 
+      // console.log(records);
+
       setData(records);
-      setEditingRow('');
-      setCurrentAction('idle');
+      /*  setData((r) => {
+        const records = [...r];
+        records[index] = { ...records[index], ...record };
+        return records;
+      }); */
+
+      setEditingRow({ previous: editingRow?.current, current: undefined });
+      //setEditingRow('');
+      setState({ previous: state.current, current: 'idle' });
     } catch (err) {
       console.log('Validate Failed:', err);
     }
   };
 
   const handleEditRecord = (record: RecordType) => {
-    setEditingRow(record.key);
-    setCurrentAction('editing');
+    setEditingRow({ previous: editingRow?.current, current: record.key });
+    //setEditingRow(record.key);
+    setState({ previous: state.current, current: 'editing' });
     setSelectedRows([record.key]);
     form.setFieldsValue({ ...record });
   };
@@ -201,18 +225,24 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
   const handleDeleteRecord = (keys: React.Key[]) => {
     if (dataSource.length === 0 || !setData) return;
     const records = _.reject(dataSource, (e) => _.includes(keys, e.key));
+
     setData(records);
-    setEditingRow('');
-    setCurrentAction('idle');
+    setEditingRow({ previous: editingRow?.current, current: undefined });
+    //setEditingRow('');
+    setState({ previous: 'deleting', current: 'idle' });
+    //setState({ previous: state.current, current: 'idle' });
     setSelectedRows([]);
   };
 
   const handleCancelRecord = () => {
     if (dataSource.length === 0 || !setData) return;
-    const records = dataSource.slice(0, dataSource.length - 1);
-    setData(records);
-    setEditingRow('');
-    setCurrentAction('idle');
+    if (state.current === 'adding') {
+      const records = dataSource.slice(0, dataSource.length - 1);
+      setData(records);
+    }
+    setEditingRow({ previous: editingRow?.current, current: undefined });
+    // setEditingRow('');
+    setState({ previous: state.current, current: 'idle' });
     setSelectedRows([]);
   };
 
@@ -232,7 +262,7 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
         <div className={styles.buttonWrapper}>
           <Button
             className={styles.buttonEdit}
-            disabled={currentAction !== 'idle'}
+            disabled={state.current !== 'idle'}
             type="link"
             onClick={() => {
               handleEditRecord(record);
@@ -248,14 +278,14 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
         <div className={styles.buttonWrapper}>
           <Popconfirm
             placement="left"
-            disabled={currentAction !== 'idle'}
+            disabled={state.current !== 'idle'}
             title="¿Desea eliminar la fila?"
             onConfirm={() => {
               handleDeleteRecord([record.key]);
             }}
             okText="Sí"
             cancelText="No">
-            <Button className={styles.buttonDelete} disabled={currentAction !== 'idle'} type="link">
+            <Button className={styles.buttonDelete} disabled={state.current !== 'idle'} type="link">
               Eliminar
             </Button>
           </Popconfirm>
@@ -305,24 +335,20 @@ export const EditableTable = <RecordType extends IElement = any>(props: Editable
   return (
     <Wrapper className={styles.tableWrapper} unselectable direction="column" horizontal="center">
       {/*props.noTitle ? undefined : renderHeader()*/}
-
+      {/* {console.log(restProps)} */}
       <Form form={form} component={false}>
-        <Table
-          {...props}
+        <TableAnt
+          {...restProps}
           components={{
             header: {
-              cell: EditableColumn,
+              cell: Column,
             },
             body: {
-              cell: props.noEditableCell ? undefined : MemoizedEditableCell,
+              cell: /*props.noEditableCell ? undefined : */ Cell,
             },
           }}
           columns={columns}
           dataSource={dataSource}
-          onRow={(record, index) => ({
-            record,
-            onChange: () => console.log(record),
-          })}
         />
       </Form>
     </Wrapper>

@@ -43,8 +43,6 @@ export const Inicio: React.FC = (props) => {
     },
   ];
 
-  useEffect(() => {}, []);
-
   const renderCard = (card: IListCard, key: React.Key) => {
     return (
       <ListCard
