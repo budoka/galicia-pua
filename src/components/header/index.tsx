@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setButtonVisible, setCollapsed, setForcedCollapsed, setOpenMenu, setOrientation } from 'src/actions';
+import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { goHome } from 'src/utils/history';
@@ -19,6 +20,7 @@ interface HeaderProps extends LayoutProps {
 }
 
 export const Header: React.FC<HeaderProps> = (props) => {
+  const auth = useAzureAuth();
   const settings = useSelector((state: RootState) => state.settings);
   const dispatch = useDispatch();
   const size = useWindowSize();
@@ -90,7 +92,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return (
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
-          Usuario: <span className={styles.username}>{'Oscar Gómez'}</span>
+          Usuario: <span className={styles.username}>{auth.account?.username}</span>
         </span>
       </div>
     );

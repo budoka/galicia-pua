@@ -1,7 +1,10 @@
 import { Checkbox, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
-import React, { useEffect, useMemo, useRef } from 'react';
-import { BasicComponenetProps, IElement } from 'src/interfaces';
+import { LabeledValue } from 'antd/lib/select';
+import Text from 'antd/lib/typography/Text';
+import classNames from 'classnames';
+import React, { ReactElement, useEffect, useRef } from 'react';
+import { BasicComponenetProps } from 'src/interfaces';
 import { InputType } from '..';
 import styles from './style.module.less';
 
@@ -9,103 +12,119 @@ const { Option } = Select;
 
 export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElement> {
   dataIndex: string;
+  value: string | number | boolean;
   editing: boolean;
   inputType?: InputType;
+  options?: LabeledValue[];
   hasFocus?: boolean;
   hasFeedback?: boolean;
   rules?: Rule[];
 }
 
 export const Cell = (props: ICellProps) => {
-  const { className, style, dataIndex, editing, inputType, hasFocus, hasFeedback, rules, children } = props;
+  const { style, dataIndex, editing, inputType, options, hasFocus, hasFeedback, rules, children } = props;
 
-  const inputRef = useRef<Input>(null);
+  const cellRef = useRef<HTMLTableDataCellElement>(null);
+
+  const className = classNames(props.className, styles.cell);
+
+  /* useEffect(() => {
+    console.log('rendering cell');
+  });*/
 
   useEffect(() => {
-    console.log('rendering cell');
-  });
-
-  /*useEffect(() => {
-    console.log('rendering cell');
-  }, [style]);*/
-
-  useEffect(() => {
-    if (props.hasFocus) inputRef?.current?.focus();
+    if (hasFocus) {
+      const input = cellRef?.current?.getElementsByTagName('input')[0];
+      input && input.focus();
+    }
   }, [editing, hasFocus]);
 
   const scrollOnFocus = () => {
-    const parent = document.querySelector('.ant-table-body table')!;
-    const parentX = parent.getBoundingClientRect().x;
+    try {
+      const parent = document.querySelector('.ant-table-body table')!;
+      const parentX = parent.getBoundingClientRect().x;
 
-    const child = document.querySelector('.ant-table-body')!;
-    const childX = child.getBoundingClientRect().x;
-    const childW = child.getBoundingClientRect().width;
+      const child = document.querySelector('.ant-table-body')!;
+      const childX = child.getBoundingClientRect().x;
+      const childW = child.getBoundingClientRect().width;
 
-    const input = inputRef.current?.input!.closest('td.ant-table-cell')!;
-    const inputX = input.getBoundingClientRect().x;
-    const inputW = input.getBoundingClientRect().width;
+      const cell = cellRef.current!;
+      const cellX = cell.getBoundingClientRect().x;
+      const cellW = cell.getBoundingClientRect().width;
 
-    //console.log(parentX + ' -- ' + childX + ' -- ' + inputX);
-    //console.log(parentX + ' -- ' + (childW - 210) + ' -- ' + inputW);
+      //console.log(parentX + ' -- ' + childX + ' -- ' + inputX);
+      //console.log(parentX + ' -- ' + (childW - 210) + ' -- ' + inputW);
 
-    const verticalScrollbarWidth = 12;
-    const actionColumnWidth = 210;
+      const verticalScrollbarWidth = 12;
+      const actionColumnWidth = 210;
 
-    const delta = inputX - (childW - actionColumnWidth - inputW) - (childX - verticalScrollbarWidth);
+      const delta = cellX - (childW - actionColumnWidth - cellW) - (childX - verticalScrollbarWidth);
 
-    const offSetParent = childX - parentX;
+      const offSetParent = childX - parentX;
 
-    child.scrollTo({ behavior: 'auto', left: Math.ceil(offSetParent + delta) });
+      child.scrollTo({ behavior: 'auto', left: Math.ceil(offSetParent + delta) });
+    } catch (error) {
+      console.log('Unable to scroll on focus: ' + error);
+    }
   };
 
-  const renderOptions = (options: IElement[]) => {
-    return options.map((option, index) => (
-      <Option key={option.key} value={option.value} title={option.label} className={styles.option}>
-        {option.label}
-      </Option>
-    ));
+  const renderOptions = () => {
+    return options!.map((option, index) => {
+      const title = (option.label as ReactElement).props?.children ?? option.label;
+      return (
+        <Option key={option.key ?? option.value} value={option.value} title={title} className={styles.option}>
+          {option.label}
+        </Option>
+      );
+    });
+  };
+
+  const renderSelect = () => {
+    if (editing)
+      return (
+        <Select className={styles.input} showSearch showAction={['focus', 'click']} optionFilterProp="title">
+          {renderOptions()}
+        </Select>
+      );
+
+    return <>{options?.find((option) => option.value === React.Children.toArray(children)[0])?.label ?? children}</>;
   };
 
   const renderCheckbox = () => {
-    return <Checkbox className={styles.input} checked={true} onChange={() => {}} />;
-  };
-
-  const renderSelect = (options: IElement[]) => {
-    return (
-      <Select className={styles.input} showSearch showAction={['focus', 'click']} optionFilterProp="title">
-        {renderOptions(options)}
-      </Select>
-    );
+    return <Checkbox className={styles.input} disabled={!editing} />;
   };
 
   const renderText = () => {
-    return <Input className={styles.input} ref={inputRef} onFocus={scrollOnFocus} />;
+    if (editing) return <Input className={styles.input} />;
+    return <>{children}</>;
   };
 
-  const renderInput = (inputType: InputType, options?: IElement[]) => {
+  const renderField = (inputType?: InputType) => {
     switch (inputType) {
-      case 'text':
-        return renderText();
       case 'select':
-        return renderSelect(options!);
+        return renderSelect();
       case 'checkbox':
         return renderCheckbox();
+      case 'text':
       default:
         return renderText();
     }
   };
 
   return (
-    <td className={className} style={style} /*{...restProps}*/>
+    <td className={className} style={style} /*{...restProps}*/ ref={cellRef} onFocus={scrollOnFocus}>
       {editing ? (
-        <Form.Item className={styles.formItem} name={dataIndex} style={{ margin: 0, padding: 0 }} rules={rules} hasFeedback={hasFeedback}>
-          {renderInput(inputType!, [
-            { key: 'keyA', value: '1', label: 'Elemento AAAAAAAAAAAAAAA' },
-            { key: 'keyB', value: '2', label: 'b' },
-          ])}
+        <Form.Item
+          className={styles.formItem}
+          name={dataIndex}
+          style={{ margin: 0, padding: 0 }}
+          rules={rules}
+          hasFeedback={hasFeedback}
+          valuePropName={inputType === 'checkbox' ? 'checked' : 'value'}>
+          {renderField(inputType)}
         </Form.Item>
       ) : (
-        children
+        renderField(inputType)
       )}
     </td>
   );

@@ -2,6 +2,14 @@
 
 @import (reference) '~src/styles/global.less';
 
+.cell {
+  > span {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
 #inputStyle {
   height: 22px !important;
   min-height: 22px !important;
@@ -61,7 +69,7 @@
 
   &:global.ant-form-item-has-feedback {
     :global .ant-select-arrow {
-      right: 20px !important;
+      right: 17px !important;
     }
   }
 }

@@ -10,20 +10,21 @@ import {
   SsoSilentRequest,
 } from '@azure/msal-browser';
 import { LayoutProps } from 'antd/lib/layout';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { MSAL_CONFIG } from './auth-config';
 import decodeJwt from 'jwt-decode';
-import _ from 'lodash';
-import { JWTPayload } from '../interface';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { AuthAzureError } from 'src/exceptions/auth/azure';
 import { hasJsonStructure } from 'src/utils/json';
+import { JsxElement } from 'typescript';
+import { JWTPayload } from '../interface';
+import { MSAL_CONFIG } from './auth-config';
 
 export type LoginType = 'loginRedirect' | 'loginPopup';
 
 interface AuthRequests {
+  loginPopupRequest: PopupRequest;
+  profilePopupRequest: PopupRequest;
   loginRedirectRequest: RedirectRequest;
-  loginRequest: PopupRequest;
   profileRedirectRequest: RedirectRequest;
-  profileRequest: PopupRequest;
   silentProfileRequest: SilentRequest;
   silentLoginRequest: SsoSilentRequest;
 }
@@ -40,77 +41,20 @@ interface AuthContextProps {
 
 const AuthContext = createContext<AuthContextProps>({});
 
-// Provider component that wraps your app and makes auth object ...
-// ... available to any child component that calls useAuth().
-export const ProvideAuth = ({ children }: LayoutProps) => {
-  const auth: AuthContextProps = useProvideAuth();
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
-};
-
-// Hook for child components to get the auth object ...
-// ... and re-render when it changes.
-export const useAzureAuth = () => {
-  return useContext(AuthContext);
-};
-
-function useProvideAuth() {
+const useProvideAuth = () => {
   const [authInstance, setAuthInstance] = useState<PublicClientApplication>();
   const [authRequest, setAuthRequest] = useState<AuthRequests>();
   const [account, setAccount] = useState<AccountInfo>();
   const [accessToken, setAccessToken] = useState<string>();
 
   useEffect(() => {
-    if (!accessToken) return;
-
-    console.log(accessToken);
-
-    const decodedToken = getAccessTokenDecoded()!;
-    const exp = +decodedToken?.exp;
-    const now = ~~(Date.now() / 1000);
-
-    console.log(now > exp);
-    console.log(decodedToken);
-
-    if (now > exp) {
-      console.log('silent access token');
-      setAccessToken(undefined);
-      //  getSilentAccessToken();
-    }
+    createAuthInstance();
+    setRequestObjects();
   }, []);
 
   useEffect(() => {
-    if (accessToken) return;
-    createAuthInstance();
-    setRequestObjects();
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (authInstance && authRequest) {
-      loadAuthModule();
-    }
+    if (authInstance && authRequest) loadAuthModule();
   }, [authInstance, authRequest]);
-
-  // Revisar access token exp y obtener uno nuevo
-  /*useEffect(() => {
-    console.log(account);
-    if (!account) return;
-    if (accessToken) {
-      const decoded = getAccessTokenDecoded()!;
-      const exp = +decoded?.exp;
-      const now = ~~(Date.now() / 1000);
-
-      console.log(now > exp);
-      console.log(accessToken);
-
-      if (now > exp) {
-        console.log('silent access token');
-        //  getSilentAccessToken();
-      }
-    } else {
-      console.log('getSilentAccessToken');
-      //  getSilentAccessToken();
-    }
-  }, [account]);*/
 
   /**
    * Create an auth instance.
@@ -120,54 +64,33 @@ function useProvideAuth() {
   };
 
   /**
-   * Get the username from the local storage.
-   */
-  const getUsername = () => {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key) continue;
-      const value = localStorage.getItem(key)!;
-
-      if (hasJsonStructure(value)) {
-        const data = JSON.parse(value);
-        //console.log(data);
-        const username = data.username;
-        //console.log(username);
-        if (username) return username;
-      }
-    }
-  };
-
-  /**
    * Initialize request objects used by this AuthModule.
    */
   const setRequestObjects = (): void => {
-    const loginRequest = {
+    const loginPopupRequest = {
       scopes: [],
-    };
+    } as PopupRequest;
 
-    const loginRedirectRequest = {
-      ...loginRequest,
-      redirectStartPage: window.location.href,
-    };
-
-    const profileRequest = {
+    const profilePopupRequest = {
       scopes: [],
       //scopes: ["User.Read"]
-    };
+    } as PopupRequest;
+
+    const loginRedirectRequest = {
+      ...loginPopupRequest,
+      redirectStartPage: window.location.href,
+    } as RedirectRequest;
 
     const profileRedirectRequest = {
-      ...profileRequest,
+      ...profilePopupRequest,
       redirectStartPage: window.location.href,
-    };
-
-    // Add here scopes for access token to be used at MS Graph API endpoints.
+    } as RedirectRequest;
 
     const silentProfileRequest = {
       scopes: [],
       account: { environment: '', homeAccountId: '', tenantId: '', username: '' },
       forceRefresh: false,
-    };
+    } as SilentRequest;
 
     const silentLoginRequest = {
       scopes: [],
@@ -175,9 +98,9 @@ function useProvideAuth() {
     };
 
     const requests: AuthRequests = {
-      loginRequest,
+      loginPopupRequest: loginPopupRequest,
+      profilePopupRequest: profilePopupRequest,
       loginRedirectRequest,
-      profileRequest,
       profileRedirectRequest,
       silentProfileRequest,
       silentLoginRequest,
@@ -215,79 +138,93 @@ function useProvideAuth() {
    *
    * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/initialization.md#redirect-apis
    */
-  const loadAuthModule = (): void => {
-    if (!authInstance) return;
+  const loadAuthModule = async (): Promise<void> => {
+    if (!authInstance) throw new AuthAzureError('No se ha encontrado una instancia de autenticación.');
+    if (!authRequest) throw new AuthAzureError('No se ha encontrado instancias de solicitud.');
 
-    authInstance
-      .handleRedirectPromise()
-      .then((res: AuthenticationResult | null) => {
-        //console.log(res);
-        if (res) handleResponse(res);
-        else attemptSsoSilent();
-      })
-      .catch();
-  };
+    const response = await authInstance.handleRedirectPromise();
 
-  /**
-   * Set the state data.
-   * @param res
-   */
-  const setData = (res: AuthenticationResult): void => {
-    setAccessToken(res.accessToken);
-    setAccount(res.account ?? getAccount());
+    handleResponse(response);
   };
 
   /**
    * Handles the response from a popup or redirect. If response is null, will check if we have any accounts and attempt to sign in.
    * @param res
    */
-  const handleResponse = (res: AuthenticationResult): void => {
-    //console.log('Welcome!!');
-    setData(res);
+  const handleResponse = async (res: AuthenticationResult | null): Promise<void> => {
+    if (res) {
+      //console.log('Welcome!!');
+      setData(res);
+    } else {
+      await attemptAcquireTokenSilent().catch(() => attemptSsoSilent());
+    }
+  };
+
+  /**
+   * Attemp to acquire a silent token from cache.
+   */
+  const attemptAcquireTokenSilent = async () => {
+    if (!authInstance) throw new AuthAzureError('No se ha encontrado una instancia de autenticación.');
+    if (!authRequest) throw new AuthAzureError('No se ha encontrado instancias de solicitud.');
+
+    const account = getAccount();
+
+    const silentProfileRequest: SilentRequest = {
+      ...authRequest.silentProfileRequest,
+      account: account || { environment: '', homeAccountId: '', tenantId: '', username: '' },
+    };
+
+    const response = await authInstance.acquireTokenSilent(silentProfileRequest);
+    //console.log(response);
+    setData(response);
   };
 
   /**
    * Calls ssoSilent to attempt silent flow. If it fails due to interaction required error, it will prompt the user to login using popup.
    * @param request
    */
-  const attemptSsoSilent = (loginType: LoginType = 'loginRedirect'): void => {
-    const silentLoginRequest = authRequest?.silentLoginRequest;
+  const attemptSsoSilent = async (loginType: LoginType = 'loginRedirect'): Promise<void> => {
+    if (!authInstance) throw new AuthAzureError('No se ha encontrado una instancia de autenticación.');
+    if (!authRequest) throw new AuthAzureError('No se ha encontrado instancias de solicitud.');
 
-    if (silentLoginRequest) {
-      authInstance!
-        .ssoSilent(silentLoginRequest)
-        .then((res) => {
-          //console.log('Welcome SSO!!');
-          setData(res);
-        })
-        .catch((error) => {
-          // console.error('Silent Error: ' + error);
-          if (error instanceof InteractionRequiredAuthError /*|| !status*/) {
-            // login(loginType);
-          }
-          login(loginType);
-        });
+    const silentLoginRequest = authRequest.silentLoginRequest;
+
+    try {
+      const response = await authInstance.ssoSilent(silentLoginRequest);
+      //console.log(response);
+      setData(response);
+    } catch (error) {
+      //console.log('unabled to sso silent');
+      //console.log(error);
+      login(loginType);
     }
   };
 
   /**
-   * Calls loginPopup or loginRedirect based on given signInType.
-   * @param signInType
+   * Calls loginPopup or loginRedirect based on given loginType.
+   * @param loginType
    */
-  const login = (loginType: LoginType): void => {
-    //setStatus(false);
-    if (loginType === 'loginPopup') {
-      const loginRequest = authRequest?.loginRequest;
+  const login = async (loginType: LoginType): Promise<void> => {
+    if (!authInstance) throw new AuthAzureError('No se ha encontrado una instancia de autenticación.');
+    if (!authRequest) throw new AuthAzureError('No se ha encontrado instancias de solicitud.');
 
-      authInstance!
-        .loginPopup(loginRequest)
-        .then((res: AuthenticationResult) => {
-          handleResponse(res);
-        })
-        .catch();
+    if (loginType === 'loginPopup') {
+      const loginRequest = authRequest.loginPopupRequest;
+
+      try {
+        const response = await authInstance.loginPopup(loginRequest);
+        handleResponse(response);
+      } catch (error) {
+        //console.error(error);
+      }
     } else if (loginType === 'loginRedirect') {
       const loginRedirectRequest = authRequest?.loginRedirectRequest;
-      authInstance!.loginRedirect(loginRedirectRequest).catch(/*(e) => console.log(e)*/);
+
+      try {
+        await authInstance.loginRedirect(loginRedirectRequest);
+      } catch (error) {
+        //console.error(error);
+      }
     }
   };
 
@@ -301,18 +238,13 @@ function useProvideAuth() {
     if (authInstance) authInstance.logout(logOutRequest);
   };
 
-  const getSilentAccessToken = async () => {
-    if (!authInstance || !account) return;
-
-    const silentProfileRequest: SilentRequest = {
-      ...authRequest!.silentProfileRequest,
-      account: account,
-    };
-
-    const response = await authInstance!.acquireTokenSilent(silentProfileRequest);
-    const accessToken = response.accessToken;
-    setAccessToken(accessToken);
-    return accessToken;
+  /**
+   * Set the state data.
+   * @param res
+   */
+  const setData = (res: AuthenticationResult): void => {
+    setAccessToken(res.accessToken);
+    setAccount(res.account ?? getAccount());
   };
 
   const getAccessTokenDecoded = () => {
@@ -320,6 +252,22 @@ function useProvideAuth() {
 
     const token: JWTPayload = decodeJwt(accessToken);
     return token;
+  };
+
+  const getUsername = (storage: Storage = sessionStorage) => {
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (!key) continue;
+      const value = storage.getItem(key)!;
+
+      if (hasJsonStructure(value)) {
+        const data = JSON.parse(value);
+        //console.log(data);
+        const username = data.username;
+        //console.log(username);
+        if (username) return username;
+      }
+    }
   };
 
   /**
@@ -369,7 +317,7 @@ function useProvideAuth() {
       account: account,
     };
 
-    const accesToken = await getTokenPopup(silentProfileRequest, authRequest!.profileRequest);
+    const accesToken = await getTokenPopup(silentProfileRequest, authRequest!.profilePopupRequest);
     setAccessToken(accesToken);
     return accesToken;
 
@@ -385,7 +333,7 @@ function useProvideAuth() {
         if (e instanceof InteractionRequiredAuthError) {
           //console.log('acquiring token using redirect');
           return await authInstance!
-            .acquireTokenPopup(interactiveRequest!)
+            .acquireTokenPopup(interactiveRequest)
             .then((resp) => {
               return resp.accessToken;
             })
@@ -406,4 +354,24 @@ function useProvideAuth() {
     getProfileTokenPopup,
     logout,
   } as AuthContextProps;
+};
+
+// Hook for child components to get the auth object ...
+// ... and re-render when it changes.
+export const useAzureAuth = () => {
+  return useContext(AuthContext);
+};
+
+interface AuthProviderProps {
+  disabled?: boolean;
+  children?: React.ReactNode;
 }
+
+// Provider component that wraps your app and makes auth object ...
+// ... available to any child component that calls useAzureAuth().
+export const AuthProvider = ({ disabled = false, children }: AuthProviderProps) => {
+  if (disabled) return <>{children}</>;
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const auth: AuthContextProps = useProvideAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+};

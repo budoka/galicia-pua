@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { APIError } from 'src/exceptions';
+import { APIError } from 'src/exceptions/api';
 import { Dictionary, IAPIMethod } from 'src/interfaces';
 import { apis } from 'src/services/apis-data';
 import { getVar } from './environment';

@@ -1,5 +1,5 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Select } from 'antd';
+import { Breadcrumb, Button, Select, Tag } from 'antd';
 import { LabeledValue } from 'antd/lib/select';
 import _ from 'lodash';
 import { parse } from 'query-string';
@@ -52,7 +52,19 @@ const _columns = [
     title: 'b',
     width: 200,
     style: {},
-    //   inputType: 'select',
+    inputType: 'select',
+    options: [
+      {
+        value: 1,
+        label: (
+          <Tag className="ellipsis" style={{ width: 100, marginRight: 0 }}>
+            ASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDA
+          </Tag>
+        ),
+      },
+      { value: 2, label: 'EDF' },
+      { value: 3, label: 'ASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDA' },
+    ],
     editable: true,
   },
   {
@@ -60,8 +72,8 @@ const _columns = [
     dataIndex: 'c',
     title: 'c',
     width: 200,
-
     inputType: 'checkbox',
+    dataType: 'boolean',
     editable: true,
   },
   {
@@ -69,6 +81,8 @@ const _columns = [
     dataIndex: 'd',
     title: 'd',
     width: 200,
+    inputType: 'checkbox',
+    dataType: 'boolean',
     editable: true,
   },
   {
@@ -90,6 +104,7 @@ const _columns = [
     dataIndex: 'g',
     title: 'g',
     width: 400,
+    inputType: 'checkbox',
     editable: true,
   },
   {
@@ -98,11 +113,12 @@ const _columns = [
     title: 'h',
     width: 400,
     editable: true,
+    rules: [{ required: true }],
   },
 ] as IColumn<ContenidoCaja>[];
 
 const _data = new Array(100).fill('').map((e, i) => {
-  return { key: `${i + 1}`, a: 'a', b: 'b', c: 'c', d: 'd', e: 'e', f: 'f', g: 'g', h: 'h' };
+  return { key: `${i + 1}`, a: 'a', b: 1, c: true, d: false, e: 'e', f: 'f', g: 'g', h: 'h' };
 }) as any[];
 
 export const IngresarCaja: React.FC = (props) => {
@@ -425,7 +441,7 @@ export const IngresarCaja: React.FC = (props) => {
         dataSource={dataSource}
         loading={cajas.preview.isRunning}
         extraColumns={{ key: true, actions: true }}
-        sortable={false}
+        sortable
         pagination={{ pageSize: 20 }}
         // style={{ width: '100%' }}
         setData={setDataSource}

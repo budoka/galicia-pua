@@ -1,10 +1,10 @@
 import { Button, Form, Popconfirm } from 'antd';
 import { Rule } from 'antd/lib/form';
+import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { SorterResult } from 'antd/lib/table/interface';
+import { CompareFn, SorterResult, SortOrder } from 'antd/lib/table/interface';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
-import { ResizeCallbackData } from 'react-resizable';
 import { IElement } from 'src/interfaces';
 import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
@@ -23,6 +23,7 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
   forceEditing?: boolean;
   dataType?: DataType;
   inputType?: InputType;
+  options?: LabeledValue[];
   rules?: Rule[];
   // required?: boolean;
   // order?: number;
@@ -32,31 +33,12 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
 // Table properties
 export interface ITableProps<RecordType> extends TableProps<RecordType> {
   sortable?: boolean;
-  noRowSelection?: boolean;
-  noPagination?: boolean;
+  hideRowSelection?: boolean;
+  hidePagination?: boolean;
   extraColumns?: { key?: boolean; actions?: boolean };
   extraActions?: { actions: ReactNode; position: Position }[];
   setData?: React.Dispatch<React.SetStateAction<RecordType[]>>;
 }
-
-const keyColumn = {
-  key: 'key',
-  dataIndex: 'key',
-  title: '#',
-  minWidth: 60,
-  width: 60,
-  // sorter: props.sortable && { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
-} as IColumn<any>;
-
-const actionColumn = {
-  key: 'actions',
-  dataIndex: 'actions',
-  title: 'Acciones',
-  fixed: 'right',
-  width: 210,
-  //minWidth: 210,
-  //maxWidth: 210,
-} as IColumn<any>;
 
 export const Table = <RecordType extends IElement = any>(props: ITableProps<RecordType>) => {
   const [form] = Form.useForm();
@@ -68,6 +50,23 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const [editingRow, setEditingRow] = useState<{ previous?: React.Key; current?: React.Key }>();
   const [state, setState] = useState<{ previous?: State; current?: State }>({ current: 'idle' });
   const [sort, setSort] = useState<SorterResult<RecordType>[]>([]);
+
+  const keyColumn = {
+    key: 'key',
+    dataIndex: 'key',
+    title: '#',
+    minWidth: 60,
+    width: 60,
+    sorter: props.sortable && { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
+  } as IColumn<RecordType>;
+
+  const actionColumn = {
+    key: 'actions',
+    dataIndex: 'actions',
+    title: 'Acciones',
+    fixed: 'right',
+    width: 210,
+  } as IColumn<RecordType>;
 
   const { dataSource: _dataSource, columns: _columns, setData, extraColumns: moreColumns, sortable, ...restProps } = props;
 
@@ -121,23 +120,28 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           };
         },
         onCell: (record: RecordType) => {
-          const shouldFocusInput = !isInputFocused && col.editable && isEditing(record);
+          const dataIndex = col.dataIndex as string;
+          const { forceEditing, editable, inputType, options, rules } = col;
+
+          const shouldFocusInput = !isInputFocused && editable && isEditing(record);
           if (shouldFocusInput) isInputFocused = true;
 
           return {
-            key: col.dataIndex,
-            dataIndex: col.dataIndex,
-            editing: col.forceEditing || (col.editable && isEditing(record)),
-            inputType: col.inputType,
+            key: dataIndex,
+            dataIndex: dataIndex,
+            value: record[dataIndex],
+            editing: forceEditing || (editable && isEditing(record)),
+            inputType,
+            options,
             hasFocus: shouldFocusInput,
-            rules: col.rules,
+            rules,
             hasFeedback: true,
           } as ICellProps;
         },
         render: col.render
           ? col.render
           : (value, record, index) => {
-              if (col.key === 'key') return dataSource!.indexOf(record) + 1;
+              if (col.key === 'key') return dataSource.indexOf(record) + 1;
               else if (col.key === 'actions') return renderActions(record);
               else if (!value) return '-';
               else return value;
@@ -246,6 +250,10 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     setSelectedRows([]);
   };
 
+  const preventFocus = (e: React.FocusEvent<any>) => {
+    e.stopPropagation();
+  };
+
   const renderActions = (record: RecordType) => {
     return isEditing(record) ? (
       <div className={styles.cellActions}>
@@ -264,7 +272,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             className={styles.buttonEdit}
             disabled={state.current !== 'idle'}
             type="link"
-            onClick={() => {
+            onFocus={preventFocus}
+            onClick={(e) => {
               handleEditRecord(record);
             }}>
             Editar
@@ -280,12 +289,20 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             placement="left"
             disabled={state.current !== 'idle'}
             title="¿Desea eliminar la fila?"
-            onConfirm={() => {
-              handleDeleteRecord([record.key]);
-            }}
             okText="Sí"
-            cancelText="No">
-            <Button className={styles.buttonDelete} disabled={state.current !== 'idle'} type="link">
+            cancelText="No"
+            okButtonProps={{ onFocus: preventFocus }}
+            cancelButtonProps={{ onFocus: preventFocus }}
+            onConfirm={(e) => {
+              handleDeleteRecord([record.key]);
+            }}>
+            <Button
+              className={styles.buttonDelete}
+              disabled={state.current !== 'idle'}
+              type="link"
+              onFocus={(e) => {
+                e.stopPropagation();
+              }}>
               Eliminar
             </Button>
           </Popconfirm>
@@ -299,7 +316,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           <Button
             className={styles.buttonSave}
             type="link"
-            onClick={() => {
+            onFocus={preventFocus}
+            onClick={(e) => {
               handleSaveRecord(record.key);
             }}>
             Guardar
@@ -314,7 +332,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           <Button
             className={styles.buttonCancel}
             type="link"
-            onClick={() => {
+            onFocus={preventFocus}
+            onClick={(e) => {
               handleCancelRecord();
             }}>
             Cancelar
@@ -344,7 +363,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
               cell: Column,
             },
             body: {
-              cell: /*props.noEditableCell ? undefined : */ Cell,
+              cell: Cell,
             },
           }}
           columns={columns}

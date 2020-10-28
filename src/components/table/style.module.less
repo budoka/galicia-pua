@@ -80,7 +80,7 @@
 }
 
 .buttonEdit,
-.buttonDelete,
+.buttonDelete > button,
 .buttonSave,
 .buttonCancel {
   padding: 0 !important;
@@ -94,9 +94,8 @@
     position: relative;
   }
 
-  &:hover::after,
-  &:active::after,
-  &:focus::after {
+  &:not([disabled]):hover::after,
+  &:not([disabled]):focus::after {
     width: 100%;
     left: 0;
     background-color: @primary-4;

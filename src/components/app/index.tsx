@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOpenMenu } from 'src/actions';
-import { useAzureAuth } from 'src/auth/azure/useAzureAuth.tsx';
+
 import { Header } from 'src/components/header';
 import { Router } from 'src/components/router';
 import { Sider } from 'src/components/sider';
@@ -17,6 +17,7 @@ import styles from './style.module.less';
 import { history } from 'src/store';
 import { Footer } from '../footer';
 import { Loading } from '../loading';
+import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 
 const { Content } = Layout;
 

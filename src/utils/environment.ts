@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { EnviromentError } from 'src/exceptions';
+import { EnviromentError } from 'src/exceptions/environment';
 import { Dictionary } from 'src/interfaces';
 import { parseValue } from './parse';
 

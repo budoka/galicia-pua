@@ -1,4 +1,4 @@
-export function hasJsonStructure(value: string) {
+export const hasJsonStructure = (value: string) => {
   try {
     const result = JSON.parse(value);
     const type = Object.prototype.toString.call(result);
@@ -6,4 +6,4 @@ export function hasJsonStructure(value: string) {
   } catch (err) {
     return false;
   }
-}
+};
