@@ -21,12 +21,6 @@
     padding: 4px 8px;
   }
 
-  .tableHeader {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-
   .tableHeaderLeft {
     .tableStyle();
     justify-content: flex-start;
@@ -40,13 +34,14 @@
     }
   }
 
-  .tableHeaderRight {
+  /* .tableHeaderRight {
     .tableStyle();
     justify-content: flex-start;
-  }
+  }*/
 
-  .tableHeaderInfo {
-    .tableHeader();
+  .tableExtraNode {
+    display: flex;
+    width: 100%;
     justify-content: flex-start;
     text-align: center;
     align-self: center;
@@ -61,7 +56,8 @@
   }
 
   :global .ant-table-title {
-    .tableHeader();
+    display: flex;
+    width: 100%;
   }
 }
 
@@ -79,21 +75,7 @@
   justify-items: center;
 }
 
-.buttonEdit,
-.buttonDelete > button,
-.buttonSave,
-.buttonCancel {
-  padding: 0 !important;
-  display: flex !important;
-
-  span {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 100%;
-    position: relative;
-  }
-
+#line {
   &:not([disabled]):hover::after,
   &:not([disabled]):focus::after {
     width: 100%;
@@ -111,5 +93,37 @@
     width: 0;
     background: transparent;
     transition: width 0.5s ease, background-color 0.5s ease, left 0.5s ease;
+  }
+}
+
+.buttonEdit,
+.buttonSave,
+.buttonCancel {
+  padding: 0 !important;
+  display: flex !important;
+
+  span {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100%;
+    position: relative;
+  }
+
+  #line();
+}
+
+.buttonDelete {
+  padding: 0 !important;
+  display: flex !important;
+
+  span {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100%;
+    position: relative;
+
+    #line();
   }
 }

@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 import { IListCardItem } from './interfaces';
+import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 
 interface ListCardProps {
   className?: string;
@@ -19,7 +20,7 @@ interface ListCardProps {
 }
 
 export const ListCard: React.FC<ListCardProps> = (props) => {
-  const className = classNames(styles.content, props.className);
+  const className = classNames(styles.content, UNSELECTABLE, SHADOW, props.className);
 
   const setBadgeStatus = (count: number) => {
     const { theme } = props;

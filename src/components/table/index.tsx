@@ -1,10 +1,14 @@
-import { Button, Form, Popconfirm } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
+import { Button, Form, Popconfirm, Tooltip } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { CompareFn, SorterResult, SortOrder } from 'antd/lib/table/interface';
+import classNames from 'classnames';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
+import { act } from 'react-dom/test-utils';
+import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { IElement } from 'src/interfaces';
 import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
@@ -15,6 +19,7 @@ import styles from './style.module.less';
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
 export type InputType = 'text' | 'select' | 'checkbox';
 export type State = 'idle' | 'adding' | 'editing' | 'deleting';
+export type ActionNode = 'add button' | 'delete button' | 'update button';
 export type Position = 'header' | 'footer' | 'both';
 
 // Column properties
@@ -36,7 +41,7 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
   hideRowSelection?: boolean;
   hidePagination?: boolean;
   extraColumns?: { key?: boolean; actions?: boolean };
-  extraActions?: { actions: ReactNode; position: Position }[];
+  extraNodes?: { node: ActionNode | ((records: RecordType[]) => ReactNode); position: Position; order?: number[] }[];
   setData?: React.Dispatch<React.SetStateAction<RecordType[]>>;
 }
 
@@ -68,7 +73,9 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     width: 210,
   } as IColumn<RecordType>;
 
-  const { dataSource: _dataSource, columns: _columns, setData, extraColumns: moreColumns, sortable, ...restProps } = props;
+  const { dataSource: _dataSource, columns: _columns, setData, extraColumns, extraNodes, sortable, ...restProps } = props;
+
+  const className = classNames(styles.tableWrapper, UNSELECTABLE, SHADOW, props.className);
 
   const dataSource = _dataSource ?? [];
   const columns = buildColumns(_columns);
@@ -142,7 +149,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           ? col.render
           : (value, record, index) => {
               if (col.key === 'key') return dataSource.indexOf(record) + 1;
-              else if (col.key === 'actions') return renderActions(record);
+              else if (col.key === 'actions') return renderActionsColumn(record);
               else if (!value) return '-';
               else return value;
             },
@@ -155,6 +162,74 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   useEffect(() => {
     if (state.current === 'idle') form.resetFields();
   }, [state]);
+
+  const renderExtraNodes = (position: RegExp) => {
+    return extraNodes
+      ?.filter((action) => position.test(action.position))
+      .map((action) => {
+        switch (action.node) {
+          case 'add button':
+            return renderAddButton();
+
+          case 'delete button':
+            return renderDeleteButton();
+
+          case 'update button':
+            return renderUpdateButton();
+
+          default:
+            return action.node(dataSource);
+        }
+        //   action.node === 'add button' ? renderAddButton() : action.node(dataSource))
+      });
+  };
+
+  const renderAddButton = () => {
+    return !editingRow?.current ? (
+      <Button type="primary" onClick={() => handleAddRecord()}>
+        Agregar
+      </Button>
+    ) : (
+      <Button type="ghost" onClick={() => handleCancelRecord()}>
+        Cancelar
+      </Button>
+    );
+  };
+
+  const renderDeleteButton = () => {
+    const disabledRemove = !(selectedRows.length > 0 && state.current !== 'adding');
+
+    return (
+      <Popconfirm
+        title="¿Desea eliminar las filas seleccionadas?"
+        onConfirm={() => {
+          handleDeleteRecord(selectedRows);
+          //handleDeleteRecords(props.state.list.filter(e => e.selected).map(e => e.id));
+        }}
+        okText="Sí"
+        cancelText="No"
+        disabled={disabledRemove}>
+        <Button type="primary" danger disabled={disabledRemove}>
+          Eliminar
+        </Button>
+      </Popconfirm>
+    );
+  };
+
+  const renderUpdateButton = () => {
+    return (
+      <Tooltip title="Actualizar">
+        <Button
+          disabled={refresh}
+          type="link"
+          icon={<ReloadOutlined spin={refresh} />}
+          onClick={() => {
+            setRefresh(true);
+          }}
+        />
+      </Tooltip>
+    );
+  };
 
   const isEditing = (record: RecordType) => {
     return record.key === editingRow?.current;
@@ -201,17 +276,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       const records = [...dataSource];
       records[index] = { ...records[index], ...record };
 
-      // console.log(records);
-
       setData(records);
-      /*  setData((r) => {
-        const records = [...r];
-        records[index] = { ...records[index], ...record };
-        return records;
-      }); */
-
       setEditingRow({ previous: editingRow?.current, current: undefined });
-      //setEditingRow('');
       setState({ previous: state.current, current: 'idle' });
     } catch (err) {
       console.log('Validate Failed:', err);
@@ -220,7 +286,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
   const handleEditRecord = (record: RecordType) => {
     setEditingRow({ previous: editingRow?.current, current: record.key });
-    //setEditingRow(record.key);
     setState({ previous: state.current, current: 'editing' });
     setSelectedRows([record.key]);
     form.setFieldsValue({ ...record });
@@ -232,9 +297,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
     setData(records);
     setEditingRow({ previous: editingRow?.current, current: undefined });
-    //setEditingRow('');
     setState({ previous: 'deleting', current: 'idle' });
-    //setState({ previous: state.current, current: 'idle' });
     setSelectedRows([]);
   };
 
@@ -245,7 +308,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       setData(records);
     }
     setEditingRow({ previous: editingRow?.current, current: undefined });
-    // setEditingRow('');
     setState({ previous: state.current, current: 'idle' });
     setSelectedRows([]);
   };
@@ -254,7 +316,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     e.stopPropagation();
   };
 
-  const renderActions = (record: RecordType) => {
+  const renderActionsColumn = (record: RecordType) => {
     return isEditing(record) ? (
       <div className={styles.cellActions}>
         {renderButtonSave()} {renderDivider()} {renderButtonCancel()}
@@ -351,25 +413,28 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     }
   };
 
+  const renderHeader = () => {};
+
   return (
-    <Wrapper className={styles.tableWrapper} unselectable direction="column" horizontal="center">
-      {/*props.noTitle ? undefined : renderHeader()*/}
-      {/* {console.log(restProps)} */}
-      <Form form={form} component={false}>
-        <TableAnt
-          {...restProps}
-          components={{
-            header: {
-              cell: Column,
-            },
-            body: {
-              cell: Cell,
-            },
-          }}
-          columns={columns}
-          dataSource={dataSource}
-        />
-      </Form>
-    </Wrapper>
+    //  <Wrapper className={styles.tableWrapper} unselectable direction="column" horizontal="center">
+    <Form form={form} component={false}>
+      <TableAnt
+        {...restProps}
+        className={className}
+        components={{
+          header: {
+            cell: Column,
+          },
+          body: {
+            cell: Cell,
+          },
+        }}
+        columns={columns}
+        dataSource={dataSource}
+        title={(records) => renderExtraNodes(/header|both/)}
+        footer={(records) => renderExtraNodes(/footer|both/)}
+      />
+    </Form>
+    //  </Wrapper>
   );
 };

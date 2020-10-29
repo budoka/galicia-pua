@@ -55,7 +55,7 @@ const App = () => {
     return title;
   };
 
-  return auth.accessToken ? (
+  return !auth.disabled && !auth.data ? (
     <Loading style={{ height: '100vh' }} size={26} text={'Cargando...'} />
   ) : (
     <>

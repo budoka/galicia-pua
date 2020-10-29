@@ -441,6 +441,28 @@ export const IngresarCaja: React.FC = (props) => {
         dataSource={dataSource}
         loading={cajas.preview.isRunning}
         extraColumns={{ key: true, actions: true }}
+        extraNodes={[
+          {
+            node: 'add button',
+            position: 'footer',
+          },
+          {
+            node: (records) => (
+              <Tag key="1" color="red">
+                Registros: {records.length}
+              </Tag>
+            ),
+            position: 'both',
+          },
+          {
+            node: (records) => (
+              <Tag key="2" color="blue">
+                TEST
+              </Tag>
+            ),
+            position: 'header',
+          },
+        ]}
         sortable
         pagination={{ pageSize: 20 }}
         // style={{ width: '100%' }}

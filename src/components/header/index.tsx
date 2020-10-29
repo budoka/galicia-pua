@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return (
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
-          Usuario: <span className={styles.username}>{auth.account?.username}</span>
+          Usuario: <span className={styles.username}>{auth.data?.account.username}</span>
         </span>
       </div>
     );

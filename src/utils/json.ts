@@ -1,3 +1,7 @@
+/**
+ *
+ * @param value check if passed json string has a valid json structure.
+ */
 export const hasJsonStructure = (value: string) => {
   try {
     const result = JSON.parse(value);
