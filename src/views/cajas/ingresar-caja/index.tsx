@@ -1,6 +1,7 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Breadcrumb, Button, Select, Tag } from 'antd';
 import { LabeledValue } from 'antd/lib/select';
+import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import { parse } from 'query-string';
 import { ColumnsType } from 'rc-table/lib/interface';
@@ -118,7 +119,7 @@ const _columns = [
 ] as IColumn<ContenidoCaja>[];
 
 const _data = new Array(100).fill('').map((e, i) => {
-  return { key: `${i + 1}`, a: '', b: '', c: true, d: false, e: 'e', f: 'f', g: 'g', h: 'h' };
+  return { key: `${i + 1}`, a: dayjs(), b: '', c: true, d: false, e: 'e', f: 'f', g: 'g', h: 'h' };
 }) as any[];
 
 export const IngresarCaja: React.FC = (props) => {

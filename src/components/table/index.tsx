@@ -5,6 +5,7 @@ import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { CompareFn, SorterResult, SortOrder, TableRowSelection } from 'antd/lib/table/interface';
 import classNames from 'classnames';
+import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
 import { act } from 'react-dom/test-utils';
@@ -149,6 +150,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
           const shouldFocusInput = !isInputFocused && editable && isEditing(record);
           if (shouldFocusInput) isInputFocused = true;
+
+          // console.log((record.a as Dayjs).format('DD/MM/YYYY'));
 
           return {
             key: dataIndex,

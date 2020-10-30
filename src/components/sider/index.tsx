@@ -40,7 +40,6 @@ export const Sider: React.FC<SiderProps> = (props) => {
   }, [router.location.pathname, settings.collapsed]);
 
   const onOpenChange = (currentMenu: React.Key[]) => {
-    console.log(currentMenu);
     if (currentMenu.length > 0) {
       dispatch(setOpenMenu(currentMenu[currentMenu.length - 1].toString()));
     } else dispatch(setOpenMenu());
@@ -94,11 +93,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
     <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
       <Menu
         selectedKeys={[history.location.pathname]}
-        defaultOpenKeys={[]}
-        openKeys={(() => {
-          console.log(settings.openMenu ? [settings.openMenu] : []);
-          return settings.openMenu ? [settings.openMenu] : [];
-        })()}
+        // openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
           settings.collapsed && dispatch(setOpenMenu());

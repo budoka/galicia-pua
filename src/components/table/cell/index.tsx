@@ -1,10 +1,10 @@
-import { Checkbox, DatePicker, Input, Select } from 'antd';
+import { Checkbox, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
-import Text from 'antd/lib/typography/Text';
 import classNames from 'classnames';
+import dayjs, { Dayjs } from 'dayjs';
 import React, { ReactElement, useEffect, useRef } from 'react';
-import { ELLIPSIS } from 'src/constants/constants';
+import DatePicker from 'src/components/date-picker';
 import { BasicComponenetProps } from 'src/interfaces';
 import { InputType } from '..';
 import styles from './style.module.less';
@@ -13,7 +13,7 @@ const { Option } = Select;
 
 export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElement> {
   dataIndex: string;
-  value: string | number | boolean;
+  value: string | number | boolean | Dayjs;
   editing: boolean;
   inputType?: InputType;
   options?: LabeledValue[];
@@ -96,9 +96,11 @@ export const Cell = (props: ICellProps) => {
   };
 
   const renderDatePicker = () => {
+    console.log(children);
+    console.log((props.value as Dayjs).format('DD/MM/YYYY'));
     if (editing) return <DatePicker className={styles.input} format={'DD/MM/YYYY'} placeholder={''} allowClear />;
-
-    return <>{children}</>;
+    return <>{(props.value as Dayjs).format('DD/MM/YYYY')}</>;
+    //return <>{children}</>;
   };
 
   const renderText = () => {
