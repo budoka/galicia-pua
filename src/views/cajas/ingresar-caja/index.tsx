@@ -42,9 +42,9 @@ const _columns = [
     title: 'a',
     width: 200,
     editable: true,
-    dataType: 'texto',
-    inputType: 'text',
-    rules: [{ max: 5 }],
+    dataType: 'fecha',
+    inputType: 'date',
+    // rules: [{ max: 5 }],
   },
   {
     key: 'b',
@@ -118,7 +118,7 @@ const _columns = [
 ] as IColumn<ContenidoCaja>[];
 
 const _data = new Array(100).fill('').map((e, i) => {
-  return { key: `${i + 1}`, a: 'a', b: 1, c: true, d: false, e: 'e', f: 'f', g: 'g', h: 'h' };
+  return { key: `${i + 1}`, a: '', b: '', c: true, d: false, e: 'e', f: 'f', g: 'g', h: 'h' };
 }) as any[];
 
 export const IngresarCaja: React.FC = (props) => {
@@ -127,9 +127,9 @@ export const IngresarCaja: React.FC = (props) => {
 
   const history = useHistory();
 
-  const tipoCajaRef = useRef<Select<LabeledValue>>(null);
-  const tipoContenidoCajaRef = useRef<Select<LabeledValue>>(null);
-  const tipoPlantillaRef = useRef<Select<LabeledValue>>(null);
+  const tipoCajaRef = useRef(null);
+  const tipoContenidoCajaRef = useRef(null);
+  const tipoPlantillaRef = useRef(null);
 
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<number>(-1); // Es el filtro con focus
   const [columns, setColumns] = useState(_columns);
@@ -162,7 +162,7 @@ export const IngresarCaja: React.FC = (props) => {
   // Recuperar lista de tipos de contenido de caja.
   useEffect(() => {
     cajas.filtros.seleccionado.tipoCaja && dispatch(getTiposContenidoCaja(cajas.filtros.seleccionado.tipoCaja));
-    tipoContenidoCajaRef.current && tipoContenidoCajaRef.current.focus();
+    tipoContenidoCajaRef.current && (tipoContenidoCajaRef.current as any).focus();
   }, [cajas.filtros.seleccionado.tipoCaja]);
 
   // Recuperar lista de plantillas de detalle.
@@ -170,7 +170,7 @@ export const IngresarCaja: React.FC = (props) => {
     cajas.filtros.seleccionado.tipoContenidoCaja &&
       cajas.filtros.seleccionado.tipoContenidoCaja.descripcion === CAJA_DETALLE &&
       dispatch(getTiposPlantilla(cajas.filtros.seleccionado.tipoContenidoCaja));
-    tipoPlantillaRef.current && tipoPlantillaRef.current.focus();
+    tipoPlantillaRef.current && (tipoPlantillaRef.current as any).focus();
   }, [cajas.filtros.seleccionado.tipoContenidoCaja]);
 
   // Actualizar plantillas
@@ -440,27 +440,29 @@ export const IngresarCaja: React.FC = (props) => {
         columns={columns as ColumnsType<ContenidoCaja>}
         dataSource={dataSource}
         loading={cajas.preview.isRunning}
-        extraColumns={{ key: true, actions: true }}
-        extraNodes={[
+        extraColumns={{ showKeyColumn: true, showActionsColumn: true }}
+        extraComponents={[
           {
-            node: 'add button',
-            position: 'footer',
-          },
-          {
-            node: (records) => (
-              <Tag key="1" color="red">
-                Registros: {records.length}
-              </Tag>
-            ),
+            key: 1,
+            node: 'add-button',
             position: 'both',
           },
           {
-            node: (records) => (
-              <Tag key="2" color="blue">
-                TEST
-              </Tag>
-            ),
-            position: 'header',
+            key: 2,
+            node: 'delete-button',
+            position: 'both',
+          },
+          {
+            key: 3,
+            node: 'refresh-button',
+            position: 'top',
+          },
+          {
+            key: 4,
+            node: (records) => <Tag color="red">Registros: {records.length}</Tag>,
+            position: 'both',
+            order: [9, 9],
+            style: { marginLeft: 'auto' },
           },
         ]}
         sortable

@@ -10,8 +10,6 @@ import { Link } from 'react-router-dom';
 import bwipjs from 'bwip-js';
 import { SelectProps as SelectPropsAnt, SelectValue } from 'antd/lib/select';
 
-const { Option } = SelectAnt;
-
 interface SelectProps<SelectValue> extends SelectPropsAnt<SelectValue> {
   wrapperClassName?: string;
 }

@@ -22,22 +22,23 @@ interface WrapperProps extends Omit<BasicComponenetProps<HTMLDivElement>, 'unsel
 }
 
 export const Wrapper: React.FC<WrapperProps> = (props) => {
-  const className = classNames(
-    props.contentWrapper && styles.wrapper,
-    props.className,
-    props.unselectable && 'unselectable',
-    props.direction ? styles[props.direction] : styles.column,
-    props.horizontal ? styles[props.horizontal] : styles.center,
-    props.vertical ? styles[props.vertical] : styles.top,
-    props.scroll?.x && styles[`scroll-x-${props.scroll.x}`],
-    props.scroll?.y && styles[`scroll-y-${props.scroll.y}`],
-    props.shadow && 'shadow',
-    props.fixed && 'fixed',
-    props.sticky && 'sticky',
+  const { contentWrapper, className, unselectable, direction, horizontal, vertical, scroll, shadow, fixed, sticky, ...restProps } = props;
+  const wrapperClassName = classNames(
+    contentWrapper && styles.wrapper,
+    className,
+    unselectable && 'unselectable',
+    direction ? styles[direction] : styles.column,
+    horizontal ? styles[horizontal] : styles.center,
+    vertical ? styles[vertical] : styles.top,
+    scroll?.x && styles[`scroll-x-${scroll.x}`],
+    scroll?.y && styles[`scroll-y-${scroll.y}`],
+    shadow && 'shadow',
+    fixed && 'fixed',
+    sticky && 'sticky',
   );
 
   return (
-    <div className={className} style={props.style}>
+    <div {...restProps} className={wrapperClassName} style={props.style}>
       {props.children}
     </div>
   );

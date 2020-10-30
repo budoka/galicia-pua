@@ -1,9 +1,10 @@
-import { Checkbox, Input, Select } from 'antd';
+import { Checkbox, DatePicker, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import Text from 'antd/lib/typography/Text';
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useRef } from 'react';
+import { ELLIPSIS } from 'src/constants/constants';
 import { BasicComponenetProps } from 'src/interfaces';
 import { InputType } from '..';
 import styles from './style.module.less';
@@ -26,7 +27,7 @@ export const Cell = (props: ICellProps) => {
 
   const cellRef = useRef<HTMLTableDataCellElement>(null);
 
-  const className = classNames(props.className, styles.cell);
+  const className = classNames(styles.cell, props.className);
 
   /* useEffect(() => {
     console.log('rendering cell');
@@ -94,6 +95,12 @@ export const Cell = (props: ICellProps) => {
     return <Checkbox className={styles.input} disabled={!editing} />;
   };
 
+  const renderDatePicker = () => {
+    if (editing) return <DatePicker className={styles.input} format={'DD/MM/YYYY'} placeholder={''} allowClear />;
+
+    return <>{children}</>;
+  };
+
   const renderText = () => {
     if (editing) return <Input className={styles.input} />;
     return <>{children}</>;
@@ -105,6 +112,8 @@ export const Cell = (props: ICellProps) => {
         return renderSelect();
       case 'checkbox':
         return renderCheckbox();
+      case 'date':
+        return renderDatePicker();
       case 'text':
       default:
         return renderText();

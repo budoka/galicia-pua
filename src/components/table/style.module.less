@@ -4,9 +4,15 @@
 
 .tableWrapper {
   width: 100%;
+  background-color: @table-bg;
+
+  /* Fix sort enabled */
+  th {
+    padding: 0 !important;
+  }
 
   :global .ant-table-container::before {
-    width: 0px !important;
+    width: 0 !important;
     // transition: width 0.3s ease, box-shadow 0.3s ease !important;
   }
 
@@ -16,30 +22,16 @@
     }
   }
 
-  .tableStyle {
+  .extraComponent {
     display: flex;
-    padding: 4px 8px;
-  }
+    padding: 2px 4px;
 
-  .tableHeaderLeft {
-    .tableStyle();
-    justify-content: flex-start;
-    > * {
-      margin: 0 4px;
-    }
-
-    > button {
-      width: 85px;
-      padding: 0;
+    * {
+      margin: 0 !important; // En prueba
     }
   }
 
-  /* .tableHeaderRight {
-    .tableStyle();
-    justify-content: flex-start;
-  }*/
-
-  .tableExtraNode {
+  .tableExtraComponents {
     display: flex;
     width: 100%;
     justify-content: flex-start;
@@ -55,24 +47,27 @@
     height: 40px !important;
   }
 
-  :global .ant-table-title {
+  :global .ant-table-title,
+  :global .ant-table-footer {
     display: flex;
     width: 100%;
-  }
-}
+    background-color: @table-bg;
 
-.cellActions {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: -8px 0;
+    button:not(:global .ant-btn-icon-only) {
+      width: 90px;
+    }
+  }
 }
 
 .buttonWrapper {
   display: flex;
   width: 50%;
   justify-content: center;
-  justify-items: center;
+  align-items: flex-start;
+
+  /* button {
+    height: auto !important;
+  }*/
 }
 
 #line {

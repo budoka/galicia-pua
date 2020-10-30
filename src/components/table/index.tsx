@@ -3,7 +3,7 @@ import { Button, Form, Popconfirm, Tooltip } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { CompareFn, SorterResult, SortOrder } from 'antd/lib/table/interface';
+import { CompareFn, SorterResult, SortOrder, TableRowSelection } from 'antd/lib/table/interface';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
@@ -17,10 +17,10 @@ import { Column } from './column';
 import styles from './style.module.less';
 
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
-export type InputType = 'text' | 'select' | 'checkbox';
+export type InputType = 'text' | 'date' | 'select' | 'checkbox';
 export type State = 'idle' | 'adding' | 'editing' | 'deleting';
-export type ActionNode = 'add button' | 'delete button' | 'update button';
-export type Position = 'header' | 'footer' | 'both';
+export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button';
+export type Position = 'top' | 'bottom' | 'both';
 
 // Column properties
 export interface IColumn<RecordType> extends ColumnType<RecordType> {
@@ -40,8 +40,14 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
   sortable?: boolean;
   hideRowSelection?: boolean;
   hidePagination?: boolean;
-  extraColumns?: { key?: boolean; actions?: boolean };
-  extraNodes?: { node: ActionNode | ((records: RecordType[]) => ReactNode); position: Position; order?: number[] }[];
+  extraColumns?: { showKeyColumn?: boolean; showActionsColumn?: boolean };
+  extraComponents?: {
+    key?: React.Key;
+    node: ActionNode | ((records: RecordType[]) => ReactNode);
+    position: Position;
+    order?: (number | null)[];
+    style?: CSSProperties;
+  }[];
   setData?: React.Dispatch<React.SetStateAction<RecordType[]>>;
 }
 
@@ -62,7 +68,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     title: '#',
     minWidth: 60,
     width: 60,
-    sorter: props.sortable && { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
+    sorter: props.sortable && state.current === 'idle' && { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
   } as IColumn<RecordType>;
 
   const actionColumn = {
@@ -73,7 +79,17 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     width: 210,
   } as IColumn<RecordType>;
 
-  const { dataSource: _dataSource, columns: _columns, setData, extraColumns, extraNodes, sortable, ...restProps } = props;
+  const {
+    dataSource: _dataSource,
+    columns: _columns,
+    setData,
+    extraColumns,
+    extraComponents,
+    sortable,
+    hideRowSelection,
+    hidePagination,
+    ...restProps
+  } = props;
 
   const className = classNames(styles.tableWrapper, UNSELECTABLE, SHADOW, props.className);
 
@@ -86,10 +102,10 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     if (!columns || columns.length === 0) return;
 
     // Create a dictionary to check if key and actions columns already exist.
-    const columnsDict = _.keyBy(columns, 'key');
+    const columnsDict = _.keyBy(columns, 'keyColumn');
 
-    if (props.extraColumns?.key && columns && !columnsDict['key']) columns = [keyColumn, ...columns];
-    if (props.extraColumns?.actions && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
+    if (props.extraColumns?.showKeyColumn && columns && !columnsDict['keyColumn']) columns = [keyColumn, ...columns];
+    if (props.extraColumns?.showActionsColumn && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
 
     let isInputFocused = false;
 
@@ -97,6 +113,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       return {
         ...col,
         align: 'center',
+        ellipsis: true,
         shouldCellUpdate: (record, prevRecord) => {
           // Update cell when a record was deleted.
           if (state.previous === 'deleting') return true;
@@ -163,25 +180,33 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     if (state.current === 'idle') form.resetFields();
   }, [state]);
 
-  const renderExtraNodes = (position: RegExp) => {
-    return extraNodes
-      ?.filter((action) => position.test(action.position))
-      .map((action) => {
-        switch (action.node) {
-          case 'add button':
-            return renderAddButton();
+  const renderComponents = (position: RegExp) => {
+    const index = +(String(position) === String(/bottom|both/)); // header/both = 0, footer/both = 1
 
-          case 'delete button':
-            return renderDeleteButton();
+    return extraComponents
+      ?.filter((component) => position.test(component.position))
+      .sort((a, b) => compare(_.isEmpty(a.order) ? null : a.order![index], _.isEmpty(b.order) ? null : b.order![index]))
+      .map((component) => {
+        const { key, style } = component;
+        switch (component.node) {
+          case 'add-button':
+            return { key, component: renderAddButton(), style };
 
-          case 'update button':
-            return renderUpdateButton();
+          case 'delete-button':
+            return { key, component: renderDeleteButton(), style };
+
+          case 'refresh-button':
+            return { key, component: renderRefreshButton(), style };
 
           default:
-            return action.node(dataSource);
+            return { key, component: component.node(dataSource), style };
         }
-        //   action.node === 'add button' ? renderAddButton() : action.node(dataSource))
-      });
+      })
+      .map(({ key, component, style }) => (
+        <Wrapper key={key} className={styles.extraComponent} style={style} horizontal="center" vertical="middle">
+          {component}
+        </Wrapper>
+      ));
   };
 
   const renderAddButton = () => {
@@ -216,7 +241,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     );
   };
 
-  const renderUpdateButton = () => {
+  const renderRefreshButton = () => {
     return (
       <Tooltip title="Actualizar">
         <Button
@@ -248,6 +273,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         setSort([sort]);
 
         form.resetFields();
+
         setCurrentPage(Math.ceil((dataSource.length + 1) / pageSize!));
 
         const key = dataSource.length;
@@ -255,7 +281,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
         setData([...dataSource, record]);
         setSelectedRows([key]);
-        // setEditingRow(key);
+        setEditingRow({ previous: editingRow?.current, current: key });
         setState({ previous: state.current, current: 'adding' });
       })
       .catch((error) => {
@@ -312,19 +338,35 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     setSelectedRows([]);
   };
 
+  const rowSelection: TableRowSelection<RecordType> = {
+    selectedRowKeys: selectedRows,
+    onChange: (selectedRowKeys, selectedRows) => {
+      //console.log(selectedRowKeys);
+      if (state.current !== 'idle') return;
+      const keys: React.Key[] = selectedRows.map((r) => r.key);
+      //console.log(keys);
+      setSelectedRows(keys);
+    },
+    getCheckboxProps: (record: RecordType) => ({
+      //* name: record.name,
+      //name: record.id + '',
+      disabled: state.current !== 'idle' && !isEditing(record),
+    }),
+  };
+
   const preventFocus = (e: React.FocusEvent<any>) => {
     e.stopPropagation();
   };
 
   const renderActionsColumn = (record: RecordType) => {
     return isEditing(record) ? (
-      <div className={styles.cellActions}>
+      <>
         {renderButtonSave()} {renderDivider()} {renderButtonCancel()}
-      </div>
+      </>
     ) : (
-      <div className={styles.cellActions}>
+      <>
         {renderButtonEdit()} {renderDivider()} {renderButtonDelete()}
-      </div>
+      </>
     );
 
     function renderButtonEdit() {
@@ -413,8 +455,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     }
   };
 
-  const renderHeader = () => {};
-
   return (
     //  <Wrapper className={styles.tableWrapper} unselectable direction="column" horizontal="center">
     <Form form={form} component={false}>
@@ -431,8 +471,26 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         }}
         columns={columns}
         dataSource={dataSource}
-        title={(records) => renderExtraNodes(/header|both/)}
-        footer={(records) => renderExtraNodes(/footer|both/)}
+        title={(records) => renderComponents(/top|both/)}
+        footer={(records) => renderComponents(/botoom|both/)}
+        rowSelection={props.hideRowSelection ? undefined : rowSelection}
+        pagination={
+          hidePagination
+            ? false
+            : {
+                disabled: state.current !== 'idle',
+                position: ['bottomRight'],
+                current: currentPage,
+                pageSize,
+                pageSizeOptions: ['10', '20', '30', '50'],
+                showSizeChanger: true,
+                onChange: (page, pageSize) => {
+                  setCurrentPage(page);
+                  setPageSize(pageSize);
+                  setEditingRow({ previous: editingRow?.current, current: undefined });
+                },
+              }
+        }
       />
     </Form>
     //  </Wrapper>

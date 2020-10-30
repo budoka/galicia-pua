@@ -8,7 +8,7 @@
     "@types/react-custom-scrollbars": "^4.0.7",
     "@types/react-resizable": "^1.7.2",
     "@welldone-software/why-did-you-render": "^5.0.0",
-    "antd": "^4.6.5",
+    "antd": "^4.7.3",
     "axios": "^0.20.0",
     "bwip-js": "^2.0.10",
     "camelcase": "^5.3.1",
