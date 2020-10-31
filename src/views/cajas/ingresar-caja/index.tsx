@@ -1,7 +1,7 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { Breadcrumb, Button, Select, Tag } from 'antd';
 import { LabeledValue } from 'antd/lib/select';
-import dayjs, { Dayjs } from 'dayjs';
+import { Moment } from 'moment';
 import _ from 'lodash';
 import { parse } from 'query-string';
 import { ColumnsType } from 'rc-table/lib/interface';
@@ -33,6 +33,7 @@ import { RootState } from 'src/reducers';
 import { deleteProps } from 'src/utils/object';
 import { compare } from 'src/utils/string';
 import styles from './style.module.less';
+import moment from 'moment';
 
 const { Option } = Select;
 
@@ -58,7 +59,7 @@ const _columns = [
       {
         value: 1,
         label: (
-          <Tag className="ellipsis" style={{ width: 100, marginRight: 0 }}>
+          <Tag className="ellipsis" style={{ width: '100%', marginRight: 0 }}>
             ASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDAASDASDASDA
           </Tag>
         ),
@@ -72,7 +73,7 @@ const _columns = [
     key: 'c',
     dataIndex: 'c',
     title: 'c',
-    width: 200,
+    width: 40,
     inputType: 'checkbox',
     dataType: 'boolean',
     editable: true,
@@ -82,8 +83,6 @@ const _columns = [
     dataIndex: 'd',
     title: 'd',
     width: 200,
-    inputType: 'checkbox',
-    dataType: 'boolean',
     editable: true,
   },
   {
@@ -119,7 +118,7 @@ const _columns = [
 ] as IColumn<ContenidoCaja>[];
 
 const _data = new Array(100).fill('').map((e, i) => {
-  return { key: `${i + 1}`, a: dayjs(), b: '', c: true, d: false, e: 'e', f: 'f', g: 'g', h: 'h' };
+  return { key: `${i + 1}`, a: moment(), b: '', c: i % 2 === 0 ? true : false, d: 'asdasdasda', e: 'e', f: 'f', g: 'g', h: 'h' };
 }) as any[];
 
 export const IngresarCaja: React.FC = (props) => {
@@ -435,45 +434,48 @@ export const IngresarCaja: React.FC = (props) => {
 
   const Tabla = React.useMemo(() => {
     return (
-      /*_.isEmpty(cajas.preview.preview) ? null :*/ <Table<ContenidoCaja>
-        bordered
-        size={'small'}
-        columns={columns as ColumnsType<ContenidoCaja>}
-        dataSource={dataSource}
-        loading={cajas.preview.isRunning}
-        extraColumns={{ showKeyColumn: true, showActionsColumn: true }}
-        extraComponents={[
-          {
-            key: 1,
-            node: 'add-button',
-            position: 'both',
-          },
-          {
-            key: 2,
-            node: 'delete-button',
-            position: 'both',
-          },
-          {
-            key: 3,
-            node: 'refresh-button',
-            position: 'top',
-          },
-          {
-            key: 4,
-            node: (records) => <Tag color="red">Registros: {records.length}</Tag>,
-            position: 'both',
-            order: [9, 9],
-            style: { marginLeft: 'auto' },
-          },
-        ]}
-        sortable
-        pagination={{ pageSize: 20 }}
-        // style={{ width: '100%' }}
-        setData={setDataSource}
-        //hasKeyColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-        //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-        scroll={{ y: 300 }}
-      />
+      <Wrapper direction="row" horizontal="right" style={{ width: '50%' }}>
+        {/* _.isEmpty(cajas.preview.preview) ? null :*/}
+        <Table<ContenidoCaja>
+          bordered
+          size={'small'}
+          columns={columns as ColumnsType<ContenidoCaja>}
+          dataSource={dataSource}
+          loading={cajas.preview.isRunning}
+          extraColumns={{ showKeyColumn: true, showActionsColumn: true }}
+          extraComponents={[
+            {
+              key: 1,
+              node: 'add-button',
+              position: 'both',
+            },
+            {
+              key: 2,
+              node: 'delete-button',
+              position: 'both',
+            },
+            {
+              key: 3,
+              node: 'refresh-button',
+              position: 'top',
+            },
+            {
+              key: 4,
+              node: (records) => <Tag color="red">Registros: {records.length}</Tag>,
+              position: 'both',
+              order: [9, 9],
+              style: { marginLeft: 'auto' },
+            },
+          ]}
+          sortable
+          pagination={{ pageSize: 20 }}
+          // style={{ width: '100%' }}
+          setData={setDataSource}
+          //hasKeyColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
+          //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
+          scroll={{ y: 300 }}
+        />
+      </Wrapper>
     );
   }, [cajas.preview.isRunning, columns, dataSource]);
 

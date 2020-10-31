@@ -1,6 +1,3 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { ObjectLiteral } from 'src/interfaces';
-
 ///////////////////// Interfaces Back /////////////////////
 
 // REQUEST - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview

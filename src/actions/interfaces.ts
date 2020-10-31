@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs';
+import { Moment } from 'moment';
 import { Dictionary } from 'src/interfaces';
 
 export interface RunnableState {
@@ -12,5 +12,5 @@ export interface IRequestCache<Data> {
 
 export interface IRequestDataCache<Data> {
   data: Data;
-  expiration?: Dayjs;
+  expiration?: Moment;
 }

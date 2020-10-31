@@ -1,14 +1,12 @@
-import { ReloadOutlined } from '@ant-design/icons';
+import { MinusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Button, Form, Popconfirm, Tooltip } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
-import { CompareFn, SorterResult, SortOrder, TableRowSelection } from 'antd/lib/table/interface';
+import { SorterResult, TableCurrentDataSource, TablePaginationConfig, TableRowSelection } from 'antd/lib/table/interface';
 import classNames from 'classnames';
-import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
-import { act } from 'react-dom/test-utils';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { IElement } from 'src/interfaces';
 import { compare } from 'src/utils/string';
@@ -163,6 +161,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             hasFocus: shouldFocusInput,
             rules,
             hasFeedback: true,
+            form,
           } as ICellProps;
         },
         render: col.render
@@ -170,7 +169,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           : (value, record, index) => {
               if (col.key === 'key') return dataSource.indexOf(record) + 1;
               else if (col.key === 'actions') return renderActionsColumn(record);
-              else if (!value) return '-';
+              else if (!value && value === false) return <MinusOutlined />;
               else return value;
             },
       } as IColumn<RecordType>;
@@ -182,6 +181,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   useEffect(() => {
     if (state.current === 'idle') form.resetFields();
   }, [state]);
+
+  useEffect(() => {
+    console.log('reseting selected rows');
+    setSelectedRows([]);
+  }, [currentPage, sort]);
 
   const renderComponents = (position: RegExp) => {
     const index = +(String(position) === String(/bottom|both/)); // header/both = 0, footer/both = 1
@@ -341,6 +345,15 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     setSelectedRows([]);
   };
 
+  const handleChangeTable = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, React.ReactText[] | null>,
+    sorter: SorterResult<RecordType> | SorterResult<RecordType>[],
+    extra: TableCurrentDataSource<RecordType>,
+  ) => {
+    setSort(Array.isArray(sorter) ? sorter : [sorter]);
+  };
+
   const rowSelection: TableRowSelection<RecordType> = {
     selectedRowKeys: selectedRows,
     onChange: (selectedRowKeys, selectedRows) => {
@@ -459,7 +472,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   };
 
   return (
-    //  <Wrapper className={styles.tableWrapper} unselectable direction="column" horizontal="center">
     <Form form={form} component={false}>
       <TableAnt
         {...restProps}
@@ -494,8 +506,10 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
                 },
               }
         }
+        onChange={(pagination, filters, sorter, extra) => {
+          handleChangeTable(pagination, filters, sorter, extra);
+        }}
       />
     </Form>
-    //  </Wrapper>
   );
 };

@@ -23,6 +23,9 @@ interface WrapperProps extends Omit<BasicComponenetProps<HTMLDivElement>, 'unsel
 
 export const Wrapper: React.FC<WrapperProps> = (props) => {
   const { contentWrapper, className, unselectable, direction, horizontal, vertical, scroll, shadow, fixed, sticky, ...restProps } = props;
+
+  console.log(styles[horizontal as string]);
+
   const wrapperClassName = classNames(
     contentWrapper && styles.wrapper,
     className,

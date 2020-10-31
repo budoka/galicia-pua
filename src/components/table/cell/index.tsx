@@ -1,10 +1,12 @@
-import { Checkbox, Input, Select } from 'antd';
+import { CheckOutlined } from '@ant-design/icons';
+import { Checkbox, DatePicker, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import classNames from 'classnames';
-import dayjs, { Dayjs } from 'dayjs';
+import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
-import DatePicker from 'src/components/date-picker';
+
+import { ELLIPSIS } from 'src/constants/constants';
 import { BasicComponenetProps } from 'src/interfaces';
 import { InputType } from '..';
 import styles from './style.module.less';
@@ -13,7 +15,7 @@ const { Option } = Select;
 
 export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElement> {
   dataIndex: string;
-  value: string | number | boolean | Dayjs;
+  value: string | number | boolean | Moment;
   editing: boolean;
   inputType?: InputType;
   options?: LabeledValue[];
@@ -23,7 +25,7 @@ export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElemen
 }
 
 export const Cell = (props: ICellProps) => {
-  const { style, dataIndex, editing, inputType, options, hasFocus, hasFeedback, rules, children } = props;
+  const { style, dataIndex, value, title, editing, inputType, options, hasFocus, hasFeedback, rules, children, ...restProps } = props;
 
   const cellRef = useRef<HTMLTableDataCellElement>(null);
 
@@ -83,39 +85,55 @@ export const Cell = (props: ICellProps) => {
   const renderSelect = () => {
     if (editing)
       return (
-        <Select className={styles.input} showSearch showAction={['focus', 'click']} optionFilterProp="title">
+        <Select showSearch showAction={['focus', 'click']} optionFilterProp="title">
           {renderOptions()}
         </Select>
       );
 
-    return <>{options?.find((option) => option.value === React.Children.toArray(children)[0])?.label ?? children}</>;
+    const label =
+      options?.find((option) => {
+        //  console.log(option);
+        return option.value === value;
+      })?.label ?? React.Children.toArray(children)[0];
+
+    const title = typeof label === 'object' ? (label as ReactElement).props.children : label;
+
+    return (
+      <span className={ELLIPSIS} title={title}>
+        {label}
+      </span>
+    );
+
+    // return <>{options?.find((option) => option.value === React.Children.toArray(children)[0])?.label ?? 'children'}</>;
   };
 
   const renderCheckbox = () => {
-    return <Checkbox className={styles.input} disabled={!editing} />;
+    if (editing) return <Checkbox />;
+    return value ? <CheckOutlined /> : children;
   };
 
   const renderDatePicker = () => {
-    console.log(children);
-    console.log((props.value as Dayjs).format('DD/MM/YYYY'));
-    if (editing) return <DatePicker className={styles.input} format={'DD/MM/YYYY'} placeholder={''} allowClear />;
-    return <>{(props.value as Dayjs).format('DD/MM/YYYY')}</>;
+    if (editing) return <DatePicker format={'DD/MM/YYYY'} placeholder={''} allowClear />;
+    const date = isMoment(value) ? (value as Moment).format('DD/MM/YYYY') : value;
+    return <span title={date as string}>{date}</span>;
     //return <>{children}</>;
   };
 
   const renderText = () => {
-    if (editing) return <Input className={styles.input} />;
-    return <>{children}</>;
+    if (editing) return <Input />;
+    //  return <span title={value as string}>{value}</span>;
+    return children;
   };
 
   const renderField = (inputType?: InputType) => {
+    // if (!dataIndex || dataIndex === 'key' || dataIndex === 'actions') return children;
     switch (inputType) {
       case 'select':
         return renderSelect();
-      case 'checkbox':
-        return renderCheckbox();
       case 'date':
         return renderDatePicker();
+      case 'checkbox':
+        return renderCheckbox();
       case 'text':
       default:
         return renderText();
@@ -123,14 +141,13 @@ export const Cell = (props: ICellProps) => {
   };
 
   return (
-    <td className={className} style={style} /*{...restProps}*/ ref={cellRef} onFocus={scrollOnFocus}>
+    <td className={className} title={title} style={style} ref={cellRef} onFocus={scrollOnFocus}>
       {editing ? (
         <Form.Item
-          className={styles.formItem}
           name={dataIndex}
           style={{ margin: 0, padding: 0 }}
           rules={rules}
-          hasFeedback={hasFeedback}
+          hasFeedback={inputType === 'checkbox' ? false : hasFeedback}
           valuePropName={inputType === 'checkbox' ? 'checked' : 'value'}>
           {renderField(inputType)}
         </Form.Item>
