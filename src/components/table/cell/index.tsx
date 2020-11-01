@@ -1,4 +1,4 @@
-import { CheckOutlined } from '@ant-design/icons';
+import { CheckOutlined, MinusOutlined } from '@ant-design/icons';
 import { Checkbox, DatePicker, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
@@ -126,7 +126,8 @@ export const Cell = (props: ICellProps) => {
   };
 
   const renderField = (inputType?: InputType) => {
-    // if (!dataIndex || dataIndex === 'key' || dataIndex === 'actions') return children;
+    if (dataIndex && dataIndex !== 'key' && dataIndex !== 'actions' && !value && value !== 0) return <MinusOutlined />;
+
     switch (inputType) {
       case 'select':
         return renderSelect();

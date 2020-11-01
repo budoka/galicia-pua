@@ -1,4 +1,4 @@
-import { MinusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { ReloadOutlined } from '@ant-design/icons';
 import { Button, Form, Popconfirm, Tooltip } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
@@ -169,7 +169,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           : (value, record, index) => {
               if (col.key === 'key') return dataSource.indexOf(record) + 1;
               else if (col.key === 'actions') return renderActionsColumn(record);
-              else if (!value && value === false) return <MinusOutlined />;
               else return value;
             },
       } as IColumn<RecordType>;
@@ -252,7 +251,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     return (
       <Tooltip title="Actualizar">
         <Button
-          disabled={refresh}
+          disabled={refresh || state.current !== 'idle'}
           type="link"
           icon={<ReloadOutlined spin={refresh} />}
           onClick={() => {

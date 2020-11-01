@@ -52,7 +52,7 @@ const _columns = [
     key: 'b',
     dataIndex: 'b',
     title: 'b',
-    width: 200,
+    width: 150,
     style: {},
     inputType: 'select',
     options: [
@@ -118,7 +118,17 @@ const _columns = [
 ] as IColumn<ContenidoCaja>[];
 
 const _data = new Array(100).fill('').map((e, i) => {
-  return { key: `${i + 1}`, a: moment(), b: '', c: i % 2 === 0 ? true : false, d: 'asdasdasda', e: 'e', f: 'f', g: 'g', h: 'h' };
+  return {
+    key: `${i + 1}`,
+    a: moment(),
+    b: '',
+    c: i % 2 === 0 ? true : false,
+    d: i % 2 === 0 ? '' : 0,
+    e: 'e',
+    f: 'f',
+    g: 'g',
+    h: 'h',
+  };
 }) as any[];
 
 export const IngresarCaja: React.FC = (props) => {
@@ -434,7 +444,7 @@ export const IngresarCaja: React.FC = (props) => {
 
   const Tabla = React.useMemo(() => {
     return (
-      <Wrapper direction="row" horizontal="right" style={{ width: '50%' }}>
+      <Wrapper direction="row" horizontal="right" style={{ width: '50%', minWidth: 400 }}>
         {/* _.isEmpty(cajas.preview.preview) ? null :*/}
         <Table<ContenidoCaja>
           bordered

@@ -93,7 +93,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
     <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
       <Menu
         selectedKeys={[history.location.pathname]}
-        // openKeys={settings.openMenu ? [settings.openMenu] : []}
+        openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
           settings.collapsed && dispatch(setOpenMenu());

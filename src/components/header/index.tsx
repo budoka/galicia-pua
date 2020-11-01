@@ -56,6 +56,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   const handleCollapsed = (collapsed: boolean) => {
     collapsed ? dispatch(setOpenMenu()) : dispatch(setButtonVisible(true));
+    // collapsed && dispatch(setButtonVisible(true));
     dispatch(setCollapsed(collapsed));
   };
 
