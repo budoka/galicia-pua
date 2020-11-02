@@ -8,6 +8,7 @@ const initialState: SettingsState = {
   collapsed: false,
   forcedCollapsed: false,
   buttonVisible: true,
+  openMenu: undefined,
 };
 
 export default function reducer(state = initialState, action: SettingsActionTypes): SettingsState {
@@ -25,13 +26,13 @@ export default function reducer(state = initialState, action: SettingsActionType
     case Settings.SIDER_COLLAPSED:
       return {
         ...state,
-        collapsed: action.collapsed || !state.collapsed,
+        collapsed: action.collapsed,
       };
     case Settings.SIDER_FORCED_COLLAPSED:
       return {
         ...state,
-        collapsed: action.payload.collapsed ?? true,
-        forcedCollapsed: action.payload.forcedCollapsed,
+        // collapsed: action.forcedCollapsed,
+        forcedCollapsed: action.forcedCollapsed,
       };
     case Settings.SIDER_BUTTON_VISIBILITY:
       return {

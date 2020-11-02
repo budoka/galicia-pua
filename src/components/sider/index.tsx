@@ -4,13 +4,16 @@ import { MenuMode } from 'antd/lib/menu';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import SubMenu from 'antd/lib/menu/SubMenu';
 import classNames from 'classnames';
+import _, { partial } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { setOpenMenu } from 'src/actions';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
+import { Dictionary, ObjectLiteral } from 'src/interfaces';
 import { RootState } from 'src/reducers';
-import { history } from 'src/store';
+import { View } from 'src/views';
+//import { history } from 'src/store';
 import styles from './style.module.less';
 import { SiderChildItem, SiderItem, SiderParentItem } from './types';
 
@@ -31,18 +34,38 @@ export const Sider: React.FC<SiderProps> = (props) => {
   const router = useSelector((state: RootState) => state.router);
 
   useEffect(() => {
-    const menu = !settings.collapsed
-      ? (props.items as SiderParentItem[]).find((i) => i.children && i.children.some((c) => c.view.path! === history.location.pathname!))
-          ?.title!
-      : undefined;
+    const pathname = window.location.pathname;
 
-    !settings.collapsed && menu !== settings.openMenu && dispatch(setOpenMenu(menu));
+    let views: ObjectLiteral = {};
+
+    props.items.forEach((item) => {
+      const children = (item as SiderParentItem).children;
+      const child = item as SiderChildItem;
+      if (children) {
+        children.forEach((child) => {
+          const view = { ...child.view };
+          view['title'] = (item as SiderParentItem).title;
+          const pathname = view.path;
+          if (pathname) views[pathname] = view;
+        });
+      } else {
+        const pathname = child.view.path;
+        if (pathname) views[pathname] = child.view;
+      }
+    });
+
+    Object.entries(views).some(([key, view]) => {
+      if (key === pathname) {
+        !settings.collapsed && key !== settings.openMenu && dispatch(setOpenMenu((view as View).title));
+        return true;
+      }
+    });
   }, [router.location.pathname, settings.collapsed]);
 
   const onOpenChange = (currentMenu: React.Key[]) => {
     if (currentMenu.length > 0) {
       dispatch(setOpenMenu(currentMenu[currentMenu.length - 1].toString()));
-    } else dispatch(setOpenMenu());
+    } else if (settings.openMenu) dispatch(setOpenMenu());
   };
 
   const renderMenu = (items: SiderItem[]) => {
@@ -92,7 +115,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
   return (
     <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
       <Menu
-        selectedKeys={[history.location.pathname]}
+        selectedKeys={[window.location.pathname]}
         openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {

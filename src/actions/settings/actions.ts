@@ -10,7 +10,7 @@ export const setOrientation = (orientation: SettingsState['orientation']) => (
   dispatch({ type: Settings.ORIENTATION_CHANGE, orientation });
 };
 
-export const setCollapsed = (collapsed?: SettingsState['collapsed']) => (dispatch: (arg: SettingsActionTypes) => SettingsActionTypes) => {
+export const setCollapsed = (collapsed: SettingsState['collapsed']) => (dispatch: (arg: SettingsActionTypes) => SettingsActionTypes) => {
   dispatch(success());
 
   function success(): SettingsActionTypes {
@@ -18,13 +18,13 @@ export const setCollapsed = (collapsed?: SettingsState['collapsed']) => (dispatc
   }
 };
 
-export const setForcedCollapsed = (forcedCollapsed: SettingsState['forcedCollapsed'], collapsed?: SettingsState['collapsed']) => (
+export const setForcedCollapsed = (forcedCollapsed: SettingsState['forcedCollapsed']) => (
   dispatch: (arg: SettingsActionTypes) => SettingsActionTypes,
 ) => {
   dispatch(success());
 
   function success(): SettingsActionTypes {
-    return { type: Settings.SIDER_FORCED_COLLAPSED, payload: { forcedCollapsed, collapsed } };
+    return { type: Settings.SIDER_FORCED_COLLAPSED, forcedCollapsed };
   }
 };
 

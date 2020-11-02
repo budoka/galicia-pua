@@ -30,15 +30,12 @@ export interface ORIENTATION_CHANGE {
 
 export interface SIDER_COLLAPSED {
   type: typeof Settings.SIDER_COLLAPSED;
-  collapsed?: SettingsState['collapsed'];
+  collapsed: SettingsState['collapsed'];
 }
 
 export interface SIDER_FORCED_COLLAPSED {
   type: typeof Settings.SIDER_FORCED_COLLAPSED;
-  payload: {
-    forcedCollapsed: SettingsState['forcedCollapsed'];
-    collapsed?: SettingsState['collapsed'];
-  };
+  forcedCollapsed: SettingsState['forcedCollapsed'];
 }
 
 export interface SIDER_BUTTON_VISIBLED {

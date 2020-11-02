@@ -29,6 +29,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   const headerClassName = classNames(FIXED, UNSELECTABLE, SHADOW, props.className, styles.header);
 
+  /* Icon rotation effect */
   useEffect(() => {
     setTimeout(
       () => {
@@ -40,29 +41,40 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   useEffect(() => {
     const orientation = getScreenOrientation(size);
-
     if (orientation !== settings.orientation) dispatch(setOrientation(orientation));
 
-    if (size.width <= 600) {
-      if (settings.buttonVisible) dispatch(setButtonVisible(false));
-      if (!settings.collapsed) handleCollapsed(true);
+    const shouldCollapse = size.width <= 612;
+    if (shouldCollapse) {
+      if (shouldCollapse !== settings.collapsed || shouldCollapse === settings.forcedCollapsed) {
+        if (settings.buttonVisible) dispatch(setButtonVisible(false));
+        if (settings.openMenu) dispatch(setOpenMenu());
+        // handleCollapsed(true);
+      }
     } else {
-      if (!settings.buttonVisible) dispatch(setButtonVisible(true));
-
-      if (settings.forcedCollapsed) handleCollapsed(true);
-      else if (settings.collapsed && !settings.forcedCollapsed) handleCollapsed(false);
+      if (shouldCollapse !== settings.collapsed) {
+        if (!settings.buttonVisible) dispatch(setButtonVisible(true));
+        if (!settings.forcedCollapsed) handleCollapsed(false);
+      }
     }
-  }, [settings.collapsed, settings.forcedCollapsed, settings.orientation, size]);
+  }, [size]);
 
-  const handleCollapsed = (collapsed: boolean) => {
-    collapsed ? dispatch(setOpenMenu()) : dispatch(setButtonVisible(true));
-    // collapsed && dispatch(setButtonVisible(true));
-    dispatch(setCollapsed(collapsed));
+  useEffect(() => {
+    if (!settings.openMenu) handleCollapsed(true);
+  }, [settings.openMenu]);
+
+  useEffect(() => {
+    const shouldIgnore = size.width <= 612;
+    if (shouldIgnore) return;
+    else if (settings.forcedCollapsed) dispatch(setOpenMenu());
+    else handleCollapsed(false);
+  }, [settings.forcedCollapsed]);
+
+  const handleCollapsed = (shouldCollapse: boolean) => {
+    dispatch(setCollapsed(shouldCollapse));
   };
 
-  const handleForcedCollapsed = () => {
-    dispatch(setOpenMenu());
-    dispatch(setForcedCollapsed(!settings.forcedCollapsed));
+  const handleForcedCollapsed = (shouldForceCollapse: boolean) => {
+    dispatch(setForcedCollapsed(shouldForceCollapse));
   };
 
   const renderLogo = () => {
@@ -81,9 +93,9 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return !props.hideSiderButton && settings.buttonVisible /*!(settings.device === 'mobile' && settings.orientation === 'portrait')*/ ? (
       <div className={styles.siderButtonWrapper}>
         {settings.collapsed ? (
-          <MenuUnfoldOutlined className={styles.siderButton} onClick={handleForcedCollapsed} />
+          <MenuUnfoldOutlined className={styles.siderButton} onClick={() => handleForcedCollapsed(false)} />
         ) : (
-          <MenuFoldOutlined className={styles.siderButton} onClick={handleForcedCollapsed} />
+          <MenuFoldOutlined className={styles.siderButton} onClick={() => handleForcedCollapsed(true)} />
         )}
       </div>
     ) : null;
