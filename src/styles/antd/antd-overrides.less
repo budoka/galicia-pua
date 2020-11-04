@@ -27,3 +27,34 @@
 @gray-8: color(~`colorPalette('@{gray}', 8) `);
 @gray-9: color(~`colorPalette('@{gray}', 9) `);
 @gray-10: color(~`colorPalette('@{gray}', 10) `);
+
+@media (max-width: 575px) {
+  .ant-form .ant-form-item .ant-form-item-label,
+  .ant-form .ant-form-item .ant-form-item-control {
+    flex: none;
+    text-align: right;
+    padding: 0px;
+  }
+
+  .ant-form-item-control {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1 !important;
+  }
+
+  .ant-form-horizontal {
+    flex-grow: 0;
+  }
+
+  .ant-form-item-label {
+    flex-grow: 0 !important;
+
+    > label::after {
+      display: inline-block !important;
+      content: ':';
+      position: relative;
+      top: -0.5px;
+      margin: 0 8px 0 2px;
+    }
+  }
+}

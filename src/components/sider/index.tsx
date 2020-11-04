@@ -63,6 +63,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
   }, [router.location.pathname, settings.collapsed]);
 
   const onOpenChange = (currentMenu: React.Key[]) => {
+    //console.log(currentMenu);
     if (currentMenu.length > 0) {
       dispatch(setOpenMenu(currentMenu[currentMenu.length - 1].toString()));
     } else if (settings.openMenu) dispatch(setOpenMenu());
@@ -101,7 +102,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
         title = (item as SiderChildItem).view.title;
 
         return (
-          <Menu.Item key={key}>
+          <Menu.Item key={key} hidden={(item as SiderChildItem).hidden}>
             <Link to={path}>
               {item.icon}
               <span>{title}</span>
@@ -119,7 +120,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
         openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
-          settings.collapsed && dispatch(setOpenMenu());
+          if (settings.collapsed) dispatch(setOpenMenu());
         }}
         theme={props.theme ?? 'light'}
         mode={props.mode ?? 'inline'}>

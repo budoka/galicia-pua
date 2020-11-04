@@ -46,7 +46,8 @@ const _columns = [
     editable: true,
     dataType: 'fecha',
     inputType: 'date',
-    // rules: [{ max: 5 }],
+
+    sorter: { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
   },
   {
     key: 'b',
@@ -84,6 +85,7 @@ const _columns = [
     title: 'd',
     width: 200,
     editable: true,
+    rules: [{ max: 5 }],
   },
   {
     key: 'e',
@@ -121,10 +123,10 @@ const _data = new Array(100).fill('').map((e, i) => {
   return {
     key: `${i + 1}`,
     a: moment(),
-    b: '',
+    b: i % 2 === 0 ? '' : 'aaa',
     c: i % 2 === 0 ? true : false,
     d: i % 2 === 0 ? '' : 0,
-    e: 'e',
+    e: i % 2 === 0 ? 'e' : '',
     f: 'f',
     g: 'g',
     h: 'h',
@@ -424,27 +426,9 @@ export const IngresarCaja: React.FC = (props) => {
     );
   };
 
-  /*const renderTable = useCallback(() => {
-    console.log('renderTable ' + _.isEmpty(cajas.preview.preview));
-    return _.isEmpty(cajas.preview.preview) ? null : (
-      <>
-        <Divider />
-        <EditableTable<ContenidoCaja>
-          rowKey={'id'}
-          columns={columns}
-          dataSource={dataSource}
-          size={'small'}
-          loading={cajas.preview.isRunning}
-          //hasIdColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-          //hasActionColumn={cajas.filtros.seleccionado.tipoContenidoCaja?.descripcion !== CAJA_ETIQUETA}
-        />
-      </>
-    );
-  }, [cajas.filtros.seleccionado, cajas.preview.preview]);*/
-
   const Tabla = React.useMemo(() => {
     return (
-      <Wrapper direction="row" horizontal="right" style={{ width: '50%', minWidth: 400 }}>
+      <Wrapper direction="row" horizontal="right" style={{ width: '90%', minWidth: 400 }}>
         {/* _.isEmpty(cajas.preview.preview) ? null :*/}
         <Table<ContenidoCaja>
           bordered
@@ -455,26 +439,25 @@ export const IngresarCaja: React.FC = (props) => {
           extraColumns={{ showKeyColumn: true, showActionsColumn: true }}
           extraComponents={[
             {
-              key: 1,
+              key: 'add-button',
               node: 'add-button',
               position: 'both',
             },
             {
-              key: 2,
+              key: 'delete-button',
               node: 'delete-button',
               position: 'both',
             },
             {
-              key: 3,
+              key: 'refresh-button',
               node: 'refresh-button',
               position: 'top',
+              style: { marginLeft: 'auto' },
             },
             {
-              key: 4,
-              node: (records) => <Tag color="red">Registros: {records.length}</Tag>,
-              position: 'both',
-              order: [9, 9],
-              style: { marginLeft: 'auto' },
+              key: 'records-count',
+              node: 'records-count',
+              position: 'top',
             },
           ]}
           sortable

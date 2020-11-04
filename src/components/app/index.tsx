@@ -18,6 +18,7 @@ import { history } from 'src/store';
 import { Footer } from '../footer';
 import { Loading } from '../loading';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
+import './style.less';
 
 const { Content } = Layout;
 
@@ -31,7 +32,7 @@ const items: SiderItem[] = [
   {
     title: 'Cajas',
     icon: <InboxOutlined />,
-    children: [{ view: views[2] }, { view: views[3] }, { view: views[4] }],
+    children: [{ view: views[2] }, { view: views[3] }, { view: views[4] }, { view: views[8], hidden: true }],
   },
   {
     title: 'Pedidos',

@@ -9,6 +9,7 @@ export interface SiderParentItem {
 export interface SiderChildItem {
   view: View;
   icon?: React.ReactNode;
+  hidden?: boolean;
 }
 
 export type SiderItem = SiderParentItem | SiderChildItem;

@@ -62,7 +62,8 @@ export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (d
   return await axios
     .request<FiltroTipoCajaResponse[]>(config)
     .then((response) => {
-      const data = response.data;
+      const ff: FiltroTipoCajaResponse = { id: 1, descripcion: 'Documentos' };
+      const data = response.data ?? ff;
       reqCache.cache[index] = { data };
 
       dispatch(success(data));

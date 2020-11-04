@@ -6,12 +6,24 @@
   flex-wrap: wrap;
 }
 
+.column {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .card {
   min-width: 350px;
-  max-width: 350px;
-  width: 350px;
-  height: 300px;
-  margin: 8px 16px !important;
+  max-width: 95%;
+  width: 95%;
+  min-height: 300px;
+  height: 95%;
+  margin: 8px !important; //16px !important;
+
+  :global .ant-card-head {
+    text-align: left !important;
+  }
 }
 
 .header {

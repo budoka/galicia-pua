@@ -119,7 +119,14 @@
     vertical-align: top;
   }
 
-  vertical-align: bottom;
+  /* Hide alert (validation error message) */
+  :global .ant-form-item-explain {
+    div {
+      display: none;
+    }
+  }
+
+  //vertical-align: bottom;
 }
 
 /* Select Popup Option */

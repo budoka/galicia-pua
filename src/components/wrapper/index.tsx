@@ -5,8 +5,8 @@ import { BasicComponenetProps } from 'src/interfaces';
 import styles from './style.module.less';
 
 type Direction = 'row' | 'column';
-type Horizontal = 'left' | 'center' | 'right';
-type Vertical = 'top' | 'middle' | 'bottom';
+type Horizontal = 'left' | 'center' | 'right' | 'full-width';
+type Vertical = 'top' | 'middle' | 'bottom' | 'full-height';
 type Visible = 'auto' | 'show' | 'hide';
 
 interface WrapperProps extends Omit<BasicComponenetProps<HTMLDivElement>, 'unselectable'> {

@@ -15,8 +15,8 @@ export const Inicio: React.FC = (props) => {
     {
       title: 'Cajas',
       items: [
-        { description: 'Pendientes de Cierre', count: 20, path: views[1].path },
-        { description: 'Pendientes de Devolución', count: 0, path: views[2].path },
+        { description: 'Pendientes de Cierre', count: 20, path: views[8].path },
+        { description: 'Pendientes de Devolución', count: 0, path: views[8].path },
       ],
     },
     {
@@ -58,7 +58,11 @@ export const Inicio: React.FC = (props) => {
   };
 
   const renderColumn = (card: ReactNode, key: React.Key) => {
-    return <Col key={key}>{card}</Col>;
+    return (
+      <Col key={key} className={styles.column}>
+        {card}
+      </Col>
+    );
   };
 
   const renderRow = (column: ReactNode, key: React.Key) => {
@@ -83,7 +87,7 @@ export const Inicio: React.FC = (props) => {
   };
 
   return (
-    <Wrapper contentWrapper className={className} unselectable direction="row" horizontal="center">
+    <Wrapper contentWrapper className={className} unselectable direction="row" horizontal="center" vertical="full-height">
       {renderCards(2)}
     </Wrapper>
   );

@@ -56,7 +56,7 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
     return items
       ? items.map((item, index) => {
           return (
-            <Card key={index} type="inner" className={styles.card}>
+            <Card key={index} type="inner" className={styles.innerCard}>
               <div className={styles.cardContent}>
                 {item.path && item.count ? linkWrapper(renderCard(item), item.path) : renderCard(item)}
               </div>

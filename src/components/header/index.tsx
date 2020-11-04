@@ -48,7 +48,6 @@ export const Header: React.FC<HeaderProps> = (props) => {
       if (shouldCollapse !== settings.collapsed || shouldCollapse === settings.forcedCollapsed) {
         if (settings.buttonVisible) dispatch(setButtonVisible(false));
         if (settings.openMenu) dispatch(setOpenMenu());
-        // handleCollapsed(true);
       }
     } else {
       if (shouldCollapse !== settings.collapsed) {
@@ -59,14 +58,17 @@ export const Header: React.FC<HeaderProps> = (props) => {
   }, [size]);
 
   useEffect(() => {
-    if (!settings.openMenu) handleCollapsed(true);
+    if (!settings.collapsed && (!settings.buttonVisible || settings.forcedCollapsed)) handleCollapsed(true);
+    //if (!settings.openMenu && !settings.collapsed) handleCollapsed(true);
   }, [settings.openMenu]);
 
   useEffect(() => {
     const shouldIgnore = size.width <= 612;
     if (shouldIgnore) return;
-    else if (settings.forcedCollapsed) dispatch(setOpenMenu());
-    else handleCollapsed(false);
+    else if (settings.forcedCollapsed) {
+      if (settings.openMenu) dispatch(setOpenMenu());
+      else handleCollapsed(true);
+    } else handleCollapsed(false);
   }, [settings.forcedCollapsed]);
 
   const handleCollapsed = (shouldCollapse: boolean) => {

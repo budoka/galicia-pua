@@ -1,0 +1,25 @@
+/* ingresar-cajas */
+
+@import (reference) '~src/styles/global.less';
+@import (reference) '~src/components/app/style.module.less';
+
+.table {
+  min-width: 970px;
+
+  :global .ant-form-item {
+    margin-bottom: 0 !important;
+
+    :global .ant-select-selection-placeholder {
+      text-align: left;
+    }
+
+    button {
+      margin-left: 10px;
+    }
+  }
+}
+
+:global .ant-table-body {
+  min-height: calc(400px + @scrollbar) !important;
+  // min-height: calc(400px + @scrollbar) !important;
+}

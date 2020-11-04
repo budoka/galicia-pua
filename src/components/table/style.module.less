@@ -6,6 +6,17 @@
   width: 100%;
   background-color: @table-bg;
 
+  :global .ant-spin:global.ant-spin-spinning {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    max-height: 90% !important;
+
+    :global .ant-spin-text {
+      padding-top: 5px !important;
+    }
+  }
+
   /* Fix sort enabled */
   th {
     padding: 0 !important;
@@ -26,7 +37,7 @@
     display: flex;
     padding: 2px 4px;
 
-    * {
+    > * {
       margin: 0 !important; // En prueba
     }
   }

@@ -1,5 +1,5 @@
-import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Form, Popconfirm, Tooltip } from 'antd';
+import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Button, Form, Popconfirm, Tag, Tooltip } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
@@ -18,7 +18,7 @@ import styles from './style.module.less';
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
 export type InputType = 'text' | 'date' | 'select' | 'checkbox';
 export type State = 'idle' | 'adding' | 'editing' | 'deleting';
-export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button';
+export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button' | 'records-count';
 export type Position = 'top' | 'bottom' | 'both';
 
 // Column properties
@@ -31,6 +31,7 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
   rules?: Rule[];
   // required?: boolean;
   // order?: number;
+  //minWidth?: number;
   style?: CSSProperties;
 }
 
@@ -39,6 +40,7 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
   sortable?: boolean;
   hideRowSelection?: boolean;
   hidePagination?: boolean;
+  fill?: boolean;
   extraColumns?: { showKeyColumn?: boolean; showActionsColumn?: boolean };
   extraComponents?: {
     key?: React.Key;
@@ -65,9 +67,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     key: 'key',
     dataIndex: 'key',
     title: '#',
-    minWidth: 60,
     width: 60,
-    sorter: props.sortable && state.current === 'idle' && { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
+    sorter: state.current === 'idle' && { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
   } as IColumn<RecordType>;
 
   const actionColumn = {
@@ -85,6 +86,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     extraColumns,
     extraComponents,
     sortable,
+    fill,
     hideRowSelection,
     hidePagination,
     ...restProps
@@ -103,8 +105,9 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     // Create a dictionary to check if key and actions columns already exist.
     const columnsDict = _.keyBy(columns, 'keyColumn');
 
-    if (props.extraColumns?.showKeyColumn && columns && !columnsDict['keyColumn']) columns = [keyColumn, ...columns];
-    if (props.extraColumns?.showActionsColumn && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
+    if (extraColumns?.showKeyColumn && columns && !columnsDict['keyColumn']) columns = [keyColumn, ...columns];
+    if (extraColumns?.showActionsColumn && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
+    if (props.fill) columns = [...columns, { style: { border: 'none' /* backgroundColor: '#fafafa'*/ } } as IColumn<RecordType>];
 
     let isInputFocused = false;
 
@@ -113,7 +116,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         ...col,
         align: 'center',
         ellipsis: true,
+        sorter: sortable && state.current === 'idle' && col.sorter,
+        //width: col.minWidth,
         shouldCellUpdate: (record, prevRecord) => {
+          // Ignore fill cell
+          if (record.key === undefined) return false;
           // Update cell when a record was deleted.
           if (state.previous === 'deleting') return true;
 
@@ -137,9 +144,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         onHeaderCell: (column: IColumn<RecordType>) => {
           return {
             //width: col.width,
-            width: column.width,
+            // width: column.width,
             style: { fontWeight: 'bold' },
-            // style: { minWidth: col.minWidth, maxWidth: col.maxWidth },
           };
         },
         onCell: (record: RecordType) => {
@@ -162,6 +168,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             rules,
             hasFeedback: true,
             form,
+            style: col.style,
           } as ICellProps;
         },
         render: col.render
@@ -196,13 +203,16 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         const { key, style } = component;
         switch (component.node) {
           case 'add-button':
-            return { key, component: renderAddButton(), style };
+            return { key, component: AddButton, style };
 
           case 'delete-button':
-            return { key, component: renderDeleteButton(), style };
+            return { key, component: DeleteButton, style };
 
           case 'refresh-button':
-            return { key, component: renderRefreshButton(), style };
+            return { key, component: RefreshButton, style };
+
+          case 'records-count':
+            return { key, component: RecordsCount, style };
 
           default:
             return { key, component: component.node(dataSource), style };
@@ -215,7 +225,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       ));
   };
 
-  const renderAddButton = () => {
+  const AddButton = React.useMemo(() => {
     return !editingRow?.current ? (
       <Button type="primary" onClick={() => handleAddRecord()}>
         Agregar
@@ -225,9 +235,9 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         Cancelar
       </Button>
     );
-  };
+  }, [editingRow]);
 
-  const renderDeleteButton = () => {
+  const DeleteButton = React.useMemo(() => {
     const disabledRemove = !(selectedRows.length > 0 && state.current !== 'adding');
 
     return (
@@ -235,7 +245,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         title="¿Desea eliminar las filas seleccionadas?"
         onConfirm={() => {
           handleDeleteRecord(selectedRows);
-          //handleDeleteRecords(props.state.list.filter(e => e.selected).map(e => e.id));
         }}
         okText="Sí"
         cancelText="No"
@@ -245,12 +254,13 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         </Button>
       </Popconfirm>
     );
-  };
+  }, [selectedRows, state]);
 
-  const renderRefreshButton = () => {
+  const RefreshButton = React.useMemo(() => {
     return (
       <Tooltip title="Actualizar">
         <Button
+          style={{ paddingTop: 0 }}
           disabled={refresh || state.current !== 'idle'}
           type="link"
           icon={<ReloadOutlined spin={refresh} />}
@@ -260,7 +270,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         />
       </Tooltip>
     );
-  };
+  }, [refresh, state]);
+
+  const RecordsCount = React.useMemo(() => {
+    return <Tag color="volcano">Registros: {dataSource.length}</Tag>;
+  }, [dataSource]);
 
   const isEditing = (record: RecordType) => {
     return record.key === editingRow?.current;
@@ -470,10 +484,15 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     }
   };
 
+  const Loading = React.useMemo(() => {
+    return <LoadingOutlined />;
+  }, []);
+
   return (
     <Form form={form} component={false}>
       <TableAnt
         {...restProps}
+        loading={restProps.loading ? { indicator: Loading, tip: 'Cargando' } : restProps.loading}
         className={className}
         components={{
           header: {
@@ -485,8 +504,22 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         }}
         columns={columns}
         dataSource={dataSource}
-        title={(records) => renderComponents(/top|both/)}
-        footer={(records) => renderComponents(/botoom|both/)}
+        title={
+          extraComponents && extraComponents.filter((component) => /top|both/.test(component.position)).length > 0
+            ? (records) => {
+                const components = renderComponents(/top|both/);
+                return _.isEmpty(components) ? undefined : components;
+              }
+            : undefined
+        }
+        footer={
+          extraComponents && extraComponents.filter((component) => /botoom|both/.test(component.position)).length > 0
+            ? (records) => {
+                const components = renderComponents(/botoom|both/);
+                return _.isEmpty(components) ? undefined : components;
+              }
+            : undefined
+        }
         rowSelection={props.hideRowSelection ? undefined : rowSelection}
         pagination={
           hidePagination

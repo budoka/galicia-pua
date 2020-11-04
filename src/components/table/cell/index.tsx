@@ -126,7 +126,7 @@ export const Cell = (props: ICellProps) => {
   };
 
   const renderField = (inputType?: InputType) => {
-    if (dataIndex && dataIndex !== 'key' && dataIndex !== 'actions' && !value && value !== 0) return <MinusOutlined />;
+    if (dataIndex && dataIndex !== 'key' && dataIndex !== 'actions' && !value && value !== 0 && !editing) return <MinusOutlined />;
 
     switch (inputType) {
       case 'select':

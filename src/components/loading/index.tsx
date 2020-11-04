@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { BasicComponenetProps } from 'src/interfaces';
 import { Wrapper } from '../wrapper';
+import styles from './style.module.less';
 
 interface LoadingProps extends BasicComponenetProps<HTMLDivElement> {
   className?: string;
@@ -25,7 +26,7 @@ export const Loading: React.FC<LoadingProps> = (props) => {
   console.log(props.style);
 
   return (
-    <Wrapper vertical="middle" unselectable className={className} style={props.style}>
+    <Wrapper horizontal="center" vertical="middle" unselectable className={className} style={props.style}>
       <Spin className={spinClass} tip={text} indicator={indicator} style={{ fontSize, color }} />
     </Wrapper>
   );
