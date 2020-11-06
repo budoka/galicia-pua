@@ -62,7 +62,7 @@ const App = () => {
   };
 
   return !auth.disabled && !auth.data ? (
-    <Loading style={{ height: '100vh' }} size={26} text={'Cargando...'} />
+    <Loading style={{ height: '100vh' }} size={26} text={'Cargando'} />
   ) : (
     <>
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>

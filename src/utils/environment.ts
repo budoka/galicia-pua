@@ -1,18 +1,21 @@
 import dotenv from 'dotenv';
 import { EnviromentError } from 'src/exceptions/environment';
-import { Dictionary } from 'src/interfaces';
 import { parseValue } from './parse';
-
-dotenv.config();
 
 const PREFIX_REACT_APP = 'REACT_APP_';
 
-export interface EnvironmentData {
-  cache: Dictionary<any>;
+dotenv.config();
+
+interface ICache<T> {
+  [key: string]: T;
+}
+
+interface EnvironmentData {
+  cache: ICache<any>;
   env?: string;
 }
 
-export const environmentData: EnvironmentData = {
+const environmentData: EnvironmentData = {
   env: undefined,
   cache: {},
 };
@@ -58,11 +61,4 @@ export function isDevelopment() {
  */
 export function isProduction() {
   return getEnvironment() === 'production';
-}
-
-/**
- * Check if the database log is enabled.
- */
-export function isDatabaseLogEnabled() {
-  return getVar('DATABASE_LOG');
 }

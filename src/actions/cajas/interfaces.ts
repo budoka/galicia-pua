@@ -62,5 +62,3 @@ export interface CajaEtiqueta extends IElement {
   id: number; // Se va a quitar
   idEtiqueta: number;
 }
-
-///////////////////// Interfaces Back /////////////////////

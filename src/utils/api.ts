@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { APIError } from 'src/exceptions/api';
-import { Dictionary } from 'src/interfaces';
 import { apis } from 'src/services/apis-data';
 import { getVar } from './environment';
 
@@ -9,7 +8,7 @@ export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export interface IAPI {
   name: string;
   url: string;
-  method: IAPIMethod[];
+  methods: IAPIMethod[];
 }
 
 export interface IAPIMethod {
@@ -17,13 +16,13 @@ export interface IAPIMethod {
   verb: HttpVerb;
   path: string;
   headers?: {
-    [header: string]: unknown;
+    [header: string]: string | number | boolean;
   };
   data?: {
-    [data: string]: unknown;
+    [data: string]: string | number | boolean;
   };
   params?: {
-    [params: string]: unknown;
+    [params: string]: string | number | boolean;
   };
 }
 
@@ -32,26 +31,32 @@ export interface IAPIData {
   method: IAPIMethod;
 }
 
-export const cache: Dictionary<IAPIData> = {};
+interface ICache<T> {
+  [key: string]: T;
+}
+
+interface IAPIDataCache {
+  cache: ICache<IAPIData>;
+}
+
+const cache: ICache<IAPIData> = {};
 
 /**
  * Get the data of an API from an array of APIs.
  * @param apiName API name.
  * @param id Method/path id.
  */
-  export function getAPIData(apiName: string, id: string): IAPIData {
+export function getAPIData(apiName: string, id: string): IAPIData {
   const index = `${apiName}_${id}`;
-  if (cache[index]) {
-    // console.log('Cached!!!');
-    return cache[index];
-  }
+  if (cache[index]) return cache[index];
 
-  const api = _.find(apis, (api) => api.name === apiName);
+  const api = apis.find((api) => api.name === apiName);
 
   if (!api) throw new APIError(`API '${apiName}' not found.`);
 
   const url = api.url;
-  const method = _.find(api.method, (path) => path.id === id);
+
+  const method = api.methods.find((path) => path.id === id);
 
   if (!method) throw new APIError(`Method id: '${id}' not found.`);
 
@@ -64,13 +69,11 @@ export const cache: Dictionary<IAPIData> = {};
  * @param apiName API name.
  */
 export function getAPIURL(apiName: string) {
-  const api = _.find(apis, (api) => api.name === apiName);
+  const api = apis.find((api) => api.name === apiName);
 
   if (!api) throw new APIError(`API '${apiName}' not found.`);
 
-  const url = api.url;
-
-  return url;
+  return api.url;
 }
 
 /**

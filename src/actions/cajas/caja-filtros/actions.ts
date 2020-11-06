@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ThunkResult } from 'src/actions';
-import { IRequestCache } from 'src/actions/interfaces';
 import { Dictionary, QueryParams } from 'src/interfaces';
 import { API } from 'src/services/apis-data';
 import { getAPIData, IAPIData } from 'src/utils/api';
@@ -25,8 +24,6 @@ const instance = axios.create({
   headers: {'X-Custom-Header': 'foobar'}
 })*/
 
-const reqCache: IRequestCache<any> = { cache: {} };
-
 export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (dispatch, getState) => {
   const isRunning = getState().cajas.filtros.isRunning;
 
@@ -50,12 +47,12 @@ export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (d
 
   const index = hashCode(config);
 
-  if (reqCache.cache[index]) {
+  /*if (reqCache.cache[index]) {
     console.log('Cached tipoCaja!!!');
     const cachedData = reqCache.cache[index].data;
     dispatch(success(cachedData));
     return;
-  }
+  }*/
 
   dispatch(running(true));
 
@@ -64,7 +61,7 @@ export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (d
     .then((response) => {
       const ff: FiltroTipoCajaResponse = { id: 1, descripcion: 'Documentos' };
       const data = response.data ?? ff;
-      reqCache.cache[index] = { data };
+      //  reqCache.cache[index] = { data };
 
       dispatch(success(data));
     })
@@ -127,7 +124,7 @@ export const getTiposContenidoCaja = (tipoCaja: FiltrosCajaState['seleccionado']
     .request<FiltroTipoContenidoCajaResponseV1[]>(config)
     .then((response) => {
       const data = response.data;
-      reqCache.cache[index] = { data };
+      // reqCache.cache[index] = { data };
 
       const dataFixed: FiltroTipoContenidoCajaResponse[] = data.map((d) => {
         return { id: d, descripcion: d };
@@ -179,12 +176,12 @@ export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccion
 
   const index = hashCode(config);
 
-  if (reqCache.cache[index]) {
+  /* if (reqCache.cache[index]) {
     console.log('Cached plantillasPorSector!!!');
     const cachedData = reqCache.cache[index].data;
     dispatch(success(cachedData));
     return;
-  }
+  }*/
 
   dispatch(running(true));
 
@@ -192,7 +189,7 @@ export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccion
     .request<FiltroTipoPlantillaResponse[]>(config)
     .then((response) => {
       const data = response.data;
-      reqCache.cache[index] = { data };
+      //   reqCache.cache[index] = { data };
 
       dispatch(success(data));
     })

@@ -98,7 +98,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const columns = buildColumns(_columns);
 
   function buildColumns(columns: ColumnsType<RecordType> | undefined) {
-    console.log('buildColumns ...');
+    //console.log('buildColumns ...');
 
     if (!columns || columns.length === 0) return;
 
@@ -189,7 +189,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   }, [state]);
 
   useEffect(() => {
-    console.log('reseting selected rows');
+    // console.log('reseting selected rows');
     setSelectedRows([]);
   }, [currentPage, sort]);
 

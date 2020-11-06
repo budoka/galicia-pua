@@ -7,7 +7,7 @@ import { getAPIData } from 'src/utils/api';
 
 import { FiltrosCajaState } from '../caja-filtros';
 import { hashCode } from 'src/utils/string';
-import { IRequestCache } from 'src/actions/interfaces';
+//import { IRequestCache } from 'src/actions/interfaces';
 import {
   PreviewCajaRequest,
   PreviewCajaResponse,
@@ -25,7 +25,7 @@ const instance = axios.create({
   headers: {'X-Custom-Header': 'foobar'}
 })*/
 
-const reqCache: IRequestCache<any> = { cache: {} };
+//const reqCache: IRequestCache<any> = { cache: {} };
 
 export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccionado']): ThunkResult => async (dispatch, getState) => {
   const state = getState();
@@ -52,12 +52,12 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
 
   const index = hashCode(config);
 
-  if (reqCache.cache[index]) {
+  /*if (reqCache.cache[index]) {
     console.log('Cached preview!!!');
     const cachedData = reqCache.cache[index].data;
     dispatch(success(cachedData));
     return;
-  }
+  }*/
 
   dispatch(running(true));
 
@@ -72,19 +72,19 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
       if ('inclusiones' in response.data[0]) {
         const previewDocumento: PreviewCajaDocumentoResponse[] = response.data as PreviewCajaDocumentoResponse[];
 
-        reqCache.cache[index] = { data: previewDocumento };
+        // reqCache.cache[index] = { data: previewDocumento };
 
         dispatch(success(previewDocumento));
       } else if ('idPlantilla' in response.data[0]) {
         const previewDetalle: PreviewCajaDetalleResponse[] = response.data as PreviewCajaDetalleResponse[];
 
-        reqCache.cache[index] = { data: previewDetalle };
+        //  reqCache.cache[index] = { data: previewDetalle };
 
         dispatch(success(previewDetalle));
       } else if ('legacy' in response.data[0]) {
         const previewEtiqueta: PreviewCajaEtiquetaResponse[] = response.data as PreviewCajaEtiquetaResponse[];
 
-        reqCache.cache[index] = { data: previewEtiqueta };
+        //   reqCache.cache[index] = { data: previewEtiqueta };
 
         dispatch(success(previewEtiqueta));
       } else {

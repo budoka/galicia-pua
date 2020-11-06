@@ -1,10 +1,12 @@
 import { Button, Col, DatePicker, Form, Input, Row, Select, Tag } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
+import dayjs from 'dayjs';
 import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
 import { ContenidoCaja } from 'src/actions/cajas/interfaces';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
@@ -60,32 +62,23 @@ const _columns = [
   },
 ] as IColumn<ContenidoCaja>[];
 
-const _data = new Array(100).fill('').map((e, i) => {
-  return {
-    key: `${i + 1}`,
-    a: moment(),
-    b: '',
-    c: i % 2 === 0 ? true : false,
-    d: i % 2 === 0 ? '' : 0,
-    e: 'e',
-    f: 'f',
-    g: 'g',
-    h: 'h',
-  };
-}) as any[];
-
 export const Cajas: React.FC = (props) => {
   const dispatch = useDispatch();
-  const cajas = useSelector((state: RootState) => state.cajas);
+  const cajasPendientes = useSelector((state: RootState) => state.cajas.pendientes);
+
+  console.log(cajasPendientes.detallesCaja);
 
   const [columns, setColumns] = useState(_columns);
-  const [dataSource, setDataSource] = useState(_data);
+  const [dataSource, setDataSource] = useState(cajasPendientes.detallesCaja);
   const [form] = useForm();
 
-  useEffect(() => console.log('render cajas'));
+  // useEffect(() => console.log('render cajas'));
 
   useEffect(() => {
     // Fetch cajas
+    const expiration = dayjs().add(15, 'second').unix();
+
+    dispatch(getCajasPendientes({ idUsuario: 3, centroCosto: 1243, roles: ['Administrador'], estado: 'PendienteCierre' }, expiration));
   }, []);
 
   const onFinish = (values: any) => {};
@@ -143,7 +136,7 @@ export const Cajas: React.FC = (props) => {
           fill
           columns={columns as ColumnsType<ContenidoCaja>}
           dataSource={dataSource}
-          loading={cajas.preview.isRunning}
+          loading={cajasPendientes.isRunning}
           hideRowSelection
           extraColumns={{ showKeyColumn: true, showActionsColumn: false }}
           extraComponents={[
@@ -171,7 +164,7 @@ export const Cajas: React.FC = (props) => {
         />
       </Wrapper>
     );
-  }, [cajas.preview.isRunning, columns, dataSource]);
+  }, [cajasPendientes.isRunning, columns, dataSource]);
 
   return (
     <Wrapper contentWrapper unselectable direction="column" horizontal="center" style={{ minWidth: 1024 }}>

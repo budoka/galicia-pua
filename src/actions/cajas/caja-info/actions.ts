@@ -1,13 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ThunkResult } from 'src/actions';
-import { IRequestCache } from 'src/actions/interfaces';
+
 import { API } from 'src/services/apis-data';
 import { getAPIData } from 'src/utils/api';
 import { hashCode } from 'src/utils/string';
 import { InfoCajaAction, InfoCajaState, InfoCajaActionTypes } from '../caja-info';
 import { Caja, InfoCaja, ContenidoCaja } from '../interfaces';
-
-const reqCache: IRequestCache<any> = { cache: {} };
 
 export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dispatch, getState) => {
   const isRunning = getState().cajas.info.isRunning;
@@ -35,12 +33,12 @@ export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dis
 
   const index = hashCode(config);
 
-  if (reqCache.cache[index]) {
+  /*if (reqCache.cache[index]) {
     console.log('Cached tipoCaja!!!');
     const cachedData = reqCache.cache[index].data;
     dispatch(success(cachedData));
     return;
-  }
+  }*/
 
   dispatch(running(true));
 
@@ -53,7 +51,7 @@ export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dis
 
       const caja: Caja = { id: idCaja, info: infoCaja, contenido: [] };
 
-      reqCache.cache[index] = { data: caja };
+      //  reqCache.cache[index] = { data: caja };
 
       dispatch(success(caja));
     })
@@ -94,12 +92,12 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
 
   const index = hashCode(config);
 
-  if (reqCache.cache[index]) {
+  /* if (reqCache.cache[index]) {
     console.log('Cached tipoCaja!!!');
     const cachedData = reqCache.cache[index].data;
     dispatch(success(cachedData));
     return;
-  }
+  }*/
 
   dispatch(running(true));
 
@@ -108,7 +106,7 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
     .then((response) => {
       const caja = response.data;
 
-      reqCache.cache[index] = { data: caja };
+      //  reqCache.cache[index] = { data: caja };
 
       // const caja = { numero: cajaId } as Caja;
 

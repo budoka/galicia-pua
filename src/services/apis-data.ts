@@ -1,4 +1,3 @@
-
 import { buildAPIUrl, IAPI } from 'src/utils/api';
 
 export enum API {
@@ -13,7 +12,17 @@ export const apis: IAPI[] = [
   {
     name: API.CAJA,
     url: buildAPIUrl(API.CAJA),
-    method: [
+    methods: [
+      {
+        id: 'detalleCaja',
+        verb: 'POST',
+        path: 'detalleCaja',
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+        },
+        data: {},
+      },
       {
         id: 'preview',
         verb: 'POST',
@@ -21,7 +30,6 @@ export const apis: IAPI[] = [
         headers: {
           'content-type': 'application/json',
           accept: 'application/json',
-          useQueryString: true,
         },
         data: {},
       },
@@ -31,7 +39,6 @@ export const apis: IAPI[] = [
         path: 'guardarCaja',
         headers: {
           accept: 'application/json',
-          useQueryString: true,
         },
       },
       {
@@ -40,7 +47,6 @@ export const apis: IAPI[] = [
         path: 'cerrarCaja',
         headers: {
           accept: 'application/json',
-          useQueryString: true,
         },
       },
       {
@@ -49,7 +55,6 @@ export const apis: IAPI[] = [
         path: 'eliminarCaja',
         headers: {
           accept: 'application/json',
-          useQueryString: true,
         },
       },
       {
@@ -58,7 +63,6 @@ export const apis: IAPI[] = [
         path: 'infoCaja',
         headers: {
           accept: 'application/json',
-          useQueryString: true,
         },
       },
     ],
@@ -66,7 +70,7 @@ export const apis: IAPI[] = [
   {
     name: API.DOCUMENTO,
     url: buildAPIUrl(API.DOCUMENTO),
-    method: [
+    methods: [
       {
         id: 'guardarDocumento',
         verb: 'POST',
@@ -74,7 +78,6 @@ export const apis: IAPI[] = [
         headers: {
           'content-type': 'application/json',
           accept: 'application/json',
-          useQueryString: true,
         },
         data: {},
       },
@@ -83,7 +86,7 @@ export const apis: IAPI[] = [
   {
     name: API.PLANTILLAS_SECTOR,
     url: buildAPIUrl(API.PLANTILLAS_SECTOR),
-    method: [
+    methods: [
       {
         id: 'plantillasPorSector',
         verb: 'POST',
@@ -91,7 +94,6 @@ export const apis: IAPI[] = [
         headers: {
           'content-type': 'application/json',
           accept: 'application/json',
-          useQueryString: true,
         },
         data: {},
       },
@@ -100,14 +102,13 @@ export const apis: IAPI[] = [
   {
     name: API.TIPO_CAJA,
     url: buildAPIUrl(API.TIPO_CAJA),
-    method: [
+    methods: [
       {
         id: 'tipoCaja',
         verb: 'GET',
         path: 'tipoCaja',
         headers: {
           accept: 'application/json',
-          useQueryString: true,
         },
       },
       {
@@ -116,7 +117,6 @@ export const apis: IAPI[] = [
         path: 'tipoDeContenido',
         headers: {
           accept: 'application/json',
-          useQueryString: true,
         },
       },
     ],
