@@ -1,5 +1,5 @@
-import { IAPI } from 'src/interfaces';
-import { buildAPIUrl } from 'src/utils/api';
+
+import { buildAPIUrl, IAPI } from 'src/utils/api';
 
 export enum API {
   CAJA = 'CAJA',

@@ -23,21 +23,26 @@ import './style.less';
 const { Content } = Layout;
 
 const items: SiderItem[] = [
-  { view: views[0], icon: <HomeOutlined /> },
+  { view: views['Inicio'], icon: <HomeOutlined /> },
   {
     title: 'Documentos',
     icon: <FileOutlined />,
-    children: [{ view: views[1] }],
+    children: [{ view: views['Buscar Legajo'] }],
   },
   {
     title: 'Cajas',
     icon: <InboxOutlined />,
-    children: [{ view: views[2] }, { view: views[3] }, { view: views[4] }, { view: views[8], hidden: true }],
+    children: [
+      { view: views['Cajas'], hidden: true },
+      { view: views['Buscar Caja'] },
+      { view: views['Ingresar Caja'] },
+      { view: views['Retirar Caja'] },
+    ],
   },
   {
     title: 'Pedidos',
     icon: <ShoppingCartOutlined />,
-    children: [{ view: views[5] }, { view: views[6] }, { view: views[7] }],
+    children: [{ view: views['Buscar Caja*'] }, { view: views['Buscar Legajo / Doc'] }, { view: views['Buscar Pedido'] }],
   },
 ];
 
@@ -51,8 +56,8 @@ const App = () => {
   }, [router.location.pathname]);
 
   const getTitle = () => {
-    const view = views.find((v) => v.path === getRoute());
-    const title = view ? view.title : views[views.length - 1].title;
+    const view = Object.values(views).find((v) => v.path === getRoute());
+    const title = view ? view.title : views['Not Found'].title;
     return title;
   };
 

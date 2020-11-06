@@ -1,16 +1,35 @@
 import _ from 'lodash';
 import { APIError } from 'src/exceptions/api';
-import { Dictionary, IAPIMethod } from 'src/interfaces';
+import { Dictionary } from 'src/interfaces';
 import { apis } from 'src/services/apis-data';
 import { getVar } from './environment';
+
+export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+export interface IAPI {
+  name: string;
+  url: string;
+  method: IAPIMethod[];
+}
+
+export interface IAPIMethod {
+  id: string;
+  verb: HttpVerb;
+  path: string;
+  headers?: {
+    [header: string]: unknown;
+  };
+  data?: {
+    [data: string]: unknown;
+  };
+  params?: {
+    [params: string]: unknown;
+  };
+}
 
 export interface IAPIData {
   url: string;
   method: IAPIMethod;
-}
-
-export interface IAPIDataCache {
-  cache: Dictionary<IAPIData>;
 }
 
 export const cache: Dictionary<IAPIData> = {};
@@ -20,7 +39,7 @@ export const cache: Dictionary<IAPIData> = {};
  * @param apiName API name.
  * @param id Method/path id.
  */
-export function getAPIData(apiName: string, id: string): IAPIData {
+  export function getAPIData(apiName: string, id: string): IAPIData {
   const index = `${apiName}_${id}`;
   if (cache[index]) {
     // console.log('Cached!!!');

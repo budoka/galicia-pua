@@ -1,5 +1,3 @@
-import { HttpVerb } from 'src/types';
-
 export interface BasicComponenetProps<HTMLElement>
   extends React.DetailedHTMLProps<React.HTMLAttributes<Exclude<HTMLElement, 'unselectable'>>, Exclude<HTMLElement, 'unselectable'>> {}
 
@@ -29,24 +27,3 @@ export interface QueryParams {
   order?: { [P in keyof any]?: 'ASC' | 'DESC' };
 }
 
-// API
-export interface IAPI {
-  name: string;
-  url: string;
-  method: IAPIMethod[];
-}
-
-export interface IAPIMethod {
-  id: string;
-  verb: HttpVerb;
-  path: string;
-  headers?: {
-    [header: string]: unknown;
-  };
-  data?: {
-    [data: string]: unknown;
-  };
-  params?: {
-    [params: string]: unknown;
-  };
-}
