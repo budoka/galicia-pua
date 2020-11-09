@@ -13,6 +13,12 @@ export default function reducer(state = initialState, action: CajasPendientesAct
         isRunning: true,
       };
 
+    case CajasPendientesAction.CLEAR_DATA:
+      return {
+        ...state,
+        detallesCaja: [],
+      };
+
     case CajasPendientesAction.GET_SUCCESS:
       return {
         ...state,

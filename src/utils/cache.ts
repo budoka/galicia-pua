@@ -44,10 +44,10 @@ export class CacheMemory<T> {
       const newValue = { value, expiration, hits };
 
       this.storage.set(key, { ...newValue });
-      console.log(`[${this.id}|${key}] has been cached. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
+      console.log(`[${this.id}|${key}] has been saved in cache. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
     } else {
       const { value, expiration, hits } = data!;
-      console.log(`[${this.id}|${key}] is already cached. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
+      console.log(`[${this.id}|${key}] is already in cache. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
 
       const newValue = { value, expiration, hits: hits + 1 };
       this.storage.set(key, newValue);

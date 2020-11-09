@@ -81,7 +81,14 @@
   }*/
 }
 
-#line {
+:global .ant-table-body {
+  :global .ant-table-placeholder {
+    height: -moz-available;
+    height: -webkit-fill-available;
+  }
+}
+
+.line() {
   &:not([disabled]):hover::after,
   &:not([disabled]):focus::after {
     width: 100%;
@@ -116,7 +123,7 @@
     position: relative;
   }
 
-  #line();
+  .line();
 }
 
 .buttonDelete {
@@ -130,6 +137,6 @@
     height: 100%;
     position: relative;
 
-    #line();
+    .line();
   }
 }

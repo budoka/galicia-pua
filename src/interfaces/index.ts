@@ -27,3 +27,7 @@ export interface QueryParams {
   order?: { [P in keyof any]?: 'ASC' | 'DESC' };
 }
 
+export interface RequestOptions {
+  expiration?: number;
+  force?: boolean;
+}

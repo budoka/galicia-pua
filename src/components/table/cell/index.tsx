@@ -25,7 +25,7 @@ export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElemen
 }
 
 export const Cell = (props: ICellProps) => {
-  const { style, dataIndex, value, title, editing, inputType, options, hasFocus, hasFeedback, rules, children, ...restProps } = props;
+  const { dataIndex, value, title, editing, inputType, options, hasFocus, hasFeedback, rules, children, ...restProps } = props;
 
   const cellRef = useRef<HTMLTableDataCellElement>(null);
 
@@ -142,7 +142,7 @@ export const Cell = (props: ICellProps) => {
   };
 
   return (
-    <td className={className} title={title} style={style} ref={cellRef} onFocus={scrollOnFocus}>
+    <td {...restProps} className={className} title={title} ref={cellRef} onFocus={scrollOnFocus}>
       {editing ? (
         <Form.Item
           name={dataIndex}

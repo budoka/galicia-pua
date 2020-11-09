@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import { APIError } from 'src/exceptions/api';
 import { apis } from 'src/services/apis-data';
@@ -15,6 +16,7 @@ export interface IAPIMethod {
   id: string;
   verb: HttpVerb;
   path: string;
+  timeout?: number;
   headers?: {
     [header: string]: string | number | boolean;
   };
@@ -87,4 +89,14 @@ export function buildAPIUrl(apiName: string) {
   apiName = getVar(PREFIX_API + apiName);
 
   return prefix + apiName + suffix;
+}
+
+/**
+ * Get expiration unix time
+ * @param value value
+ * @param unit default value *second*
+ */
+export function getExpirationTime(value: number, unit?: 'second' | 'minute') {
+  if (!unit) unit = 'second';
+  return dayjs().add(value, unit).unix();
 }

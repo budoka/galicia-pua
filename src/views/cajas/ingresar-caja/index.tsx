@@ -431,7 +431,7 @@ export const IngresarCaja: React.FC = (props) => {
       <Wrapper direction="row" horizontal="right" style={{ width: '90%', minWidth: 400 }}>
         {/* _.isEmpty(cajas.preview.preview) ? null :*/}
         <Table<ContenidoCaja>
-          bordered
+          // bordered
           size={'small'}
           columns={columns as ColumnsType<ContenidoCaja>}
           dataSource={dataSource}
@@ -452,12 +452,12 @@ export const IngresarCaja: React.FC = (props) => {
               key: 'refresh-button',
               node: 'refresh-button',
               position: 'top',
-              style: { marginLeft: 'auto' },
             },
             {
               key: 'records-count',
               node: 'records-count',
               position: 'top',
+              style: { marginLeft: 'auto' },
             },
           ]}
           sortable

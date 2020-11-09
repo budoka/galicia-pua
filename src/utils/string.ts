@@ -18,7 +18,7 @@ export function isString(data: any) {
 
 export type StringSensitivity = 'base' | 'accent' | 'case' | 'variant';
 
-export function IsEqualsIgnoringCase(str1: string, str2: string, sensitivity?: StringSensitivity) {
+export function isEqualsIgnoringCase(str1: string, str2: string, sensitivity?: StringSensitivity) {
   sensitivity = !sensitivity ? 'base' : sensitivity;
   return str1.localeCompare(str2, undefined, { sensitivity: sensitivity }) === 0;
 }
@@ -50,4 +50,9 @@ export function hashCode(value: string | object, seed: number = 0) {
   h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
 
   return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+
+export function splitStringByWords(value: string) {
+  const result = value.match(/[A-Z]+[^A-Z]*|[^A-Z]+/g);
+  return result;
 }

@@ -17,16 +17,6 @@ import {
 } from './interfaces';
 import _ from 'lodash';
 
-/*
-Example ...
-const instance = axios.create({
-  baseURL: 'https://some-domain.com/api/',
-  timeout: 1000,
-  headers: {'X-Custom-Header': 'foobar'}
-})*/
-
-//const reqCache: IRequestCache<any> = { cache: {} };
-
 export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccionado']): ThunkResult => async (dispatch, getState) => {
   const state = getState();
   const isRunning = state.cajas.preview.isRunning;

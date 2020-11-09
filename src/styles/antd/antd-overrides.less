@@ -28,6 +28,20 @@
 @gray-9: color(~`colorPalette('@{gray}', 9) `);
 @gray-10: color(~`colorPalette('@{gray}', 10) `);
 
+/* Table */
+.ant-table-tbody > tr.ant-table-row > td {
+  background-color: @component-background !important;
+}
+
+.ant-table-tbody {
+  > tr.ant-table-row:hover,
+  > tr.ant-table-row-selected {
+    > td {
+      background-color: @table-selected-row-bg !important;
+    }
+  }
+}
+/* Form */
 @media (max-width: 575px) {
   .ant-form .ant-form-item .ant-form-item-label,
   .ant-form .ant-form-item .ant-form-item-control {

@@ -1,11 +1,12 @@
 import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Button, Form, Popconfirm, Tag, Tooltip } from 'antd';
+import { Button, Form, message, Popconfirm, Tag, Tooltip } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { SorterResult, TableCurrentDataSource, TablePaginationConfig, TableRowSelection } from 'antd/lib/table/interface';
 import classNames from 'classnames';
 import _ from 'lodash';
+import moment from 'moment';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { IElement } from 'src/interfaces';
@@ -13,6 +14,7 @@ import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
 import { Cell, ICellProps } from './cell';
 import { Column } from './column';
+import { RefreshButton } from './refresh-button';
 import styles from './style.module.less';
 
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
@@ -46,6 +48,7 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
     key?: React.Key;
     node: ActionNode | ((records: RecordType[]) => ReactNode);
     position: Position;
+    task?: () => Promise<void>;
     order?: (number | null)[];
     style?: CSSProperties;
   }[];
@@ -107,7 +110,15 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
     if (extraColumns?.showKeyColumn && columns && !columnsDict['keyColumn']) columns = [keyColumn, ...columns];
     if (extraColumns?.showActionsColumn && columns && !columnsDict['actions']) columns = [...columns, actionColumn];
-    if (props.fill) columns = [...columns, { style: { border: 'none' /* backgroundColor: '#fafafa'*/ } } as IColumn<RecordType>];
+    if (props.fill)
+      columns = [
+        ...columns,
+        {
+          style: {
+            /*  border: 'none' backgroundColor: '#fafafa'*/
+          },
+        } as IColumn<RecordType>,
+      ];
 
     let isInputFocused = false;
 
@@ -200,7 +211,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       ?.filter((component) => position.test(component.position))
       .sort((a, b) => compare(_.isEmpty(a.order) ? null : a.order![index], _.isEmpty(b.order) ? null : b.order![index]))
       .map((component) => {
-        const { key, style } = component;
+        const { key, style, task } = component;
         switch (component.node) {
           case 'add-button':
             return { key, component: AddButton, style };
@@ -209,7 +220,13 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             return { key, component: DeleteButton, style };
 
           case 'refresh-button':
-            return { key, component: RefreshButton, style };
+            return {
+              key,
+              component: (
+                <RefreshButton disabled={refresh || state.current !== 'idle'} running={refresh} setRefresh={setRefresh} task={task} />
+              ),
+              style,
+            };
 
           case 'records-count':
             return { key, component: RecordsCount, style };
@@ -255,22 +272,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       </Popconfirm>
     );
   }, [selectedRows, state]);
-
-  const RefreshButton = React.useMemo(() => {
-    return (
-      <Tooltip title="Actualizar">
-        <Button
-          style={{ paddingTop: 0 }}
-          disabled={refresh || state.current !== 'idle'}
-          type="link"
-          icon={<ReloadOutlined spin={refresh} />}
-          onClick={() => {
-            setRefresh(true);
-          }}
-        />
-      </Tooltip>
-    );
-  }, [refresh, state]);
 
   const RecordsCount = React.useMemo(() => {
     return <Tag color="volcano">Registros: {dataSource.length}</Tag>;
@@ -504,6 +505,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         }}
         columns={columns}
         dataSource={dataSource}
+        scroll={{ y: 0 }}
+        showSorterTooltip={false}
         title={
           extraComponents && extraComponents.filter((component) => /top|both/.test(component.position)).length > 0
             ? (records) => {
@@ -541,6 +544,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         onChange={(pagination, filters, sorter, extra) => {
           handleChangeTable(pagination, filters, sorter, extra);
         }}
+        // locale={{ emptyText: 'VACIOSSSSSSSSSSSSSSSSSSSSSSSSSSSS',  }}
       />
     </Form>
   );

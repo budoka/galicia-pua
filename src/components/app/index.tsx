@@ -18,6 +18,8 @@ import { history } from 'src/store';
 import { Footer } from '../footer';
 import { Loading } from '../loading';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
+import 'src/services/setup-axios';
+import 'src/components/message/setup-message';
 import './style.less';
 
 const { Content } = Layout;
