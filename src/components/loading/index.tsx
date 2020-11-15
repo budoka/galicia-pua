@@ -23,8 +23,6 @@ export const Loading: React.FC<LoadingProps> = (props) => {
   let className = classNames(props.className);
   let spinClass = classNames(props.spinClass);
 
-  console.log(props.style);
-
   return (
     <Wrapper horizontal="center" vertical="middle" unselectable className={className} style={props.style}>
       <Spin className={spinClass} tip={text} indicator={indicator} style={{ fontSize, color }} />

@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { history } from 'src/store';
 
 /**
@@ -33,4 +34,11 @@ export function goTo(path: string) {
  */
 export function replaceRoute(path: string) {
   history.replace(path);
+}
+
+/**
+ * Hook to parse query string.
+ */
+export function useQuery() {
+  return new URLSearchParams(useLocation().search);
 }

@@ -49,7 +49,7 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
     return;
   }*/
 
-  dispatch(running(true));
+  dispatch(running());
 
   return await axios
     .request<PreviewCajaResponse>(config)
@@ -86,18 +86,18 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
       dispatch(failure());
     });
 
-  function running(running: PreviewCajaState['isRunning']): PreviewCajaActionTypes {
-    return { type: PreviewCajaAction.RUNNING_PREVIEW, payload: running };
+  function running(): PreviewCajaActionTypes {
+    return { type: PreviewCajaAction.RUNNING };
   }
 
   function success(preview: PreviewCajaState['preview']): PreviewCajaActionTypes {
     console.log('preview');
     console.log(preview);
-    return { type: PreviewCajaAction.GET_SUCCESS, preview };
+    return { type: PreviewCajaAction.GET_DATA_SUCCESS, preview };
   }
 
   function failure(): PreviewCajaActionTypes {
-    return { type: PreviewCajaAction.GET_FAILURE };
+    return { type: PreviewCajaAction.GET_DATA_FAILURE };
   }
 };
 

@@ -2,7 +2,7 @@ import { RunnableState } from 'src/actions/interfaces';
 import { Caja, ContenidoCaja } from '../interfaces';
 
 export enum InfoCajaAction {
-  RUNNING_INFO = 'InfoCajaAction/RUNNING_INFO',
+  RUNNING = 'InfoCajaAction/RUNNING',
 
   GET_BOX_SUCCESS = 'InfoCajaAction/GET_BOX_SUCCESS',
   GET_BOX_FAILURE = 'InfoCajaAction/GET_BOX_FAILURE',
@@ -31,9 +31,8 @@ export enum InfoCajaAction {
 
 export type InfoCajaState = Caja & RunnableState;
 
-export interface RUNNING_INFO {
-  type: typeof InfoCajaAction.RUNNING_INFO;
-  isRunning: InfoCajaState['isRunning'];
+export interface RUNNING {
+  type: typeof InfoCajaAction.RUNNING;
 }
 
 export interface GET_BOX_SUCCESS {
@@ -108,7 +107,7 @@ export interface REMOVE_CONTENT_FAILURE {
 }
 
 export type InfoCajaActionTypes =
-  | RUNNING_INFO
+  | RUNNING
   | GET_BOX_SUCCESS
   | GET_BOX_FAILURE
   | CREATE_BOX_SUCCESS

@@ -11,7 +11,7 @@ const initialState: InfoCajaState = {
 
 export default function reducer(state = initialState, action: InfoCajaActionTypes): InfoCajaState {
   switch (action.type) {
-    case InfoCajaAction.RUNNING_INFO:
+    case InfoCajaAction.RUNNING:
       return {
         ...state,
         isRunning: true,

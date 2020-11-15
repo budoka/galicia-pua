@@ -40,7 +40,13 @@ const views: Views = {
   },
   'Buscar Pedido': { title: 'Buscar Pedido', path: '/buscar-pedidos', component: <Unavailable />, private: true, scope: 'full' },
   // Cajas
-  Cajas: { title: 'Cajas', path: '/cajas', component: <Cajas />, private: true, scope: 'full' },
+  Cajas: {
+    title: 'Cajas',
+    path: '/cajas',
+    component: <Cajas />,
+    private: true,
+    scope: 'full',
+  },
   // Not Found
   'Not Found': { title: 'No Encontrado', path: undefined, component: <NotFound />, private: false, scope: 'full' },
 };

@@ -32,7 +32,7 @@ const postcssNormalize = require('postcss-normalize');
 
 const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const darkTheme = require('@ant-design/dark-theme').default;
+// const darkTheme = require('@ant-design/dark-theme').default;
 
 const appPackageJson = require(paths.appPackageJson);
 

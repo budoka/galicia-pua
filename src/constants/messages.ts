@@ -1,3 +1,3 @@
 export enum Message {
-  GET_FAILURE = 'Error al recuperar datos. Por favor intente nuevamente.',
+  GET_DATA_FAILURE = 'Error al recuperar datos. Por favor intente nuevamente.',
 }

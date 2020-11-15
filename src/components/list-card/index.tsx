@@ -34,7 +34,8 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
     return count !== undefined ? classNames(setBadgeStatus(count)) : undefined;
   };
 
-  const linkWrapper = (children: React.ReactNode, url: string) => {
+  const linkWrapper = (children: React.ReactNode, path: string, params?: string, query?: string) => {
+    const url = [path, params, query].join('');
     return (
       <Link to={url} className={styles.link}>
         {children}
@@ -58,7 +59,7 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
           return (
             <Card key={index} type="inner" className={styles.innerCard}>
               <div className={styles.cardContent}>
-                {item.path && item.count ? linkWrapper(renderCard(item), item.path) : renderCard(item)}
+                {item.path && item.count ? linkWrapper(renderCard(item), item.path, item.params, item.query) : renderCard(item)}
               </div>
             </Card>
           );

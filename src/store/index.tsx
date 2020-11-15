@@ -2,7 +2,7 @@ import { routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import { applyMiddleware, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension/logOnlyInProduction';
-import { persistReducer, persistStore } from 'redux-persist';
+import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
 import { createRootReducer } from 'src/reducers';
@@ -10,10 +10,10 @@ import { createRootReducer } from 'src/reducers';
 export const history = createBrowserHistory();
 
 const persistConfig = {
-  key: 'root',
+  key: 'AppState',
   storage,
   blacklist: ['cajas'],
-};
+} as PersistConfig<any>;
 
 const persistedReducer = persistReducer(persistConfig, createRootReducer(history));
 

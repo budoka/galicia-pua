@@ -15,8 +15,8 @@ export const Inicio: React.FC = (props) => {
     {
       title: 'Cajas',
       items: [
-        { description: 'Pendientes de Cierre', count: 20, path: views['Cajas'].path },
-        { description: 'Pendientes de Devolución', count: 0, path: views['Cajas'].path },
+        { description: 'Pendientes de Cierre', count: 20, path: views['Cajas'].path, query: '?estado=PendienteCierre' },
+        { description: 'Pendientes de Devolución', count: 5, path: views['Cajas'].path, query: '?estado=PendienteRecepcion' },
       ],
     },
     {

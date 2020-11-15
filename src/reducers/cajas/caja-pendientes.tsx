@@ -19,14 +19,14 @@ export default function reducer(state = initialState, action: CajasPendientesAct
         detallesCaja: [],
       };
 
-    case CajasPendientesAction.GET_SUCCESS:
+    case CajasPendientesAction.GET_DATA_SUCCESS:
       return {
         ...state,
         isRunning: false,
         detallesCaja: action.detallesCaja,
       };
 
-    case CajasPendientesAction.GET_FAILURE:
+    case CajasPendientesAction.GET_DATA_FAILURE:
       return {
         ...state,
         isRunning: false,

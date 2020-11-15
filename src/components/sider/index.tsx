@@ -8,7 +8,7 @@ import _, { partial } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { setOpenMenu } from 'src/actions';
+import { setOpenMenu } from 'src/actions/configuracion';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
 import { Dictionary, ObjectLiteral } from 'src/interfaces';
 import { RootState } from 'src/reducers';
@@ -30,7 +30,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
   const siderClassNames = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.sider);
 
   const dispatch = useDispatch();
-  const settings = useSelector((state: RootState) => state.settings);
+  const settings = useSelector((state: RootState) => state.configuracion);
   const router = useSelector((state: RootState) => state.router);
 
   useEffect(() => {

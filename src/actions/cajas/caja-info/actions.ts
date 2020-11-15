@@ -40,7 +40,7 @@ export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dis
     return;
   }*/
 
-  dispatch(running(true));
+  dispatch(running());
 
   return await axios
     .request<Caja>(config)
@@ -59,8 +59,8 @@ export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dis
       dispatch(failure());
     });
 
-  function running(isRunning: InfoCajaState['isRunning']): InfoCajaActionTypes {
-    return { type: InfoCajaAction.RUNNING_INFO, isRunning };
+  function running(): InfoCajaActionTypes {
+    return { type: InfoCajaAction.RUNNING };
   }
 
   function success(data: Caja): InfoCajaActionTypes {
@@ -99,7 +99,7 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
     return;
   }*/
 
-  dispatch(running(true));
+  dispatch(running());
 
   return await axios
     .request<Caja>(config)
@@ -116,8 +116,8 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
       dispatch(failure());
     });
 
-  function running(isRunning: InfoCajaState['isRunning']): InfoCajaActionTypes {
-    return { type: InfoCajaAction.RUNNING_INFO, isRunning };
+  function running(): InfoCajaActionTypes {
+    return { type: InfoCajaAction.RUNNING };
   }
 
   function success(caja: Caja): InfoCajaActionTypes {

@@ -8,17 +8,7 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import {
-  clearPreviewCaja,
-  getCaja,
-  getPreviewCaja,
-  getTiposCaja,
-  getTiposContenidoCaja,
-  getTiposPlantilla,
-  setTipoCajaSeleccionado,
-  setTipoContenidoCajaSeleccionado,
-  setTipoPlantillaSeleccionado,
-} from 'src/actions';
+
 import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
 import {
   PreviewCajaDetalleResponse,
@@ -34,6 +24,16 @@ import { deleteProps } from 'src/utils/object';
 import { compare } from 'src/utils/string';
 import styles from './style.module.less';
 import moment from 'moment';
+import {
+  getTiposCaja,
+  getTiposContenidoCaja,
+  getTiposPlantilla,
+  setTipoCajaSeleccionado,
+  setTipoContenidoCajaSeleccionado,
+  setTipoPlantillaSeleccionado,
+} from 'src/actions/cajas/caja-filtros';
+import { getCaja } from 'src/actions/cajas/caja-info';
+import { getPreviewCaja, clearPreviewCaja } from 'src/actions/cajas/caja-preview';
 
 const { Option } = Select;
 
@@ -47,7 +47,7 @@ const _columns = [
     dataType: 'fecha',
     inputType: 'date',
 
-    sorter: { compare: (a, b) => compare(+a.key, +b.key), multiple: -1 },
+    sorter: { compare: (a, b) => compare(+a.a, +b.a), multiple: -1 },
   },
   {
     key: 'b',
@@ -78,6 +78,7 @@ const _columns = [
     inputType: 'checkbox',
     dataType: 'boolean',
     editable: true,
+    sorter: { compare: (a, b) => compare(+a.c, +b.c), multiple: -1 },
   },
   {
     key: 'd',
@@ -151,7 +152,7 @@ export const IngresarCaja: React.FC = (props) => {
     console.log('rendering');
   });*/
 
-  useEffect(() => console.log('render cajas'));
+  // useEffect(() => console.log('render ingresar-caja'));
 
   // Ocultar pop-up filtro seleccionado.
   useEffect(() => {
@@ -441,12 +442,12 @@ export const IngresarCaja: React.FC = (props) => {
             {
               key: 'add-button',
               node: 'add-button',
-              position: 'both',
+              position: 'top',
             },
             {
               key: 'delete-button',
               node: 'delete-button',
-              position: 'both',
+              position: 'top',
             },
             {
               key: 'refresh-button',

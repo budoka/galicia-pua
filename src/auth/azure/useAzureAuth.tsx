@@ -2,21 +2,13 @@ import {
   AccountInfo,
   AuthenticationResult,
   EndSessionRequest,
-  InteractionRequiredAuthError,
   PopupRequest,
   PublicClientApplication,
   RedirectRequest,
   SilentRequest,
   SsoSilentRequest,
 } from '@azure/msal-browser';
-import { LayoutProps } from 'antd/lib/layout';
-import decodeJwt from 'jwt-decode';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { AuthAzureError } from 'src/exceptions/auth/azure';
-import { hasJsonStructure } from 'src/utils/json';
-import { getStoredPropertyValue } from 'src/utils/storage-api';
-import { JsxElement } from 'typescript';
-import { JWTPayload } from '../interface';
 import { MSAL_CONFIG } from './auth-config';
 
 export type LoginType = 'loginRedirect' | 'loginPopup';
@@ -230,11 +222,15 @@ export const useAzureAuth = () => {
 interface AuthProviderProps {
   disabled?: boolean;
   children?: React.ReactNode;
+  onLoad?: (auth: AuthContextProps) => void;
 }
 
 // Provider component that wraps your app and makes auth object ...
 // ... available to any child component that calls useAzureAuth().
-export const AuthProvider = ({ disabled = false, children }: AuthProviderProps) => {
+export const AuthProvider = ({ disabled = false, children, onLoad }: AuthProviderProps) => {
   const auth: AuthContextProps = useProvideAuth(disabled);
+
+  auth.data && onLoad && onLoad(auth);
+
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

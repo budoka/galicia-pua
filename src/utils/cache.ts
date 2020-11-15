@@ -33,7 +33,7 @@ export class CacheMemory<T> {
     const data = this.storage.get(key)!;
 
     const expireIn = data.expiration ? dayjs.duration(dayjs.unix(data.expiration).diff(dayjs.unix(dayjs().unix()))).humanize() : null;
-    console.log(`[${this.id}|${key}] Value: '${data.value}'${expireIn ? ', Expirate in ' + expireIn : ''}.`);
+    // console.log(`[${this.id}|${key}] Value: '${data.value}'${expireIn ? ', Expirate in ' + expireIn : ''}.`);
     return data.value;
   };
 
@@ -44,10 +44,10 @@ export class CacheMemory<T> {
       const newValue = { value, expiration, hits };
 
       this.storage.set(key, { ...newValue });
-      console.log(`[${this.id}|${key}] has been saved in cache. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
+      //  console.log(`[${this.id}|${key}] has been saved in cache. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
     } else {
       const { value, expiration, hits } = data!;
-      console.log(`[${this.id}|${key}] is already in cache. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
+      // console.log(`[${this.id}|${key}] is already in cache. Value: '${value}'${expiration ? ', Expiration: ' + expiration : ''}.`);
 
       const newValue = { value, expiration, hits: hits + 1 };
       this.storage.set(key, newValue);
@@ -58,7 +58,7 @@ export class CacheMemory<T> {
     const data = this.storage.get(key);
 
     if (!data) {
-      console.log(`[${this.id}|${key}] doesn't exist.`);
+      //    console.log(`[${this.id}|${key}] doesn't exist.`);
       return true;
     }
 
@@ -67,7 +67,7 @@ export class CacheMemory<T> {
 
     if (expiration && now > expiration) {
       const expiredAgo = dayjs.duration(dayjs.unix(expiration).diff(dayjs.unix(now))).humanize();
-      console.log(`[${this.id}|${key}] is expired. Expired ago ${expiredAgo}.`);
+      //  console.log(`[${this.id}|${key}] is expired. Expired ago ${expiredAgo}.`);
       return true;
     }
 
@@ -76,11 +76,11 @@ export class CacheMemory<T> {
 
   remove = (key: Key) => {
     this.storage.delete(key);
-    console.log(`[${this.id}|${key}] has been removed.`);
+    //   console.log(`[${this.id}|${key}] has been removed.`);
   };
 
   clear = () => {
     this.storage.clear();
-    console.log(`[${this.id}] has been clear.`);
+    //  console.log(`[${this.id}] has been clear.`);
   };
 }

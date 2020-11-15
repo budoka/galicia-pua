@@ -9,10 +9,10 @@ export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export interface IAPI {
   name: string;
   url: string;
-  methods: IAPIMethod[];
+  resources: IAPIResource[];
 }
 
-export interface IAPIMethod {
+export interface IAPIResource {
   id: string;
   verb: HttpVerb;
   path: string;
@@ -30,7 +30,7 @@ export interface IAPIMethod {
 
 export interface IAPIData {
   url: string;
-  method: IAPIMethod;
+  method: IAPIResource;
 }
 
 interface ICache<T> {
@@ -58,7 +58,7 @@ export function getAPIData(apiName: string, id: string): IAPIData {
 
   const url = api.url;
 
-  const method = api.methods.find((path) => path.id === id);
+  const method = api.resources.find((path) => path.id === id);
 
   if (!method) throw new APIError(`Method id: '${id}' not found.`);
 
@@ -93,10 +93,9 @@ export function buildAPIUrl(apiName: string) {
 
 /**
  * Get expiration unix time
- * @param value value
+ * @param value value value *15*
  * @param unit default value *second*
  */
-export function getExpirationTime(value: number, unit?: 'second' | 'minute') {
-  if (!unit) unit = 'second';
+export function getExpirationTime(value: number = 15, unit: 'second' | 'minute' = 'second') {
   return dayjs().add(value, unit).unix();
 }

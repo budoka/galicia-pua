@@ -7,4 +7,6 @@ export interface IListCardItem {
   description: React.ReactNode;
   count?: number;
   path?: string;
+  params?: string;
+  query?: string;
 }

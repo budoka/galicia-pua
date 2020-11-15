@@ -1,10 +1,8 @@
-// import './wdyr.ts';
-
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ConnectedRouter } from 'connected-react-router';
 import { ConfigProvider } from 'antd';
-import localeES from 'antd/lib/locale-provider/es_ES';
+import es from 'antd/lib/locale-provider/es_ES';
 import 'moment/locale/es';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -25,21 +23,19 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 ReactDOM.render(
-  <Provider store={store}>
+  <ReduxProvider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <ConnectedRouter history={history}>
-        <ConfigProvider locale={localeES}>
-          <AuthProvider disabled>
+      <ConfigProvider locale={es}>
+        <ConnectedRouter history={history}>
+          <AuthProvider>
             <App />
           </AuthProvider>
-        </ConfigProvider>
-      </ConnectedRouter>
+        </ConnectedRouter>
+      </ConfigProvider>
     </PersistGate>
-  </Provider>,
+  </ReduxProvider>,
   document.getElementById('root'),
 );
-
-export { localeES };
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

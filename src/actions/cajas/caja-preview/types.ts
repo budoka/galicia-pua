@@ -1,17 +1,11 @@
-import {
-  PreviewCajaDetalleResponse,
-  PreviewCajaDocumentoResponse,
-  PreviewCajaEtiquetaResponse,
-  PreviewCajaRequest,
-  PreviewCajaResponse,
-} from './interfaces';
 import { RunnableState } from '../../interfaces';
+import { PreviewCajaResponse } from './interfaces';
 
 export enum PreviewCajaAction {
-  RUNNING_PREVIEW = 'PreviewCajas/RUNNING_PREVIEW',
+  RUNNING = 'PreviewCajas/RUNNING',
 
-  GET_SUCCESS = 'PreviewCajas/GET_SUCCESS',
-  GET_FAILURE = 'PreviewCajas/GET_FAILURE',
+  GET_DATA_SUCCESS = 'PreviewCajas/GET_DATA_SUCCESS',
+  GET_DATA_FAILURE = 'PreviewCajas/GET_DATA_FAILURE',
 
   CLEAR = 'PreviewCajas/CLEAR',
 }
@@ -22,17 +16,16 @@ export interface PreviewCajaState extends RunnableState {
 }
 
 export interface RUNNING_PREVIEW {
-  type: typeof PreviewCajaAction.RUNNING_PREVIEW;
-  payload: PreviewCajaState['isRunning'];
+  type: typeof PreviewCajaAction.RUNNING;
 }
 
 export interface GET_SUCCESS {
-  type: typeof PreviewCajaAction.GET_SUCCESS;
+  type: typeof PreviewCajaAction.GET_DATA_SUCCESS;
   preview: PreviewCajaState['preview'];
 }
 
 export interface GET_FAILURE {
-  type: typeof PreviewCajaAction.GET_FAILURE;
+  type: typeof PreviewCajaAction.GET_DATA_FAILURE;
 }
 
 export interface CLEAR {

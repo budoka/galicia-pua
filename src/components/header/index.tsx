@@ -1,10 +1,10 @@
 import { CompassFilled, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Button, Layout } from 'antd';
+import { Button, Divider, Layout } from 'antd';
 import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setButtonVisible, setCollapsed, setForcedCollapsed, setOpenMenu, setOrientation } from 'src/actions';
+import { setButtonVisible, setCollapsed, setForcedCollapsed, setOpenMenu, setOrientation } from 'src/actions/configuracion';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
@@ -20,8 +20,8 @@ interface HeaderProps extends LayoutProps {
 }
 
 export const Header: React.FC<HeaderProps> = (props) => {
-  const auth = useAzureAuth();
-  const settings = useSelector((state: RootState) => state.settings);
+  const sesion = useSelector((state: RootState) => state.sesion);
+  const settings = useSelector((state: RootState) => state.configuracion);
   const dispatch = useDispatch();
   const size = useWindowSize();
 
@@ -107,7 +107,16 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return (
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
-          Usuario: <span className={styles.username}>{auth.data?.account.username}</span>
+          {'Usuario:  '}
+          <span className={styles.info}>
+            {sesion.infoSesion?.usuario} ({sesion.infoSesion?.legajo})
+          </span>
+
+          {'Sector:  '}
+          <span className={styles.info}>{sesion.infoSesion?.sector}</span>
+
+          {'Perfil:  '}
+          <span className={styles.info}>{sesion.infoSesion?.perfil}</span>
         </span>
       </div>
     );

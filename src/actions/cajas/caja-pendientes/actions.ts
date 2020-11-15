@@ -14,10 +14,10 @@ import { Caja, InfoCaja, ContenidoCaja } from '../interfaces';
 import { CajasPendientes, CajasPendientesAction, CajasPendientesActionTypes, CajasPendientesState, DetalleCaja } from './types';
 
 interface CajasPendientesBodyRequest {
-  idUsuario: number;
-  centroCosto: number;
-  roles: string[];
-  estado: string;
+  idUsuario: number; // sacar
+  roles: string[]; // sacar
+  estado?: string;
+  centroCosto?: number;
   fechaDesde?: string;
   fechaHasta?: string;
   nombre?: string;
@@ -28,8 +28,8 @@ interface CajasPendientesBodyRequest {
 
 interface DetalleCajaBodyResponse {
   numero: number;
-  descripcion: string;
   estado: string;
+  descripcion: string;
   fechaEmision: string;
   sector: number;
   usuario: string;
@@ -49,9 +49,9 @@ export const getCajasPendientes = (data: CajasPendientesBodyRequest, options?: R
   dispatch,
   getState,
 ) => {
-  const { expiration, force } = options || {};
-
   if (!data) return;
+
+  const { expiration, force } = options || {};
 
   dispatch(clearCajasPendientes());
 
@@ -68,7 +68,13 @@ export const getCajasPendientes = (data: CajasPendientesBodyRequest, options?: R
 
   const endpoint = `${url}/${path}`;
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, timeout, headers, data };
+  const config: AxiosRequestConfig = {
+    method: verb,
+    url: endpoint,
+    timeout,
+    headers,
+    data,
+  };
 
   const key = hashCode(config);
 
@@ -80,7 +86,7 @@ export const getCajasPendientes = (data: CajasPendientesBodyRequest, options?: R
     return;
   }
 
-  dispatch(running(true));
+  dispatch(running());
 
   // Consultar servicio.
   return await axios
@@ -108,16 +114,16 @@ export const getCajasPendientes = (data: CajasPendientesBodyRequest, options?: R
       dispatch(failure());
     });
 
-  function running(isRunning: CajasPendientesState['isRunning']): CajasPendientesActionTypes {
-    return { type: CajasPendientesAction.RUNNING, isRunning };
+  function running(): CajasPendientesActionTypes {
+    return { type: CajasPendientesAction.RUNNING };
   }
 
   function success(cajas: CajasPendientes): CajasPendientesActionTypes {
-    return { type: CajasPendientesAction.GET_SUCCESS, detallesCaja: cajas.detallesCaja };
+    return { type: CajasPendientesAction.GET_DATA_SUCCESS, detallesCaja: cajas.detallesCaja };
   }
 
   function failure(): CajasPendientesActionTypes {
-    message.error(Message.GET_FAILURE);
-    return { type: CajasPendientesAction.GET_FAILURE };
+    message.error(Message.GET_DATA_FAILURE);
+    return { type: CajasPendientesAction.GET_DATA_FAILURE };
   }
 };

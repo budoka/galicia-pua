@@ -2,11 +2,13 @@ import { connectRouter } from 'connected-react-router';
 import { History } from 'history';
 import { combineReducers } from 'redux';
 import cajas from 'src/reducers/cajas';
-import settings from 'src/reducers/settings';
+import configuracion from 'src/reducers/configuracion';
+import sesion from 'src/reducers/sesion';
 
 const reducers = {
   cajas,
-  settings,
+  configuracion,
+  sesion,
 };
 
 export const createRootReducer = (history: History) => {

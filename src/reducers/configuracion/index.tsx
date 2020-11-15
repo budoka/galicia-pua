@@ -1,8 +1,8 @@
-import { Settings, SettingsActionTypes, SettingsState } from 'src/actions/settings/types';
+import { ConfiguracionAction, ConfiguracionActionTypes, ConfiguracionState } from 'src/actions/configuracion/types';
 import { getDeviceType, isMobile } from 'src/utils/mobile';
 import { getScreenOrientation } from 'src/utils/screen';
 
-const initialState: SettingsState = {
+const initialState: ConfiguracionState = {
   device: getDeviceType(),
   orientation: getScreenOrientation({ width: window.innerWidth, height: window.innerHeight }),
   collapsed: false,
@@ -11,35 +11,35 @@ const initialState: SettingsState = {
   openMenu: undefined,
 };
 
-export default function reducer(state = initialState, action: SettingsActionTypes): SettingsState {
+export default function reducer(state = initialState, action: ConfiguracionActionTypes): ConfiguracionState {
   switch (action.type) {
-    case Settings.DEVICE_CHANGE:
+    case ConfiguracionAction.DEVICE_CHANGE:
       return {
         ...state,
         device: action.device,
       };
-    case Settings.ORIENTATION_CHANGE:
+    case ConfiguracionAction.ORIENTATION_CHANGE:
       return {
         ...state,
         orientation: action.orientation,
       };
-    case Settings.SIDER_COLLAPSED:
+    case ConfiguracionAction.SIDER_COLLAPSED:
       return {
         ...state,
         collapsed: action.collapsed,
       };
-    case Settings.SIDER_FORCED_COLLAPSED:
+    case ConfiguracionAction.SIDER_FORCED_COLLAPSED:
       return {
         ...state,
         // collapsed: action.forcedCollapsed,
         forcedCollapsed: action.forcedCollapsed,
       };
-    case Settings.SIDER_BUTTON_VISIBILITY:
+    case ConfiguracionAction.SIDER_BUTTON_VISIBILITY:
       return {
         ...state,
         buttonVisible: action.buttonVisible,
       };
-    case Settings.SIDER_OPEN_MENU:
+    case ConfiguracionAction.SIDER_OPEN_MENU:
       return {
         ...state,
         openMenu: action.openMenu,
