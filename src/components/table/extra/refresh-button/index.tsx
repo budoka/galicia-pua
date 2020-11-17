@@ -11,7 +11,7 @@ interface RefreshButtonProps {
   task?: () => Promise<void>;
 }
 
-export const RefreshButton = (props: RefreshButtonProps) => {
+export const RefreshButton = React.memo((props: RefreshButtonProps) => {
   const { disabled, task, setRefresh, running } = props;
 
   /* const [state, setState] = useState({
@@ -46,9 +46,7 @@ export const RefreshButton = (props: RefreshButtonProps) => {
       <Button style={{ paddingTop: 0 }} disabled={disabled} type="link" icon={<ReloadOutlined spin={running} />} onClick={handleRefresh} />
     </Tooltip>
   );
-};
-
-export default React.memo(RefreshButton);
+});
 
 /*
 import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons';

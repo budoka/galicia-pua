@@ -7,7 +7,7 @@ interface AddButtonProps {
   onCancel: () => void;
 }
 
-export const AddButton = (props: AddButtonProps) => {
+export const AddButton = React.memo((props: AddButtonProps) => {
   const { editing, onAdd, onCancel } = props;
 
   return !editing ? (
@@ -19,6 +19,4 @@ export const AddButton = (props: AddButtonProps) => {
       Cancelar
     </Button>
   );
-};
-
-export default React.memo(AddButton);
+});

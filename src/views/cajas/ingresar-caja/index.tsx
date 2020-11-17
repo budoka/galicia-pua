@@ -1,5 +1,5 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Select, Tag } from 'antd';
+import { Breadcrumb, Button, Divider, Empty, Select, Tag } from 'antd';
 import { LabeledValue } from 'antd/lib/select';
 import { Moment } from 'moment';
 import _ from 'lodash';
@@ -32,12 +32,13 @@ import {
   setTipoContenidoCajaSeleccionado,
   setTipoPlantillaSeleccionado,
 } from 'src/actions/cajas/caja-filtros';
-import { getCaja } from 'src/actions/cajas/caja-info';
+import { getCaja, saveCaja } from 'src/actions/cajas/caja-info';
 import { getPreviewCaja, clearPreviewCaja } from 'src/actions/cajas/caja-preview';
+import { ContentInfo } from 'src/components/content-info';
 
 const { Option } = Select;
 
-const _columns = [
+/* const _columns = [
   {
     key: 'a',
     dataIndex: 'a',
@@ -46,8 +47,8 @@ const _columns = [
     editable: true,
     dataType: 'fecha',
     inputType: 'date',
-
     sorter: { compare: (a, b) => compare(+a.a, +b.a), multiple: -1 },
+    rules: [{ required: true }],
   },
   {
     key: 'b',
@@ -119,8 +120,8 @@ const _columns = [
     rules: [{ required: true }],
   },
 ] as IColumn<ContenidoCaja>[];
-
-const _data = new Array(100).fill('').map((e, i) => {
+ */
+/* const _data = new Array(100).fill('').map((e, i) => {
   return {
     key: `${i + 1}`,
     a: moment(),
@@ -133,7 +134,7 @@ const _data = new Array(100).fill('').map((e, i) => {
     h: 'h',
   };
 }) as any[];
-
+ */
 export const IngresarCaja: React.FC = (props) => {
   const dispatch = useDispatch();
   const cajas = useSelector((state: RootState) => state.cajas);
@@ -145,8 +146,8 @@ export const IngresarCaja: React.FC = (props) => {
   const tipoPlantillaRef = useRef(null);
 
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<number>(-1); // Es el filtro con focus
-  const [columns, setColumns] = useState(_columns);
-  const [dataSource, setDataSource] = useState(_data);
+  const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
+  //const [dataSource, setDataSource] = useState(_data);
 
   /* useEffect(() => { 
     console.log('rendering');
@@ -213,7 +214,8 @@ export const IngresarCaja: React.FC = (props) => {
           id: index,
           title: preview.descripcion,
           dataType: preview.tipoDato,
-          required: preview.requerido === 'R',
+          rules: [{ required: preview.requerido === 'R' }],
+
           /*    required: !preview.opcional,
           length: preview.longitud,
           order: preview.orden,
@@ -223,7 +225,7 @@ export const IngresarCaja: React.FC = (props) => {
       });
 
       setColumns(columns);
-      setDataSource([]);
+      // setDataSource([]);
     } else if ('idPlantilla' in preview[0]) {
       const previewDetale: PreviewCajaDetalleResponse[] = preview as PreviewCajaDetalleResponse[];
 
@@ -232,16 +234,14 @@ export const IngresarCaja: React.FC = (props) => {
           id: preview.id,
           title: preview.titulo,
           dataType: preview.tipo,
-          required: !preview.opcional,
-          length: preview.longitud,
+          rules: [{ required: !preview.opcional, len: preview.longitud }],
           order: preview.orden,
-
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
         } as IColumn<ContenidoCaja>;
       });
 
       setColumns(columns);
-      setDataSource([]);
+      // setDataSource([]);
     } else if ('legacy' in preview[0]) {
       const previewEtiqueta: PreviewCajaEtiquetaResponse[] = preview as PreviewCajaEtiquetaResponse[];
 
@@ -281,10 +281,11 @@ export const IngresarCaja: React.FC = (props) => {
       });
 
       setColumns(columns);
-      setDataSource(data);
+      //  setDataSource(data);
     }
   }, [cajas.preview.preview]);
 
+  // AL crear/editar
   useEffect(() => {
     const idCaja = cajas.info.id;
     if (!idCaja) return;
@@ -322,7 +323,7 @@ export const IngresarCaja: React.FC = (props) => {
       toDate: dayjs().format('YYYY-MM-DD'),
       restricted: false,
     };
-    dispatch(saveCaja(cajaInfo));*/
+    dispatch(saveCaja(cajaInfo)); */
   };
 
   const renderOptions = (options: Elemento[]) => {
@@ -427,10 +428,55 @@ export const IngresarCaja: React.FC = (props) => {
     );
   };
 
-  const Tabla = React.useMemo(() => {
+  const renderTabla = () => {
+    console.log(columns);
+    return (
+      <>
+        {_.isEmpty(cajas.preview.preview) ? undefined : (
+          <>
+            <Divider />
+            <Wrapper direction="row" horizontal="right" style={{ width: '90%', minWidth: 400 }}>
+              <Table<ContenidoCaja>
+                // bordered
+                size={'small'}
+                columns={columns as ColumnsType<ContenidoCaja>}
+                dataSource={[]}
+                loading={cajas.preview.isRunning}
+                // style={{ width: '100%' }}
+                hideRowSelection
+                hideHeader
+                hideFooter
+                hidePagination
+                locale={{ emptyText: <Empty description="Vista preliminar" /> }}
+              />
+            </Wrapper>
+          </>
+        )}
+      </>
+    );
+  };
+
+  const renderActionButtons = () => {
+    return (
+      <>
+        {_.isEmpty(cajas.preview.preview) ? undefined : (
+          <>
+            <Divider />
+            <div className={styles.buttonsWrapper}>
+              <Button type="primary" onClick={createCaja}>
+                Crear
+              </Button>
+            </div>
+          </>
+        )}
+      </>
+    );
+  };
+
+  /*  const Tabla = () => {
     return (
       <Wrapper direction="row" horizontal="right" style={{ width: '90%', minWidth: 400 }}>
-        {/* _.isEmpty(cajas.preview.preview) ? null :*/}
+        
         <Table<ContenidoCaja>
           // bordered
           size={'small'}
@@ -471,13 +517,14 @@ export const IngresarCaja: React.FC = (props) => {
         />
       </Wrapper>
     );
-  }, [cajas.preview.isRunning, columns, dataSource]);
+  }; */
 
   return (
     <Wrapper contentWrapper unselectable direction="column" horizontal="center">
+      <ContentInfo />
       {renderFiltro()}
-      {Tabla}
-      {/*renderActionButtons()*/}
+      {renderTabla()}
+      {renderActionButtons()}
     </Wrapper>
   );
 };

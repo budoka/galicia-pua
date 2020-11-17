@@ -4,16 +4,14 @@ import { MenuMode } from 'antd/lib/menu';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import SubMenu from 'antd/lib/menu/SubMenu';
 import classNames from 'classnames';
-import _, { partial } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { setOpenMenu } from 'src/actions/configuracion';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
-import { Dictionary, ObjectLiteral } from 'src/interfaces';
+import { ObjectLiteral } from 'src/interfaces';
 import { RootState } from 'src/reducers';
 import { View } from 'src/views';
-//import { history } from 'src/store';
 import styles from './style.module.less';
 import { SiderChildItem, SiderItem, SiderParentItem } from './types';
 
@@ -26,7 +24,7 @@ interface SiderProps extends SiderPropsAnt {
   collapsed?: boolean;
 }
 
-export const Sider: React.FC<SiderProps> = (props) => {
+export const Sider: React.FC<SiderProps> = React.memo((props) => {
   const siderClassNames = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.sider);
 
   const dispatch = useDispatch();
@@ -44,7 +42,7 @@ export const Sider: React.FC<SiderProps> = (props) => {
       if (children) {
         children.forEach((child) => {
           const view = { ...child.view };
-          view['title'] = (item as SiderParentItem).title;
+          view.title = (item as SiderParentItem).title;
           const pathname = view.path;
           if (pathname) views[pathname] = view;
         });
@@ -56,16 +54,18 @@ export const Sider: React.FC<SiderProps> = (props) => {
 
     Object.entries(views).some(([key, view]) => {
       if (key === pathname) {
-        !settings.collapsed && key !== settings.openMenu && dispatch(setOpenMenu((view as View).title));
+        const menu = (view as View).title;
+        if (!settings.collapsed && key !== settings.openMenu && menu !== settings.openMenu) dispatch(setOpenMenu((view as View).title));
         return true;
       }
     });
   }, [router.location.pathname, settings.collapsed]);
 
   const onOpenChange = (currentMenu: React.Key[]) => {
-    //console.log(currentMenu);
     if (currentMenu.length > 0) {
-      dispatch(setOpenMenu(currentMenu[currentMenu.length - 1].toString()));
+      const menu = currentMenu[currentMenu.length - 1].toString();
+      if (settings.openMenu === menu) return;
+      dispatch(setOpenMenu(menu));
     } else if (settings.openMenu) dispatch(setOpenMenu());
   };
 
@@ -128,4 +128,4 @@ export const Sider: React.FC<SiderProps> = (props) => {
       </Menu>
     </SiderAnt>
   );
-};
+});

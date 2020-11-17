@@ -63,10 +63,13 @@ export const getInfoSesion = (data: SesionBodyRequest, options?: RequestOptions)
     .request<SesionBodyResponse>(config)
     .then((response) => {
       const dataResponse = response.data;
+      console.log(dataResponse);
       const infoSesion: InfoSesion = {
         ...data,
+        idUsuario: dataResponse.idUsuario,
+        idSector: dataResponse.idSector,
+        nombreSector: dataResponse.descripcionSector,
         perfil: dataResponse.roles && dataResponse.roles.length > 0 ? dataResponse.roles[0].descripcion : undefined,
-        sector: dataResponse.descripcionSector,
       };
 
       // Guardar en caché.

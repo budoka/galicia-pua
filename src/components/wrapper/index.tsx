@@ -9,7 +9,7 @@ type Horizontal = 'left' | 'center' | 'right' | 'full-width';
 type Vertical = 'top' | 'middle' | 'bottom' | 'full-height';
 type Visible = 'auto' | 'show' | 'hide';
 
-interface WrapperProps extends Omit<BasicComponenetProps<HTMLDivElement>, 'unselectable'> {
+interface WrapperProps extends BasicComponenetProps<HTMLDivElement> {
   contentWrapper?: boolean;
   unselectable?: boolean;
   direction?: Direction;

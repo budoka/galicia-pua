@@ -1,9 +1,11 @@
-import { CacheableState, RunnableState } from '../interfaces';
+import { RunnableState } from '../interfaces';
 
 export interface InfoSesion {
-  usuario?: string;
+  idUsuario?: number;
+  idSector?: number;
+  nombreUsuario?: string;
+  nombreSector?: string;
   legajo?: string;
-  sector?: string;
   perfil?: string;
 }
 

@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Form, Popconfirm, Tag } from 'antd';
+import { Button, Form, message, Popconfirm, Tag } from 'antd';
 import { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
@@ -13,10 +13,10 @@ import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
 import { Cell, ICellProps } from './cell';
 import { Column } from './column';
-import AddButton from './extra/add-button';
-import DeleteButton from './extra/delete-button';
+import { AddButton } from './extra/add-button';
+import { DeleteButton } from './extra/delete-button';
 import { RecordsCounter } from './extra/record-counter';
-import RefreshButton from './extra/refresh-button';
+import { RefreshButton } from './extra/refresh-button';
 import styles from './style.module.less';
 
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
@@ -44,6 +44,8 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
   sortable?: boolean;
   hideRowSelection?: boolean;
   hidePagination?: boolean;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
   fill?: boolean;
   extraColumns?: { showKeyColumn?: boolean; showActionsColumn?: boolean };
   extraComponents?: {
@@ -70,7 +72,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const [form] = Form.useForm();
 
   useEffect(() => {
-    console.log('rendering table');
+    console.log('rendering tableeee initt');
   }, []);
 
   const [state, setState] = useState<TableState<RecordType>>({
@@ -112,7 +114,18 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   );
 
   const className = classNames(styles.tableWrapper, UNSELECTABLE, SHADOW, props.className);
-  const { setData, extraColumns, extraComponents, sortable, fill, hideRowSelection, hidePagination, ...restProps } = props;
+  const {
+    setData,
+    extraColumns,
+    extraComponents,
+    sortable,
+    fill,
+    hideRowSelection,
+    hidePagination,
+    hideHeader,
+    hideFooter,
+    ...restProps
+  } = props;
   const dataSource = props.dataSource ?? [];
 
   const columns = React.useMemo(() => {
@@ -228,9 +241,9 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       ?.filter((component) => position.test(component.position))
       .sort((a, b) => compare(_.isEmpty(a.order) ? null : a.order![index], _.isEmpty(b.order) ? null : b.order![index]))
       .map((component) => {
-        const { key, style, task } = component;
+        const { key, style, task, node } = component;
 
-        switch (component.node) {
+        switch (node) {
           case 'add-button':
             return {
               key,
@@ -268,7 +281,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           // return { key, component: RecordsCount, style };
 
           default:
-            return { key, component: component.node, style };
+            return { key, component: node, style };
         }
       })
       .map(({ key, component, style }) => {
@@ -279,42 +292,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         );
       });
   };
-
-  /*
-  const AddButton = React.useMemo(() => {
-    return !editingRow.current ? (
-      <Button type="primary" onClick={() => handleAddRecord()}>
-        Agregar
-      </Button>
-    ) : (
-      <Button type="ghost" onClick={() => handleCancelRecord()}>
-        Cancelar
-      </Button>
-    );
-  }, [editingRow]);
-
-  const DeleteButton = React.useMemo(() => {
-    const disabledRemove = !(selectedRows.length > 0 && state.current !== 'adding');
-
-    return (
-      <Popconfirm
-        title="¿Desea eliminar las filas seleccionadas?"
-        onConfirm={() => {
-          handleDeleteRecord(selectedRows);
-        }}
-        okText="Sí"
-        cancelText="No"
-        disabled={disabledRemove}>
-        <Button type="primary" danger disabled={disabledRemove}>
-          Eliminar
-        </Button>
-      </Popconfirm>
-    );
-  }, [selectedRows, state]);*/
-
-  /*const RecordsCount = React.useMemo(() => {
-    return <Tag color="volcano">Registros: {dataSource.length}</Tag>;
-  }, [dataSource]);*/
 
   const isEditing = (record: RecordType) => record.key === state.editingRow.current;
 
@@ -358,10 +335,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         action: { previous: state.action.current, current: 'idle' },
       }));
 
-      //* setEditingRow({ previous: stateT.editingRow.current, current: undefined });
-      //*setState({ previous: stateT.state.current, current: 'idle' });
+      if (state.action.current === 'adding') message.success('Registro agregado correctamente');
+      else if (state.action.current === 'editing') message.success('Registro actualizado correctamente');
     } catch (err) {
       console.log('Validate Failed:', err);
+      message.error('Error al validar los campos: ' + err.errorFields.map((f: any) => f.name).join(', '));
     }
   };
 
@@ -411,10 +389,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       editingRow: { previous: state.editingRow.current, current: undefined },
       action: { previous: state.action.current, current: 'idle' },
     }));
-
-    //* setEditingRow({ previous: stateT.editingRow.current, current: undefined });
-    ///*  setState({ previous: stateT.state.current, current: 'idle' });
-    //*  setSelectedRows([]);
   };
 
   const handleChangeTable = (
@@ -423,14 +397,12 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     sorter: SorterResult<RecordType> | SorterResult<RecordType>[],
     extra: TableCurrentDataSource<RecordType>,
   ) => {
-    console.log('sorting......');
     setState((prev) => ({
       ...prev,
-      // sort: Array.isArray(sorter) ? sorter[0] : sorter,
       sort: Array.isArray(sorter) ? sorter : [sorter],
     }));
 
-    //*setSort(Array.isArray(sorter) ? sorter : [sorter]);
+    handleCancelRecord();
   };
 
   const rowSelection: TableRowSelection<RecordType> = {
@@ -556,14 +528,24 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     }
   };
 
-  const Loading = React.useMemo(() => {
-    return <LoadingOutlined />;
-  }, []);
+  const Loading = React.memo(() => <LoadingOutlined />);
+
+  /*   const renderHeader = React.useMemo(() => {
+    const regex = /top|both/;
+    const hasComponents = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
+
+    const components = renderComponents(regex);
+    return hasComponents && !_.isEmpty(components) ? (
+      <Wrapper className={styles.header} direction="row" horizontal="left" vertical="middle" style={{ width: '100%' }}>
+        {components}
+      </Wrapper>
+    ) : undefined;
+  }, [extraComponents]); */
 
   const renderTitle = () => {
     const regex = /top|both/;
     const hasComponents = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
-
+    console.log(extraComponents);
     const components = renderComponents(regex);
     return hasComponents && !_.isEmpty(components) ? components : undefined;
   };
@@ -577,11 +559,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   };
 
   return (
-    <>
+    <Wrapper direction="column" horizontal="center" style={{ width: '100%' }}>
       <Form form={form} component={false}>
         <TableAnt
           {...restProps}
-          loading={restProps.loading ? { indicator: Loading, tip: 'Cargando' } : restProps.loading}
+          loading={restProps.loading ? { indicator: <Loading />, tip: 'Cargando' } : restProps.loading}
           className={className}
           components={{
             header: {
@@ -595,8 +577,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           dataSource={dataSource}
           scroll={{ y: 0 }}
           showSorterTooltip={false}
-          title={renderTitle}
-          //footer={renderFooter}
+          title={hideHeader ? undefined : renderTitle}
+          footer={hideFooter ? undefined : renderFooter}
           rowSelection={props.hideRowSelection ? undefined : rowSelection}
           pagination={
             hidePagination
@@ -627,6 +609,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           }}
         />
       </Form>
-    </>
+    </Wrapper>
   );
 };
+
+export const MemoizedTable = React.memo<any>(Table);

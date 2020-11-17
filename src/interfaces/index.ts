@@ -1,6 +1,9 @@
 export interface BasicComponenetProps<HTMLElement>
-  extends React.DetailedHTMLProps<React.HTMLAttributes<Exclude<HTMLElement, 'unselectable'>>, Exclude<HTMLElement, 'unselectable'>> {}
+  extends React.DetailedHTMLProps<Omit<React.HTMLAttributes<HTMLElement>, 'unselectable'>, HTMLElement> {}
 
+/* export interface BasicComponenetProps2<HTMLElement>
+  extends React.DetailedHTMLProps<React.HTMLAttributes<Omit<HTMLElement, 'unselectable'>>, Exclude<HTMLElement, 'unselectable'>> {}
+ */
 export interface IElement {
   key: React.Key;
   [key: string]: any;

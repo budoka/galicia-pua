@@ -13,7 +13,7 @@ import { InfoCajaAction, InfoCajaState, InfoCajaActionTypes } from '../caja-info
 import { Caja, InfoCaja, ContenidoCaja } from '../interfaces';
 import { CajasPendientes, CajasPendientesAction, CajasPendientesActionTypes, CajasPendientesState, DetalleCaja } from './types';
 
-interface CajasPendientesBodyRequest {
+export interface CajasBodyRequest {
   idUsuario: number; // sacar
   roles: string[]; // sacar
   estado?: string;
@@ -39,23 +39,18 @@ type CajasPendientesBodyResponse = DetalleCajaBodyResponse[];
 
 const cache: CacheMemory<CajasPendientes> = new CacheMemory('Cajas Pendientes');
 
-console.log(cache);
-
 export const clearCajasPendientes = (): ThunkResult => (dispatch, getState) => {
   dispatch({ type: CajasPendientesAction.CLEAR_DATA });
 };
 
-export const getCajasPendientes = (data: CajasPendientesBodyRequest, options?: RequestOptions): ThunkResult => async (
-  dispatch,
-  getState,
-) => {
+export const getCajasPendientes = (data: CajasBodyRequest, options?: RequestOptions): ThunkResult => async (dispatch, getState) => {
   if (!data) return;
 
   const { expiration, force } = options || {};
-
   dispatch(clearCajasPendientes());
 
   const isRunning = getState().cajas.pendientes.isRunning;
+  console.log(data);
 
   if (isRunning) return;
 

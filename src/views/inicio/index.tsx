@@ -2,6 +2,7 @@ import { Col, Row } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/interfaces';
 import { Wrapper } from 'src/components/wrapper';

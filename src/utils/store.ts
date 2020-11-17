@@ -1,4 +1,4 @@
-import { View, views } from 'src/views';
+import { View } from 'src/views';
 import { getRoute } from './history';
 
 export const getUser = () => {

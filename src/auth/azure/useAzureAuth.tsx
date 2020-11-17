@@ -222,15 +222,12 @@ export const useAzureAuth = () => {
 interface AuthProviderProps {
   disabled?: boolean;
   children?: React.ReactNode;
-  onLoad?: (auth: AuthContextProps) => void;
 }
 
 // Provider component that wraps your app and makes auth object ...
 // ... available to any child component that calls useAzureAuth().
-export const AuthProvider = ({ disabled = false, children, onLoad }: AuthProviderProps) => {
+export const AuthProvider = ({ disabled = false, children }: AuthProviderProps) => {
   const auth: AuthContextProps = useProvideAuth(disabled);
-
-  auth.data && onLoad && onLoad(auth);
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

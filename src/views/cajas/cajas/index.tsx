@@ -1,21 +1,18 @@
-import { Button, Col, DatePicker, Form, Input, Row, Select, Tag } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import dayjs from 'dayjs';
-import moment from 'moment';
+import { Tag } from 'antd';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom';
-import { clearCajasPendientes, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
-import { ContenidoCaja } from 'src/actions/cajas/interfaces';
+import { CajasBodyRequest, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
+import { setFiltrosCajasPendientes } from 'src/actions/cajas/caja-pendientes-filtros';
+import { ContentInfo } from 'src/components/content-info';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
-import { DATE_DEFAULT_FORMAT } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { getExpirationTime } from 'src/utils/api';
 import { useQuery } from 'src/utils/history';
 import { compare } from 'src/utils/string';
 import { Filtros } from './filtros';
+
 import styles from './style.module.less';
 
 export interface CajasProps {}
@@ -54,7 +51,7 @@ const columns = [
     key: 'sector',
     dataIndex: 'sector',
     title: 'Sector',
-    width: 100,
+    width: 120,
     sorter: { compare: (a, b) => compare(+a.sector, +b.sector), multiple: -1 },
   },
   {
@@ -66,29 +63,67 @@ const columns = [
   },
 ] as IColumn<DetalleCaja>[];
 
-export const Cajas: React.FC<CajasProps> = (props) => {
+export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   const query = useQuery();
+
+  const sesion = useSelector((state: RootState) => state.sesion);
   const cajasPendientes = useSelector((state: RootState) => state.cajas.pendientes);
+  const filtrosCajasPendientes = useSelector((state: RootState) => state.cajas.filtrosPendientes);
   const dispatch = useDispatch();
 
   const estado = query.get('estado') || undefined;
-  const [dataSource, setDataSource] = useState(cajasPendientes.detallesCaja);
+  const [fetch, setFetch] = useState(false);
 
   useEffect(() => {
-    const expiration = getExpirationTime();
-    dispatch(getCajasPendientes({ idUsuario: 3, centroCosto: 1243, roles: ['Administrador'], estado }, { expiration }));
+    dispatch(
+      setFiltrosCajasPendientes({
+        estado,
+        sector: sesion.infoSesion?.idSector,
+        fecha: undefined,
+        usuario: sesion.infoSesion?.nombreUsuario,
+      }),
+    );
+
+    setFetch(true);
   }, []);
 
   useEffect(() => {
-    setDataSource(cajasPendientes.detallesCaja);
-  }, [cajasPendientes.detallesCaja]);
+    if (!fetch) return;
 
-  const onRefresh = async () => {
     const expiration = getExpirationTime();
-    dispatch(getCajasPendientes({ idUsuario: 3, centroCosto: 1243, roles: ['Administrador'], estado }, { expiration, force: true }));
-  };
 
-  // const Filtro = () => <Filtros estado={estado} sector={1243} />;
+    const bodyRequest: CajasBodyRequest = {
+      idUsuario: sesion.infoSesion?.idUsuario!,
+      roles: [sesion.infoSesion?.perfil!],
+      centroCosto: filtrosCajasPendientes.sector,
+      estado: filtrosCajasPendientes.estado,
+      nombre: filtrosCajasPendientes.usuario,
+    };
+
+    dispatch(getCajasPendientes(bodyRequest, { expiration }));
+  }, [fetch]);
+
+  /*   const onRefresh = async () => {
+    const expiration = getExpirationTime();
+
+    const bodyRequest: CajasBodyRequest = {
+         idUsuario: sesion.infoSesion?.idUsuario!,
+      roles: [sesion.infoSesion?.perfil!],
+      centroCosto: filtrosCajasPendientes.sector,
+      estado: filtrosCajasPendientes.estado,
+      nombre: filtrosCajasPendientes.usuario,
+      fechaDesde:
+        filtrosCajasPendientes.fecha && filtrosCajasPendientes.fecha.length > 0
+          ? filtrosCajasPendientes.fecha[0].format('YYYY-MM-DD')
+          : undefined,
+      fechaHasta:
+        filtrosCajasPendientes.fecha && filtrosCajasPendientes.fecha.length > 1
+          ? filtrosCajasPendientes.fecha[1].format('YYYY-MM-DD')
+          : undefined,
+    };
+
+    dispatch(getCajasPendientes(bodyRequest, { expiration, force: true }));
+  }; */
 
   const Tabla = () => {
     return (
@@ -100,22 +135,22 @@ export const Cajas: React.FC<CajasProps> = (props) => {
           size={'small'}
           fill
           columns={columns as ColumnsType<DetalleCaja>}
-          dataSource={dataSource}
+          dataSource={cajasPendientes.detallesCaja}
           loading={cajasPendientes.isRunning}
           hideRowSelection
           extraColumns={{ showKeyColumn: false, showActionsColumn: false }}
           extraComponents={[
-            /* {
-              key: 'filters',
-              node: <Filtros estado={estado} sector={1243} />,
-              position: 'top',
-            },*/
             {
+              key: 'filters',
+              node: <Filtros />,
+              position: 'top',
+            },
+            /*             {
               key: 'refresh-button',
               node: 'refresh-button',
               task: onRefresh,
               position: 'top',
-            },
+            }, */
             {
               key: 'records-count',
               node: 'records-count',
@@ -125,7 +160,7 @@ export const Cajas: React.FC<CajasProps> = (props) => {
           ]}
           sortable
           pagination={{ pageSize: 20 }}
-          setData={setDataSource}
+          //  setData={setDataSource}
         />
       </Wrapper>
     );
@@ -133,7 +168,8 @@ export const Cajas: React.FC<CajasProps> = (props) => {
 
   return (
     <Wrapper contentWrapper unselectable direction="column" horizontal="center" style={{ minWidth: 1200 }}>
-      <Tabla />
+      <ContentInfo />
+      {Tabla()}
     </Wrapper>
   );
-};
+});

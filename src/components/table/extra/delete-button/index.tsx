@@ -7,7 +7,7 @@ interface DeleteButtonProps {
   onDelete: () => void;
 }
 
-export const DeleteButton = (props: DeleteButtonProps) => {
+export const DeleteButton = React.memo((props: DeleteButtonProps) => {
   const { disabled, onDelete } = props;
 
   return (
@@ -17,6 +17,4 @@ export const DeleteButton = (props: DeleteButtonProps) => {
       </Button>
     </Popconfirm>
   );
-};
-
-export default React.memo(DeleteButton);
+});

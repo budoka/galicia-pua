@@ -1,6 +1,6 @@
 import { Layout } from 'antd';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Redirect, Route } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { getUser } from 'src/utils/store';
@@ -15,7 +15,7 @@ type RouterProps = {
 };
 
 export function Router(props: RouterProps) {
-  //console.log('router');
+  useEffect(() => console.log('router'));
 
   const renderViews = (views: Views) => {
     return (Object.values(views) as View[])

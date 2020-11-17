@@ -5,7 +5,7 @@ interface RecordsCounterProps {
   count: number;
 }
 
-export const RecordsCounter = (props: RecordsCounterProps) => {
+export const RecordsCounter = React.memo((props: RecordsCounterProps) => {
   const { count } = props;
   return <Tag color="volcano">Registros: {count}</Tag>;
-};
+});

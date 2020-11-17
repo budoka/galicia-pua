@@ -8,6 +8,7 @@ export interface SiderParentItem {
 
 export interface SiderChildItem {
   view: View;
+  parent?: string;
   icon?: React.ReactNode;
   hidden?: boolean;
 }

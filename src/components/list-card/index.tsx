@@ -7,9 +7,9 @@ import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 import { IListCardItem } from './interfaces';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { BasicComponenetProps } from 'src/interfaces';
 
-interface ListCardProps {
-  className?: string;
+interface ListCardProps extends BasicComponenetProps<HTMLDivElement> {
   items?: IListCardItem[];
   header?: React.ReactNode;
   headerStyle?: React.CSSProperties;

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setButtonVisible, setCollapsed, setForcedCollapsed, setOpenMenu, setOrientation } from 'src/actions/configuracion';
-import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
+
 import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { goHome } from 'src/utils/history';
@@ -72,11 +72,11 @@ export const Header: React.FC<HeaderProps> = (props) => {
   }, [settings.forcedCollapsed]);
 
   const handleCollapsed = (shouldCollapse: boolean) => {
-    dispatch(setCollapsed(shouldCollapse));
+    if (shouldCollapse !== settings.collapsed) dispatch(setCollapsed(shouldCollapse));
   };
 
   const handleForcedCollapsed = (shouldForceCollapse: boolean) => {
-    dispatch(setForcedCollapsed(shouldForceCollapse));
+    if (shouldForceCollapse !== settings.forcedCollapsed) dispatch(setForcedCollapsed(shouldForceCollapse));
   };
 
   const renderLogo = () => {
@@ -109,11 +109,11 @@ export const Header: React.FC<HeaderProps> = (props) => {
         <span className={styles.right}>
           {'Usuario:  '}
           <span className={styles.info}>
-            {sesion.infoSesion?.usuario} ({sesion.infoSesion?.legajo})
+            {sesion.infoSesion?.nombreUsuario} ({sesion.infoSesion?.legajo})
           </span>
 
           {'Sector:  '}
-          <span className={styles.info}>{sesion.infoSesion?.sector}</span>
+          <span className={styles.info}>{sesion.infoSesion?.nombreSector}</span>
 
           {'Perfil:  '}
           <span className={styles.info}>{sesion.infoSesion?.perfil}</span>
