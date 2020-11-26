@@ -15,7 +15,7 @@ export enum FiltrosCajaAction {
 
   SELECT_BOX_TYPE = 'FiltrosCajaAction/SELECT_BOX_TYPE',
   SELECT_BOX_CONTENT_TYPE = 'FiltrosCajaAction/SELECT_BOX_CONTENT_TYPE',
-  SELECT_DETAIL_TEMPLATE = 'FiltrosCajaAction/SELECT_DETAIL_TEMPLATE',
+  SELECT_BOX_DETAIL_TEMPLATE = 'FiltrosCajaAction/SELECT_BOX_DETAIL_TEMPLATE',
 }
 
 export interface FiltrosCajaState extends RunnableState {
@@ -29,7 +29,7 @@ export interface FiltrosCajaState extends RunnableState {
   };
   seleccionado: {
     tipoCaja: Elemento | null;
-    tipoContenidoCaja: Elemento | null;
+    tipoContenido: Elemento | null;
     tipoPlantilla: Elemento | null;
     /* tipoCaja: FiltroTipoCajaResponse | null;
     tipoContenidoCaja: FiltroTipoContenidoCajaResponse | null;
@@ -76,11 +76,11 @@ export interface SELECT_BOX_TYPE {
 
 export interface SELECT_BOX_CONTENT_TYPE {
   type: typeof FiltrosCajaAction.SELECT_BOX_CONTENT_TYPE;
-  tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenidoCaja'];
+  tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenido'];
 }
 
 export interface SELECT_DETAIL_TEMPLATE {
-  type: typeof FiltrosCajaAction.SELECT_DETAIL_TEMPLATE;
+  type: typeof FiltrosCajaAction.SELECT_BOX_DETAIL_TEMPLATE;
   preview: FiltrosCajaState['seleccionado']['tipoPlantilla'];
 }
 

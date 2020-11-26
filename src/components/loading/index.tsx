@@ -29,3 +29,5 @@ export const Loading: React.FC<LoadingProps> = (props) => {
     </Wrapper>
   );
 };
+
+export const LoadingContent = () => <Loading style={{ height: '100vh' }} size={26} text={'Cargando'} />;

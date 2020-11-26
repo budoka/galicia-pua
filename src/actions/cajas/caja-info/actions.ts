@@ -2,34 +2,27 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ThunkResult } from 'src/actions';
 
 import { API } from 'src/services/apis-data';
-import { getAPIData } from 'src/utils/api';
+import { getResourceData } from 'src/utils/api';
+import { goTo } from 'src/utils/history';
 import { hashCode } from 'src/utils/string';
 import { InfoCajaAction, InfoCajaState, InfoCajaActionTypes } from '../caja-info';
-import { Caja, InfoCaja, ContenidoCaja } from '../interfaces';
+import { Caja, InfoCaja, ContenidoCaja, GuardarCajaBodyRequest } from '../interfaces';
 
-export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dispatch, getState) => {
+export const saveCaja = (data: GuardarCajaBodyRequest): ThunkResult => async (dispatch, getState) => {
   const isRunning = getState().cajas.info.isRunning;
 
-  if (isRunning || !info) return;
+  if (isRunning || !data) return;
 
   const apiName = API.CAJA;
   const idMethod = 'guardarCaja';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, headers } = api.method;
+  const { verb, path, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 
-  const dataRequest: InfoCaja = {
-    ...info,
-    /* fechaDocumentacionDesde: info.fechaDocumentacionDesde.format('YYYY-MM-DD'),
-    fechaDocumentacionHasta: info.fechaDocumentacionHasta.format('YYYY-MM-DD HH:mm:ss.SSS'),
-    fechaGeneracion: info.fechaGeneracion.format('YYYY-MM-DD'),
-    fechaVencimiento: info.fechaVencimiento.format('YYYY-MM-DD'),*/
-  };
-
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest };
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data };
 
   const index = hashCode(config);
 
@@ -43,15 +36,17 @@ export const saveCaja = (info: InfoCajaState['info']): ThunkResult => async (dis
   dispatch(running());
 
   return await axios
-    .request<Caja>(config)
+    .request(/* <Caja> */ config)
     .then((response) => {
       console.log(response);
+      // No se usa
       const idCaja = response.data.id;
-      const infoCaja = info;
-
+      const infoCaja = response.data.info;
       const caja: Caja = { id: idCaja, info: infoCaja, contenido: [] };
-
       //  reqCache.cache[index] = { data: caja };
+      // EOF - No se usa
+
+      goTo(`/editar-caja/${response.data.numero}`);
 
       dispatch(success(caja));
     })
@@ -81,10 +76,10 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
 
   const apiName = API.CAJA;
   const idMethod = 'infoCaja';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, headers } = api.method;
+  const { verb, path, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 

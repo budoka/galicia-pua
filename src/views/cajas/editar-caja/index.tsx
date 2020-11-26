@@ -1,5 +1,5 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Checkbox, Col, DatePicker, Divider, Empty, Form, List, Row, Select } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, Divider, Empty, Form, List, Row, Select } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
@@ -7,7 +7,6 @@ import TextArea from 'antd/lib/input/TextArea';
 import { LabeledValue } from 'antd/lib/select';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,7 +33,7 @@ import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
-import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DEFAULT_FORMAT } from 'src/constants/constants';
+import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA } from 'src/constants/constants';
 import { IElement, Reglas } from 'src/interfaces';
 import { RootState } from 'src/reducers';
 import { deleteProps } from 'src/utils/object';
@@ -42,13 +41,16 @@ import { compare, splitStringByWords } from 'src/utils/string';
 import styles from './style.module.less';
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
+
+export interface ListItem<T extends IElement> {
+  id: React.Key;
+  description: string;
+  value: string;
+}
 
 interface UIState {
   selectTipoContenido?: { visible: boolean };
   selectTipoPlantilla?: { visible: boolean };
-  datePickerFechaVigencia?: { visible: boolean };
-  labelFechaVigencia?: { visible: boolean };
   inputDescripcion?: { visible: boolean };
   checkboxRestringir?: { visible: boolean };
   preview?: { visible: boolean };
@@ -86,7 +88,7 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
-export const IngresarCaja: React.FC = (props) => {
+export const EditarCaja: React.FC = (props) => {
   const [form] = useForm();
 
   const dispatch = useDispatch();
@@ -106,7 +108,7 @@ export const IngresarCaja: React.FC = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log('rendr ingresarcaja');
+    console.log('rendr editarcaja');
   });
 
   useEffect(() => {
@@ -206,9 +208,7 @@ export const IngresarCaja: React.FC = (props) => {
     const { value: id, label: descripcion } = form.getFieldValue('tipoCaja');
     const tipoCaja: Elemento = { id, descripcion };
 
-    const fieldsToReset = ['tipoContenido', 'tipoPlantilla', 'fechaVigencia', 'descripcion', 'restringir'];
-    form.resetFields(fieldsToReset);
-
+    form.resetFields(['tipoContenido', 'tipoPlantilla', 'descripcion', 'restringir']);
     dispatch(setTipoCajaSeleccionado(tipoCaja)); // *
     dispatch(getTiposContenidoCaja(tipoCaja));
     setUIState({ selectTipoContenido: { visible: true } });
@@ -223,10 +223,7 @@ export const IngresarCaja: React.FC = (props) => {
     else if (descripcion === CAJA_DETALLE) tipoContenido.id = 1;
     else if (descripcion === CAJA_DOCUMENTO) tipoContenido.id = 2;
 
-    const fieldsToReset = ['tipoPlantilla'];
-    if (descripcion === CAJA_DETALLE) fieldsToReset.push('fechaVigencia');
-    form.resetFields(fieldsToReset);
-
+    form.resetFields(['tipoPlantilla']);
     dispatch(setTipoContenidoCajaSeleccionado(tipoContenido)); // *
 
     if (descripcion === CAJA_DETALLE) {
@@ -234,27 +231,15 @@ export const IngresarCaja: React.FC = (props) => {
       setUIState((prev) => ({
         ...prev,
         selectTipoPlantilla: { visible: true },
-        datePickerFechaVigencia: { visible: false },
         inputDescripcion: { visible: false },
         checkboxRestringir: { visible: false },
         preview: { visible: false },
         buttonCrear: { visible: false },
       }));
-    } else if (descripcion === CAJA_ETIQUETA) {
+    } else {
       setUIState((prev) => ({
         ...prev,
         selectTipoPlantilla: { visible: false },
-        datePickerFechaVigencia: { visible: true },
-        inputDescripcion: { visible: false },
-        checkboxRestringir: { visible: false },
-        preview: { visible: false },
-        buttonCrear: { visible: false },
-      }));
-    } else if (descripcion === CAJA_DOCUMENTO) {
-      setUIState((prev) => ({
-        ...prev,
-        selectTipoPlantilla: { visible: false },
-        datePickerFechaVigencia: { visible: true },
         inputDescripcion: { visible: true },
         checkboxRestringir: { visible: true },
         preview: { visible: true },
@@ -271,33 +256,11 @@ export const IngresarCaja: React.FC = (props) => {
 
     setUIState((prev) => ({
       ...prev,
-      datePickerFechaVigencia: { visible: true },
+      inputDescripcion: { visible: true },
+      checkboxRestringir: { visible: true },
       preview: { visible: true },
+      buttonCrear: { visible: true },
     }));
-  };
-
-  const handleFechaVigencia = () => {
-    const fieldValue = form.getFieldValue('fechaVigencia');
-    if (fieldValue) {
-      const { value: id, label: descripcion } = fieldValue;
-      const fechaVigencia: Elemento = { id, descripcion };
-
-      // dispatch(setTipoPlantillaSeleccionado(tipoPlantilla)); // *
-
-      setUIState((prev) => ({
-        ...prev,
-        inputDescripcion: { visible: true },
-        checkboxRestringir: { visible: true },
-        buttonCrear: { visible: true },
-      }));
-    } else {
-      setUIState((prev) => ({
-        ...prev,
-        inputDescripcion: { visible: false },
-        checkboxRestringir: { visible: false },
-        buttonCrear: { visible: false },
-      }));
-    }
   };
 
   const handleForm = () => {
@@ -377,23 +340,6 @@ export const IngresarCaja: React.FC = (props) => {
               onChange={handleTipoPlantilla}>
               {renderOptions(cajas.filtros.filtro.tiposPlantilla)}
             </Select>
-          </Form.Item>
-        )}
-
-        {uIState?.datePickerFechaVigencia?.visible && (
-          <Form.Item label={'Fecha Vigencia'} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
-            <RangePicker
-              format={DATE_DEFAULT_FORMAT}
-              ranges={{
-                Hoy: [moment(), moment()],
-                '1 Mes': [moment(), moment().add(1, 'month')],
-                '3 Meses': [moment(), moment().add(3, 'month')],
-                '6 Meses': [moment(), moment().add(6, 'month')],
-                '1 Año': [moment(), moment().add(1, 'year')],
-              }}
-              allowClear
-              onChange={handleFechaVigencia}
-            />
           </Form.Item>
         )}
 

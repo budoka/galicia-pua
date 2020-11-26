@@ -4,7 +4,7 @@ import { FiltrosCajaAction, FiltrosCajaState, FiltrosCajaActionTypes } from 'src
 const initialState: FiltrosCajaState = {
   isRunning: false,
   filtro: { tiposCaja: [], tiposContenidoCaja: [], tiposPlantilla: [] },
-  seleccionado: { tipoCaja: null, tipoContenidoCaja: null, tipoPlantilla: null },
+  seleccionado: { tipoCaja: null, tipoContenido: null, tipoPlantilla: null },
 };
 
 export default function reducer(state = initialState, action: FiltrosCajaActionTypes): FiltrosCajaState {
@@ -57,16 +57,16 @@ export default function reducer(state = initialState, action: FiltrosCajaActionT
     case FiltrosCajaAction.SELECT_BOX_TYPE:
       return {
         ...state,
-        seleccionado: { ...state.seleccionado, tipoCaja: action.tipoCaja, tipoContenidoCaja: null, tipoPlantilla: null },
+        seleccionado: { ...state.seleccionado, tipoCaja: action.tipoCaja, tipoContenido: null, tipoPlantilla: null },
       };
 
     case FiltrosCajaAction.SELECT_BOX_CONTENT_TYPE:
       return {
         ...state,
-        seleccionado: { ...state.seleccionado, tipoContenidoCaja: action.tipoContenidoCaja, tipoPlantilla: null },
+        seleccionado: { ...state.seleccionado, tipoContenido: action.tipoContenidoCaja, tipoPlantilla: null },
       };
 
-    case FiltrosCajaAction.SELECT_DETAIL_TEMPLATE:
+    case FiltrosCajaAction.SELECT_BOX_DETAIL_TEMPLATE:
       return {
         ...state,
         seleccionado: { ...state.seleccionado, tipoPlantilla: action.preview },

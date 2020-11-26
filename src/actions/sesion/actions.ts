@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { Message } from 'src/constants/messages';
 import { RequestOptions } from 'src/interfaces';
 import { API } from 'src/services/apis-data';
-import { getAPIData } from 'src/utils/api';
+import { getResourceData } from 'src/utils/api';
 import { CacheMemory } from 'src/utils/cache';
 import { hashCode } from 'src/utils/string';
 import { ThunkResult } from '..';
@@ -31,10 +31,10 @@ export const getInfoSesion = (data: SesionBodyRequest, options?: RequestOptions)
 
   const apiName = API.INFO_SESION;
   const idMethod = 'infoSesion';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, timeout, headers } = api.method;
+  const { verb, path, timeout, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 

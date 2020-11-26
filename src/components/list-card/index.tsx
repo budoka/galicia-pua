@@ -2,21 +2,23 @@ import { Badge, Card } from 'antd';
 import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import classNames from 'classnames';
 import React from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import { Link } from 'react-router-dom';
-import { Wrapper } from '../wrapper';
-import styles from './style.module.less';
-import { IListCardItem } from './interfaces';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { BasicComponenetProps } from 'src/interfaces';
+import { IListCardItem } from './interfaces';
+import styles from './style.module.less';
 
 interface ListCardProps extends BasicComponenetProps<HTMLDivElement> {
   items?: IListCardItem[];
   header?: React.ReactNode;
   headerStyle?: React.CSSProperties;
+  bodyStyle?: React.CSSProperties;
   showZero?: boolean;
   theme?: MenuTheme;
   unselectable?: boolean;
-  wrapperClassName?: string;
+  scrollWidth?: string | number;
+  scrollHeight?: string | number;
 }
 
 export const ListCard: React.FC<ListCardProps> = (props) => {
@@ -68,8 +70,13 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
   };
 
   return (
-    <Card className={className} title={props.header} headStyle={props.headerStyle}>
-      {renderCards()}
+    <Card className={className} title={props.header} style={{ ...props.style }} headStyle={props.headerStyle} bodyStyle={props.bodyStyle}>
+      <InfiniteScroll
+        style={{ width: props.scrollWidth ?? '100%', height: props.scrollHeight ?? '100%', overflow: 'auto' }}
+        loadMore={(page: number) => {}}
+        useWindow={false}>
+        {renderCards()}
+      </InfiniteScroll>
     </Card>
   );
 };

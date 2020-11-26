@@ -1,3 +1,5 @@
+import { Rule } from 'antd/lib/form';
+
 export interface BasicComponenetProps<HTMLElement>
   extends React.DetailedHTMLProps<Omit<React.HTMLAttributes<HTMLElement>, 'unselectable'>, HTMLElement> {}
 
@@ -7,6 +9,10 @@ export interface BasicComponenetProps<HTMLElement>
 export interface IElement {
   key: React.Key;
   [key: string]: any;
+}
+
+export interface Reglas {
+  [key: string]: Rule[];
 }
 
 export interface Size {

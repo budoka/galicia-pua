@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ThunkResult } from 'src/actions';
 import { Dictionary, QueryParams } from 'src/interfaces';
 import { API } from 'src/services/apis-data';
-import { getAPIData, IAPIData } from 'src/utils/api';
+import { getResourceData, ResourceData } from 'src/utils/api';
 import { parseObject } from 'src/utils/parse';
 import { hashCode } from 'src/utils/string';
 import {
@@ -36,10 +36,10 @@ export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (d
 
   const apiName = API.TIPO_CAJA;
   const idMethod = 'tipoCaja';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, headers } = api.method;
+  const { verb, path, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -93,10 +93,10 @@ export const getTiposContenidoCaja = (tipoCaja: FiltrosCajaState['seleccionado']
 
   const apiName = API.TIPO_CAJA;
   const idMethod = 'tipoDeContenido';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, headers } = api.method;
+  const { verb, path, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -149,7 +149,7 @@ export const getTiposContenidoCaja = (tipoCaja: FiltrosCajaState['seleccionado']
   }
 };
 
-export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenidoCaja']): ThunkResult => async (
+export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenido']): ThunkResult => async (
   dispatch,
   getState,
 ) => {
@@ -160,10 +160,10 @@ export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccion
 
   const apiName = API.PLANTILLAS_SECTOR;
   const idMethod = 'plantillasPorSector';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, headers } = api.method;
+  const { verb, path, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -210,32 +210,32 @@ export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccion
   }
 };
 
-export const setTipoCajaSeleccionado = (tipoCaja: FiltrosCajaState['seleccionado']['tipoCaja']): ThunkResult => (dispatch, getState) => {
-  dispatch(success(tipoCaja));
+export const setTipoCajaSeleccionado = (idTipoCaja: FiltrosCajaState['seleccionado']['tipoCaja']): ThunkResult => (dispatch, getState) => {
+  dispatch(success(idTipoCaja));
 
   function success(tipoCaja: FiltrosCajaState['seleccionado']['tipoCaja']): FiltrosCajaActionTypes {
     return { type: FiltrosCajaAction.SELECT_BOX_TYPE, tipoCaja };
   }
 };
 
-export const setTipoContenidoCajaSeleccionado = (tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenidoCaja']): ThunkResult => (
+export const setTipoContenidoCajaSeleccionado = (idTipoContenido: FiltrosCajaState['seleccionado']['tipoContenido']): ThunkResult => (
   dispatch,
   getState,
 ) => {
-  dispatch(success(tipoContenidoCaja));
+  dispatch(success(idTipoContenido));
 
-  function success(tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenidoCaja']): FiltrosCajaActionTypes {
+  function success(tipoContenidoCaja: FiltrosCajaState['seleccionado']['tipoContenido']): FiltrosCajaActionTypes {
     return { type: FiltrosCajaAction.SELECT_BOX_CONTENT_TYPE, tipoContenidoCaja };
   }
 };
 
-export const setTipoPlantillaSeleccionado = (tipoPlantilla: FiltrosCajaState['seleccionado']['tipoPlantilla']): ThunkResult => (
+export const setTipoPlantillaSeleccionado = (idTipoPlantilla: FiltrosCajaState['seleccionado']['tipoPlantilla']): ThunkResult => (
   dispatch,
   getState,
 ) => {
-  dispatch(success(tipoPlantilla));
+  dispatch(success(idTipoPlantilla));
 
   function success(tipoPlantilla: FiltrosCajaState['seleccionado']['tipoPlantilla']): FiltrosCajaActionTypes {
-    return { type: FiltrosCajaAction.SELECT_DETAIL_TEMPLATE, preview: tipoPlantilla };
+    return { type: FiltrosCajaAction.SELECT_BOX_DETAIL_TEMPLATE, preview: tipoPlantilla };
   }
 };

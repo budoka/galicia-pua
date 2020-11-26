@@ -6,7 +6,7 @@ import { ThunkResult } from 'src/actions';
 import { Message } from 'src/constants/messages';
 import { RequestOptions } from 'src/interfaces';
 import { API } from 'src/services/apis-data';
-import { getAPIData } from 'src/utils/api';
+import { getResourceData } from 'src/utils/api';
 import { CacheMemory } from 'src/utils/cache';
 import { hashCode, splitStringByWords } from 'src/utils/string';
 import { InfoCajaAction, InfoCajaState, InfoCajaActionTypes } from '../caja-info';
@@ -56,10 +56,10 @@ export const getCajasPendientes = (data: CajasBodyRequest, options?: RequestOpti
 
   const apiName = API.CAJA;
   const idMethod = 'detalleCaja';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, timeout, headers } = api.method;
+  const { verb, path, timeout, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 

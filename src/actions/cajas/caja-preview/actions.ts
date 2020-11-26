@@ -3,7 +3,7 @@ import { ObjectLiteral, QueryParams } from 'src/interfaces';
 import { ThunkResult } from 'src/actions';
 import { PreviewCajaAction, PreviewCajaActionTypes, PreviewCajaState } from './types';
 import { API, apis } from 'src/services/apis-data';
-import { getAPIData } from 'src/utils/api';
+import { getResourceData } from 'src/utils/api';
 
 import { FiltrosCajaState } from '../caja-filtros';
 import { hashCode } from 'src/utils/string';
@@ -25,16 +25,16 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
 
   const apiName = API.CAJA;
   const idMethod = 'preview';
-  const api = getAPIData(apiName, idMethod);
+  const api = getResourceData(apiName, idMethod);
 
   const { url } = api;
-  const { verb, path, headers } = api.method;
+  const { verb, path, headers } = api.resource;
 
   const endpoint = `${url}/${path}`;
 
   const dataRequest: PreviewCajaRequest = {
-    idCaja: +filtrosSeleccionados.tipoCaja?.id!,
-    tipoContenido: filtrosSeleccionados.tipoContenidoCaja?.id! as string, // Se debe cambiar por number
+    idTipoCaja: +filtrosSeleccionados.tipoCaja?.id!,
+    idTipoContenido: +filtrosSeleccionados.tipoContenido?.id!,
     idPlantilla: +filtrosSeleccionados.tipoPlantilla?.id!,
   };
 
@@ -91,8 +91,8 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
   }
 
   function success(preview: PreviewCajaState['preview']): PreviewCajaActionTypes {
-    console.log('preview');
-    console.log(preview);
+    /*  console.log('preview');
+    console.log(preview); */
     return { type: PreviewCajaAction.GET_DATA_SUCCESS, preview };
   }
 

@@ -2,8 +2,8 @@
 
 // REQUEST - https://caja-puda-portalunificado-dev.devcloud.bancogalicia.com.ar/api/preview
 export interface PreviewCajaRequest {
-  idCaja: number; // Se va a cambiar por "idTipoCaja"
-  tipoContenido: string; // Se va a cambiar por "idTipoContenidoCaja"
+  idTipoCaja: number;
+  idTipoContenido: number;
   idPlantilla?: number;
 }
 

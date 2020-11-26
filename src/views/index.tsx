@@ -5,6 +5,7 @@ import { NotFound } from 'src/views/not-found';
 import { IngresarCaja } from 'src/views/cajas/ingresar-caja';
 import { Unavailable } from './unavailable';
 import { Cajas } from './cajas/cajas';
+import { EditarCaja } from './cajas/editar-caja';
 
 /* Definición de las vistas de la aplicación */
 
@@ -13,6 +14,7 @@ export interface Views {
   Buscar_Legajo: View;
   Buscar_Caja: View;
   Ingresar_Caja: View;
+  Editar_Caja: View;
   Retirar_Caja: View;
   Buscar_Caja2: View;
   Buscar_Legajo_Doc: View;
@@ -28,6 +30,7 @@ const views: Views = {
   // Cajas
   Buscar_Caja: { title: 'Buscar Caja', path: '/buscar-caja', component: <Unavailable />, private: true, scope: 'full' },
   Ingresar_Caja: { title: 'Ingresar Caja', path: '/ingresar-caja', component: <IngresarCaja />, private: true, scope: 'full' },
+  Editar_Caja: { title: 'Editar Caja', path: '/editar-caja/:id', component: <EditarCaja />, private: true, scope: 'full' },
   Retirar_Caja: { title: 'Retirar Caja', path: '/retirar-caja', component: <Unavailable />, private: true, scope: 'full' },
   // Pedidos
   Buscar_Caja2: { title: 'Buscar Caja', path: '/buscar-caja2', component: <Unavailable />, private: true, scope: 'full' },

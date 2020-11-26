@@ -129,7 +129,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const dataSource = props.dataSource ?? [];
 
   const columns = React.useMemo(() => {
-    // console.log('updating columns');
     let columns = props.columns;
     if (!columns || columns.length === 0) return;
 
@@ -217,10 +216,8 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       } as IColumn<RecordType>;
     });
 
-    // console.log(columns);
-
     return columns;
-  }, [state]);
+  }, [state, props.columns]);
 
   useEffect(() => {
     // console.log(state);

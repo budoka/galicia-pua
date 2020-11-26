@@ -1,4 +1,4 @@
-import { Breadcrumb } from 'antd';
+import { Breadcrumb, Divider } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { View } from 'src/views';
 import { siderItems } from '../app';
 import { SiderChildItem, SiderItem, SiderParentItem } from '../sider/types';
 import styles from './style.module.less';
+import { matchPath } from 'react-router';
 
 interface ContentInfoProps extends BasicComponenetProps<HTMLDivElement> {}
 
@@ -21,7 +22,17 @@ export const ContentInfo: React.FC<ContentInfoProps> = (props) => {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const child = item as SiderChildItem;
-      if (child.view && child.view.path === path) {
+
+      const isEq =
+        child.view &&
+        matchPath(path, {
+          path: child.view.path,
+          exact: true,
+          strict: true,
+        });
+
+      if (isEq) {
+        //  console.log(child);
         return child;
       }
       const parent = item as SiderParentItem;
@@ -43,5 +54,9 @@ export const ContentInfo: React.FC<ContentInfoProps> = (props) => {
     );
   };
 
-  return <Breadcrumb className={className}>{renderItem()}</Breadcrumb>;
+  return (
+    <>
+      <Breadcrumb className={className}>{renderItem()}</Breadcrumb> <Divider />
+    </>
+  );
 };

@@ -1,8 +1,15 @@
-import { buildAPIUrl, IAPI } from 'src/utils/api';
+import { buildBaseURL } from 'src/utils/api';
 
 export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
+export interface IAPI {
+  id: string;
+  baseURL: string;
+  resources: ResourceAPI[];
+}
+
 export interface ResourceAPI {
+  id: string;
   verb: HttpVerb;
   path: string;
   params?: {
@@ -20,51 +27,6 @@ export interface ResourceAPI {
   timeout?: number;
 }
 
-export interface AvailableAPIS {
-  CAJA: {
-    POST_ADD: ResourceAPI;
-    GET_ADD: ResourceAPI;
-  };
-  CAJA2: {
-    DELETE_REMOVE: ResourceAPI;
-  };
-}
-
-const apisx: AvailableAPIS = {
-  CAJA: {
-    POST_ADD: {
-      verb: 'POST',
-      path: '/add',
-    },
-    GET_ADD: {
-      verb: 'GET',
-      path: '/all',
-    },
-  },
-  CAJA2: {
-    DELETE_REMOVE: {
-      verb: 'DELETE',
-      path: '/remove',
-    },
-  },
-};
-
-//apisx.CAJA.GET_ADD.data
-//apis.find(a => a.name === API.CAJA)?.resources.find(r => r.id === 'detalle')?.data;
-type APIz = { api: string; resources: ResourceAPI[] };
-
-let map = new Map<string, ResourceAPI[]>();
-
-let key = new Object();
-
-map.set('CAJA', [
-  {
-    verb: 'DELETE',
-    path: '/remove',
-  },
-]);
-map.get('CAJA');
-
 export enum API {
   CAJA = 'CAJA',
   DOCUMENTO = 'DOCUMENTO',
@@ -76,28 +38,23 @@ export enum API {
 
 export const apis: IAPI[] = [
   {
-    name: API.CAJA,
-    url: buildAPIUrl(API.CAJA),
+    id: API.CAJA,
+    baseURL: buildBaseURL(API.CAJA),
     resources: [
       {
         id: 'detalleCaja',
         verb: 'POST',
         path: 'detalleCaja',
-        headers: {
-          'content-type': 'application/json',
-          accept: 'application/json',
-        },
-        data: {},
       },
       {
         id: 'preview',
         verb: 'POST',
-        path: 'preview',
+        path: 'v2/preview',
       },
       {
         id: 'guardarCaja',
         verb: 'POST',
-        path: 'guardarCaja',
+        path: 'v2/guardarCaja',
       },
       {
         id: 'cerrarCaja',
@@ -117,8 +74,8 @@ export const apis: IAPI[] = [
     ],
   },
   {
-    name: API.DOCUMENTO,
-    url: buildAPIUrl(API.DOCUMENTO),
+    id: API.DOCUMENTO,
+    baseURL: buildBaseURL(API.DOCUMENTO),
     resources: [
       {
         id: 'guardarDocumento',
@@ -128,8 +85,8 @@ export const apis: IAPI[] = [
     ],
   },
   {
-    name: API.PLANTILLAS_SECTOR,
-    url: buildAPIUrl(API.PLANTILLAS_SECTOR),
+    id: API.PLANTILLAS_SECTOR,
+    baseURL: buildBaseURL(API.PLANTILLAS_SECTOR),
     resources: [
       {
         id: 'plantillasPorSector',
@@ -139,8 +96,8 @@ export const apis: IAPI[] = [
     ],
   },
   {
-    name: API.TIPO_CAJA,
-    url: buildAPIUrl(API.TIPO_CAJA),
+    id: API.TIPO_CAJA,
+    baseURL: buildBaseURL(API.TIPO_CAJA),
     resources: [
       {
         id: 'tipoCaja',
@@ -155,8 +112,8 @@ export const apis: IAPI[] = [
     ],
   },
   {
-    name: API.INFO_SESION,
-    url: buildAPIUrl(API.INFO_SESION),
+    id: API.INFO_SESION,
+    baseURL: buildBaseURL(API.INFO_SESION),
     resources: [
       {
         id: 'infoSesion',

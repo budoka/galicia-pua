@@ -2,6 +2,42 @@
 
 import { IElement } from 'src/interfaces';
 
+export interface GuardarCajaBodyRequest {
+  idTipoCaja: number | null;
+  idTipoContenido: number | null;
+  idPlantilla: number | null;
+  idUsuarioAlta: number | null;
+  idSectorOrigen: number | null;
+  descripcion: string | null;
+  restringida: number | null;
+  fechaGeneracion: string | null;
+  fechaVencimiento: string | null;
+  fechaDesde: string | null;
+  fechaHasta: string | null;
+}
+
+export interface InfoCajaBodyRequest {
+  idCaja: number;
+}
+
+export interface InfoCajaBodyResponse {
+  id: number;
+  estado: string;
+  nombre: string;
+  legajo: string;
+  nombreSector: string;
+  descripcion: string | null;
+  restringida: number | null;
+  fechaUltimaTransicion: string;
+  fechaGeneracion: string;
+  fechaVencimiento: string | null;
+  fechaDesde: string | null;
+  fechaHasta: string | null;
+  contenido: ContenidoCaja[];
+}
+
+//////
+
 export interface Caja {
   id: number | null; // id
   info: InfoCaja | null; // demás propiedades
@@ -10,24 +46,24 @@ export interface Caja {
 
 export interface InfoCaja {
   idTipoCaja: number | null;
-  tipoContenido: number | null;
+  tipoContenido: number | null; // se debe cambiar por idTipoContenido
   idPlantilla: number | null;
-  stateId: string | null;
+  estado: string | null;
   idUsuarioAlta: number | null;
   idSectorOrigen: number | null;
   restringida: number | null;
   legajo: string | null;
-  nombre: string | null;
+  cliente: string | null;
   nombreSector: string | null;
-  nombreTipoCaja: string | null;
+  // nombreTipoCaja: string | null;
   descripcion: string | null;
-  descripcionContenido: string | null;
-  descripcionPlantilla: string | null;
+  // descripcionContenido: string | null;
+  // descripcionPlantilla: string | null;
   fechaGeneracion: string | null;
   fechaVencimiento: string | null;
   fechaUltimaTransicion: string | null;
-  fechaDocumentacionDesde: string | null;
-  fechaDocumentacionHasta: string | null;
+  fechaDesde: string | null;
+  fechaHasta: string | null;
 }
 
 export type ContenidoCaja = CajaDocumento | CajaDetalle | CajaEtiqueta;
@@ -50,7 +86,7 @@ export interface CajaDocumento extends IElement {
 
 export interface CajaDetalle extends IElement {
   id: number;
-  detalle: CajaDetalleColumna[];
+  columnas: CajaDetalleColumna[];
 }
 
 export interface CajaDetalleColumna {

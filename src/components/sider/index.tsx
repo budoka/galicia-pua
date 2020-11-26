@@ -11,6 +11,7 @@ import { setOpenMenu } from 'src/actions/configuracion';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
 import { ObjectLiteral } from 'src/interfaces';
 import { RootState } from 'src/reducers';
+import { getMatchedPathname } from 'src/utils/history';
 import { View } from 'src/views';
 import styles from './style.module.less';
 import { SiderChildItem, SiderItem, SiderParentItem } from './types';
@@ -113,10 +114,13 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
     });
   };
 
+  const selectedKey = getMatchedPathname();
+
   return (
     <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
       <Menu
-        selectedKeys={[window.location.pathname]}
+        selectedKeys={selectedKey ? [selectedKey] : undefined}
+        // selectedKeys={[window.location.pathname]}
         openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {

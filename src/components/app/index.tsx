@@ -3,11 +3,12 @@ import { Layout } from 'antd';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
+import { matchPath, useHistory } from 'react-router-dom';
 import { getInfoSesion } from 'src/actions/sesion';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 import { Footer } from 'src/components/footer';
 import { Header } from 'src/components/header';
-import { Loading } from 'src/components/loading';
+import { Loading, LoadingContent } from 'src/components/loading';
 import 'src/components/message/setup-message';
 import { Router } from 'src/components/router';
 import { Sider } from 'src/components/sider';
@@ -18,7 +19,7 @@ import 'src/services/setup-axios';
 import { getExpirationTime } from 'src/utils/api';
 import { getLegajo } from 'src/utils/galicia';
 import { getRoute } from 'src/utils/history';
-import { views } from 'src/views';
+import { Views, views } from 'src/views';
 import './style.less';
 import styles from './style.module.less';
 
@@ -38,6 +39,7 @@ export const siderItems: SiderItem[] = [
       { view: views.Cajas, hidden: true },
       { view: views.Buscar_Caja },
       { view: views.Ingresar_Caja },
+      { view: views.Editar_Caja, hidden: true },
       { view: views.Retirar_Caja },
     ],
   },
@@ -54,9 +56,10 @@ export const siderItems: SiderItem[] = [
   };
 });
 
-const App = () => {
+export const App = () => {
   const dispatch = useDispatch();
   const auth = useAzureAuth();
+  const router = useSelector((state: RootState) => state.router);
   const sesion = useSelector((state: RootState) => state.sesion);
 
   useEffect(() => {
@@ -67,13 +70,20 @@ const App = () => {
   }, [auth.data]);
 
   const getTitle = () => {
-    const view = Object.values(views).find((v) => v.path === getRoute());
+    const view = Object.values(views).find((v) =>
+      matchPath(router.location.pathname, {
+        path: v.path,
+        exact: true,
+        strict: true,
+      }),
+    );
+
     const title = view ? view.title : views.Not_Found.title;
     return title;
   };
 
   return !auth.disabled && !sesion.infoSesion ? (
-    <Loading style={{ height: '100vh' }} size={26} text={'Cargando'} />
+    <LoadingContent />
   ) : (
     <>
       <Helmet titleTemplate={`%s | ${APP_TITLE}`}>
@@ -92,5 +102,3 @@ const App = () => {
     </>
   );
 };
-
-export default App;
