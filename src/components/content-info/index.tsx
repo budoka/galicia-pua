@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { UNSELECTABLE } from 'src/constants/constants';
-import { BasicComponenetProps, Dictionary } from 'src/interfaces';
+import { BasicComponenetProps, Dictionary } from 'src/types';
 import { RootState } from 'src/reducers';
 import { View } from 'src/views';
 import { siderItems } from '../app';

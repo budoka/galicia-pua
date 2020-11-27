@@ -7,7 +7,7 @@ import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
 
 import { ELLIPSIS } from 'src/constants/constants';
-import { BasicComponenetProps } from 'src/interfaces';
+import { BasicComponenetProps } from 'src/types';
 import { InputType } from '..';
 import styles from './style.module.less';
 

@@ -12,7 +12,6 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
 import { saveCaja } from 'src/actions/cajas/caja-info';
 
 import {
@@ -28,11 +27,14 @@ import { Loading, LoadingContent } from 'src/components/loading';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DEFAULT_FORMAT } from 'src/constants/constants';
-import { IElement, Reglas } from 'src/interfaces';
+import { IElement, Reglas } from 'src/types';
 import { RootState } from 'src/reducers';
 import { deleteProps } from 'src/utils/object';
 import { compare, splitStringByWords } from 'src/utils/string';
 import styles from './style.module.less';
+import { fetchTiposCaja, fetchTiposContenido } from 'src/features/ingresar-caja/ingresar-caja.slice';
+import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
+import { Filtro } from 'src/features/ingresar-caja/types';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -88,6 +90,8 @@ export const IngresarCaja: React.FC = (props) => {
   const sesion = useSelector((state: RootState) => state.sesion);
   const cajas = useSelector((state: RootState) => state.cajas);
 
+  const ingresarCajas = useSelector((state: RootState) => state.ingresarCajas);
+
   const [uIState, setUIState] = useState<UIState>();
 
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
@@ -96,6 +100,7 @@ export const IngresarCaja: React.FC = (props) => {
   // useEffects
 
   useEffect(() => {
+    dispatch(fetchTiposCaja());
     //  dispatch(getTiposCaja());
   }, []);
 
@@ -205,6 +210,7 @@ export const IngresarCaja: React.FC = (props) => {
 
     //  dispatch(setTipoCajaSeleccionado(tipoCaja)); // *
     // dispatch(getTiposContenidoCaja(tipoCaja));
+    dispatch(fetchTiposContenido());
     setUIState({ selectTipoContenido: { visible: true } });
   };
 
@@ -321,7 +327,9 @@ export const IngresarCaja: React.FC = (props) => {
 
   // renders
 
-  const renderOptions = (options: Elemento[]) => {
+  const renderOptions = (options?: Filtro[]) => {
+    if (!options) return;
+
     return options.map((option, index) => (
       <Option key={option.id} value={option.id} id={option.id}>
         {option.descripcion}
@@ -335,11 +343,11 @@ export const IngresarCaja: React.FC = (props) => {
         <Form.Item label={'Tipo de Caja'} name={'tipoCaja'} rules={reglas['tipoCaja']} required>
           <Select
             labelInValue
-            loading={cajas.filtros.isRunning}
+            loading={ingresarCajas.loading.tiposCaja}
             placeholder="Seleccione un tipo de caja"
-            disabled={cajas.filtros.isRunning}
+            disabled={ingresarCajas.loading.tiposCaja}
             onChange={handleTipoCaja}>
-            {renderOptions(cajas.filtros.filtro.tiposCaja)}
+            {renderOptions(ingresarCajas.filters.tiposCaja)}
           </Select>
         </Form.Item>
 
@@ -347,14 +355,14 @@ export const IngresarCaja: React.FC = (props) => {
           <Form.Item label={'Tipo de Contenido'} name={'tipoContenido'} rules={reglas['tipoContenido']} required>
             <Select
               labelInValue
-              loading={cajas.filtros.isRunning}
+              loading={ingresarCajas.loading.tiposContenido}
               placeholder="Seleccione un tipo de contenido"
               optionLabelProp="children"
               optionFilterProp="children"
               filterOption={(input, option) => option && option.value && option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              disabled={cajas.filtros.isRunning}
+              disabled={ingresarCajas.loading.tiposContenido}
               onChange={handleTipoContenido}>
-              {renderOptions(cajas.filtros.filtro.tiposContenidoCaja)}
+              {renderOptions(ingresarCajas.filters.tiposContenido)}
             </Select>
           </Form.Item>
         )}

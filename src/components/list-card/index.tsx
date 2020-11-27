@@ -5,7 +5,7 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Link } from 'react-router-dom';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
-import { BasicComponenetProps } from 'src/interfaces';
+import { BasicComponenetProps } from 'src/types';
 import { IListCardItem } from './interfaces';
 import styles from './style.module.less';
 

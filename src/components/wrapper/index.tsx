@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
-import { BasicComponenetProps } from 'src/interfaces';
+import { BasicComponenetProps } from 'src/types';
 import styles from './style.module.less';
 
 type Direction = 'row' | 'column';

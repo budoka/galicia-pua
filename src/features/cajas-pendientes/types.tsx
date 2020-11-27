@@ -1,4 +1,4 @@
-import { IElement } from 'src/interfaces';
+import { IElement } from 'src/types';
 
 export interface CajasPendientesSliceState {
   data: CajasPendientes;

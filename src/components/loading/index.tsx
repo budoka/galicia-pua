@@ -2,7 +2,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
-import { BasicComponenetProps } from 'src/interfaces';
+import { BasicComponenetProps } from 'src/types';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 

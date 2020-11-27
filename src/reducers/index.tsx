@@ -4,6 +4,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import cajas from 'src/reducers/cajas';
 import configuracionReducer from 'src/features/configuracion/configuracion.slice';
 import cajasPendientesReducer from 'src/features/cajas-pendientes/cajas-pendientes.slice';
+import ingresarCajasReducer from 'src/features/ingresar-caja/ingresar-caja.slice';
 import sesionReducer from 'src/features/sesion/sesion.slice';
 
 const reducers = {
@@ -11,6 +12,7 @@ const reducers = {
   configuracion: configuracionReducer,
   sesion: sesionReducer,
   cajasPendientes: cajasPendientesReducer,
+  ingresarCajas: ingresarCajasReducer,
 };
 
 export const createRootReducer = (history: History) => {

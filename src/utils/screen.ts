@@ -1,4 +1,4 @@
-import { Size } from 'src/interfaces';
+import { Size } from 'src/types';
 
 export type ScreenOrientation = 'portrait' | 'landscape';
 

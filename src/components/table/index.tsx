@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
-import { IElement } from 'src/interfaces';
+import { IElement } from 'src/types';
 import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
 import { Cell, ICellProps } from './cell';

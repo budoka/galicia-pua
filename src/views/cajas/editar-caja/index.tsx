@@ -27,7 +27,7 @@ import { Loading, LoadingContent } from 'src/components/loading';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA } from 'src/constants/constants';
-import { IElement, Reglas } from 'src/interfaces';
+import { IElement, Reglas } from 'src/types';
 import { RootState } from 'src/reducers';
 import { deleteProps } from 'src/utils/object';
 import { compare, splitStringByWords } from 'src/utils/string';

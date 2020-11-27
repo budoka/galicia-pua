@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
 import { setOpenMenu } from 'src/features/configuracion/configuracion.slice';
-import { ObjectLiteral } from 'src/interfaces';
+import { ObjectLiteral } from 'src/types';
 import { RootState } from 'src/reducers';
 import { getMatchedPathname } from 'src/utils/history';
 import { View } from 'src/views';

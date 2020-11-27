@@ -1,4 +1,4 @@
-import { ObjectLiteral } from 'src/interfaces';
+import { ObjectLiteral } from 'src/types';
 // import { propertiesOf } from 'ts-reflection';
 
 import { keys } from 'ts-transformer-keys';

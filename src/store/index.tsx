@@ -22,7 +22,7 @@ const persistedReducer = persistReducer(persistConfig, createRootReducer(history
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([logger, routerMiddleware(history)]),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([/* logger,  */ routerMiddleware(history)]),
   devTools: process.env.NODE_ENV !== 'production',
   // middleware: [logger, thunk, routerMiddleware(history)]
 });

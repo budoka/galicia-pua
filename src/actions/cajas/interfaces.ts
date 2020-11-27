@@ -1,6 +1,6 @@
 ///////////////////// Interfaces Front /////////////////////
 
-import { IElement } from 'src/interfaces';
+import { IElement } from 'src/types';
 
 export interface GuardarCajaBodyRequest {
   idTipoCaja: number | null;

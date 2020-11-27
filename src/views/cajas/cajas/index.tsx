@@ -77,6 +77,7 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   const estado = query.get('estado') || undefined;
 
   useEffect(() => {
+    console.log('loading cajas');
     const filtros: FiltrosCajas = {
       estado,
       sector: sesion.data?.idSector,
