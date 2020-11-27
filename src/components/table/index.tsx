@@ -542,7 +542,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const renderTitle = () => {
     const regex = /top|both/;
     const hasComponents = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
-    console.log(extraComponents);
+    // console.log(extraComponents);
     const components = renderComponents(regex);
     return hasComponents && !_.isEmpty(components) ? components : undefined;
   };

@@ -1,4 +1,4 @@
-import { Device } from 'src/types';
+export type Device = 'desktop' | 'mobile' | undefined;
 
 export function getDeviceType() {
   let device: Device = 'desktop';

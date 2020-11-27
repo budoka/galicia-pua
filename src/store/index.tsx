@@ -5,7 +5,7 @@ import { createBrowserHistory } from 'history';
 import { PersistConfig, persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 //import thunk from 'redux-thunk';
-import { createRootReducer } from 'src/reducers';
+import { createRootReducer, RootState } from 'src/reducers';
 import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
 import { useDispatch } from 'react-redux';
@@ -16,11 +16,11 @@ const persistConfig = {
   key: 'AppStore',
   storage,
   blacklist: ['cajas'],
-} as PersistConfig<any>;
+} as PersistConfig<RootState>;
 
 const persistedReducer = persistReducer(persistConfig, createRootReducer(history));
 
-const store = configureStore({
+export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([logger, routerMiddleware(history)]),
   devTools: process.env.NODE_ENV !== 'production',

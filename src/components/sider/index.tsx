@@ -7,8 +7,8 @@ import classNames from 'classnames';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { setOpenMenu } from 'src/actions/configuracion';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
+import { setOpenMenu } from 'src/features/configuracion/configuracion.slice';
 import { ObjectLiteral } from 'src/interfaces';
 import { RootState } from 'src/reducers';
 import { getMatchedPathname } from 'src/utils/history';
@@ -67,7 +67,7 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
       const menu = currentMenu[currentMenu.length - 1].toString();
       if (settings.openMenu === menu) return;
       dispatch(setOpenMenu(menu));
-    } else if (settings.openMenu) dispatch(setOpenMenu());
+    } else if (settings.openMenu) dispatch(setOpenMenu(''));
   };
 
   const renderMenu = (items: SiderItem[]) => {
@@ -124,7 +124,7 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
         openKeys={settings.openMenu ? [settings.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
-          if (settings.collapsed) dispatch(setOpenMenu());
+          if (settings.collapsed) dispatch(setOpenMenu(''));
         }}
         theme={props.theme ?? 'light'}
         mode={props.mode ?? 'inline'}>

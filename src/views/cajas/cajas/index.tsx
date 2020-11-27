@@ -3,7 +3,7 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 //import { CajasBodyRequest, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
-import { setFiltrosCajasPendientes } from 'src/actions/cajas/caja-pendientes-filtros';
+
 import { ContentInfo } from 'src/components/content-info';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
@@ -14,7 +14,10 @@ import { compare } from 'src/utils/string';
 import { Filtros } from './filtros';
 
 import styles from './style.module.less';
-import { DetalleCaja } from 'src/actions/cajas/caja-pendientes';
+
+import { fetchCajas, setFilters } from 'src/features/cajas-pendientes/cajas-pendientes.slice';
+import { DetalleCaja, FiltrosCajas } from 'src/features/cajas-pendientes/types';
+import { useAppDispatch } from 'src/store';
 
 export interface CajasProps {}
 
@@ -68,63 +71,21 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   const query = useQuery();
 
   const sesion = useSelector((state: RootState) => state.sesion);
-  const cajasPendientes = useSelector((state: RootState) => state.cajas.pendientes);
-  const filtrosCajasPendientes = useSelector((state: RootState) => state.cajas.filtrosPendientes);
-  const dispatch = useDispatch();
+  const cajasPendientes = useSelector((state: RootState) => state.cajasPendientes);
+  const dispatch = useAppDispatch();
 
   const estado = query.get('estado') || undefined;
-  const [fetch, setFetch] = useState(false);
 
   useEffect(() => {
-    dispatch(
-      setFiltrosCajasPendientes({
-        estado,
-        sector: sesion.infoSesion?.idSector,
-        fecha: undefined,
-        usuario: sesion.infoSesion?.nombreUsuario,
-      }),
-    );
-
-    setFetch(true);
+    const filtros: FiltrosCajas = {
+      estado,
+      sector: sesion.data?.idSector,
+      fecha: undefined,
+      usuario: sesion.data?.nombreUsuario,
+    };
+    dispatch(setFilters(filtros));
+    dispatch(fetchCajas());
   }, []);
-
-  useEffect(() => {
-    if (!fetch) return;
-
-    const expiration = getExpirationTime();
-
-    /*     const bodyRequest: CajasBodyRequest = {
-      idUsuario: sesion.infoSesion?.idUsuario!,
-      roles: [sesion.infoSesion?.perfil!],
-      centroCosto: filtrosCajasPendientes.sector,
-      estado: filtrosCajasPendientes.estado,
-      nombre: filtrosCajasPendientes.usuario,
-    };
- */
-    //   dispatch(getCajasPendientes(bodyRequest, { expiration }));
-  }, [fetch]);
-
-  /*   const onRefresh = async () => {
-    const expiration = getExpirationTime();
-
-    const bodyRequest: CajasBodyRequest = {
-         idUsuario: sesion.infoSesion?.idUsuario!,
-      roles: [sesion.infoSesion?.perfil!],
-      centroCosto: filtrosCajasPendientes.sector,
-      estado: filtrosCajasPendientes.estado,
-      nombre: filtrosCajasPendientes.usuario,
-      fechaDesde:
-        filtrosCajasPendientes.fecha && filtrosCajasPendientes.fecha.length > 0
-          ? filtrosCajasPendientes.fecha[0].format('YYYY-MM-DD')
-          : undefined,
-      fechaHasta:
-        filtrosCajasPendientes.fecha && filtrosCajasPendientes.fecha.length > 1
-          ? filtrosCajasPendientes.fecha[1].format('YYYY-MM-DD')
-          : undefined,
-    };
-
-    dispatch(getCajasPendientes(bodyRequest, { expiration, force: true }));
-  }; */
 
   const Tabla = () => {
     return (
@@ -132,12 +93,11 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
         <Table
           rowKey={'numero'}
           className={styles.table}
-          // bordered
           size={'small'}
           fill
-          //     columns={columns as ColumnsType<DetalleCaja>}
-          //      dataSource={cajasPendientes.detallesCaja}
-          loading={cajasPendientes.isRunning}
+          columns={columns as ColumnsType<DetalleCaja>}
+          dataSource={cajasPendientes.data}
+          loading={cajasPendientes.loading}
           hideRowSelection
           extraColumns={{ showKeyColumn: false, showActionsColumn: false }}
           extraComponents={[
@@ -146,12 +106,6 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
               node: <Filtros />,
               position: 'top',
             },
-            /*             {
-              key: 'refresh-button',
-              node: 'refresh-button',
-              task: onRefresh,
-              position: 'top',
-            }, */
             {
               key: 'records-count',
               node: 'records-count',

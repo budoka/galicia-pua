@@ -4,9 +4,15 @@ import { LayoutProps } from 'antd/lib/layout';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setButtonVisible, setCollapsed, setForcedCollapsed, setOpenMenu, setOrientation } from 'src/actions/configuracion';
 
 import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import {
+  setOrientation,
+  setOpenMenu,
+  toggleButtonVisible,
+  toggleCollapse,
+  toggleForcedCollapse,
+} from 'src/features/configuracion/configuracion.slice';
 import { RootState } from 'src/reducers';
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
@@ -46,12 +52,12 @@ export const Header: React.FC<HeaderProps> = (props) => {
     const shouldCollapse = size.width <= 612;
     if (shouldCollapse) {
       if (shouldCollapse !== settings.collapsed || shouldCollapse === settings.forcedCollapsed) {
-        if (settings.buttonVisible) dispatch(setButtonVisible(false));
-        if (settings.openMenu) dispatch(setOpenMenu());
+        if (settings.buttonVisible) dispatch(toggleButtonVisible(false));
+        if (settings.openMenu) dispatch(setOpenMenu(''));
       }
     } else {
       if (shouldCollapse !== settings.collapsed) {
-        if (!settings.buttonVisible) dispatch(setButtonVisible(true));
+        if (!settings.buttonVisible) dispatch(toggleButtonVisible(true));
         if (!settings.forcedCollapsed) handleCollapsed(false);
       }
     }
@@ -66,17 +72,17 @@ export const Header: React.FC<HeaderProps> = (props) => {
     const shouldIgnore = size.width <= 612;
     if (shouldIgnore) return;
     else if (settings.forcedCollapsed) {
-      if (settings.openMenu) dispatch(setOpenMenu());
+      if (settings.openMenu) dispatch(setOpenMenu(''));
       else handleCollapsed(true);
     } else handleCollapsed(false);
   }, [settings.forcedCollapsed]);
 
   const handleCollapsed = (shouldCollapse: boolean) => {
-    if (shouldCollapse !== settings.collapsed) dispatch(setCollapsed(shouldCollapse));
+    if (shouldCollapse !== settings.collapsed) dispatch(toggleCollapse(shouldCollapse));
   };
 
   const handleForcedCollapsed = (shouldForceCollapse: boolean) => {
-    if (shouldForceCollapse !== settings.forcedCollapsed) dispatch(setForcedCollapsed(shouldForceCollapse));
+    if (shouldForceCollapse !== settings.forcedCollapsed) dispatch(toggleForcedCollapse(shouldForceCollapse));
   };
 
   const renderLogo = () => {
@@ -109,14 +115,14 @@ export const Header: React.FC<HeaderProps> = (props) => {
         <span className={styles.right}>
           {'Usuario:  '}
           <span className={styles.info}>
-            {sesion.infoSesion?.nombreUsuario} ({sesion.infoSesion?.legajo})
+            {sesion.data?.nombreUsuario} ({sesion.data?.legajo})
           </span>
 
           {'Sector:  '}
-          <span className={styles.info}>{sesion.infoSesion?.nombreSector}</span>
+          <span className={styles.info}>{sesion.data?.nombreSector}</span>
 
           {'Perfil:  '}
-          <span className={styles.info}>{sesion.infoSesion?.perfil}</span>
+          <span className={styles.info}>{sesion.data?.perfil}</span>
         </span>
       </div>
     );

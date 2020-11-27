@@ -118,7 +118,8 @@
   },
   "scripts": {
     "start": "npm run dev",
-    "dev": "node --max_old_space_size=8192 --optimize_for_size --stack_size=4096 scripts/start.js",
+    "dev2": "node --max_old_space_size=8192 --optimize_for_size --stack_size=4096 scripts/start.js",
+    "dev": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "serve": "npm run build && serve -s build",

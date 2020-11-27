@@ -1,8 +1,8 @@
 import { IElement } from 'src/interfaces';
 
-export interface SliceState {
-  data: DetalleCaja[];
-  filters: any[];
+export interface CajasPendientesSliceState {
+  data: CajasPendientes;
+  filters: FiltrosCajas;
   loading: boolean;
   error: string | null;
 }
@@ -24,6 +24,8 @@ export interface FiltrosCajas {
   sector?: number;
   usuario?: string;
 }
+
+export type CajasPendientes = DetalleCaja[];
 
 // Modelo back
 
@@ -49,4 +51,4 @@ interface DetalleCajaResponseBody {
   usuario: string;
 }
 
-export type CajasPendientesBodyResponse = DetalleCajaResponseBody[];
+export type CajasPendientesResponseBody = DetalleCajaResponseBody[];

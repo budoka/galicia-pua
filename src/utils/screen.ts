@@ -1,5 +1,6 @@
 import { Size } from 'src/interfaces';
-import { ScreenOrientation } from 'src/types';
+
+export type ScreenOrientation = 'portrait' | 'landscape';
 
 export function getScreenOrientation(size: Size) {
   let orientation: ScreenOrientation = 'portrait';

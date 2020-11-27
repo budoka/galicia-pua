@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { matchPath, useHistory } from 'react-router-dom';
-import { getInfoSesion } from 'src/actions/sesion';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 import { Footer } from 'src/components/footer';
 import { Header } from 'src/components/header';
@@ -22,6 +21,7 @@ import { getRoute } from 'src/utils/history';
 import { Views, views } from 'src/views';
 import './style.less';
 import styles from './style.module.less';
+import { fetchInfoSesion } from 'src/features/sesion/sesion.slice';
 
 const { Content } = Layout;
 
@@ -66,7 +66,7 @@ export const App = () => {
     if (!auth.data) return;
     const nombreUsuario = auth.data.account.name;
     const legajo = getLegajo(auth.data.account.username)!;
-    dispatch(getInfoSesion({ nombreUsuario, legajo }, { expiration: getExpirationTime(60, 'minute') }));
+    dispatch(fetchInfoSesion({ nombreUsuario, legajo }));
   }, [auth.data]);
 
   const getTitle = () => {
@@ -82,7 +82,7 @@ export const App = () => {
     return title;
   };
 
-  return !auth.disabled && !sesion.infoSesion ? (
+  return !auth.disabled && !sesion.data ? (
     <LoadingContent />
   ) : (
     <>
