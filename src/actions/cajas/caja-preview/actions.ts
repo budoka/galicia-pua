@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
+/*
 import { ObjectLiteral, QueryParams } from 'src/interfaces';
 import { ThunkResult } from 'src/actions';
 import { PreviewCajaAction, PreviewCajaActionTypes, PreviewCajaState } from './types';
-import { API, apis } from 'src/services/apis-data';
-import { getResourceData } from 'src/utils/api';
+
 
 import { FiltrosCajaState } from '../caja-filtros';
 import { hashCode } from 'src/utils/string';
@@ -23,12 +23,12 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
 
   if (isRunning) return;
 
-  const apiName = API.CAJA;
-  const idMethod = 'preview';
-  const api = getResourceData(apiName, idMethod);
+  const apiId = API.CAJA;
+  const resourceId = 'preview';
+  const resourceData = getResourceData(apiId, resourceId);
 
-  const { url } = api;
-  const { verb, path, headers } = api.resource;
+  const { url } = resourceData;
+  const { verb, path, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -42,12 +42,6 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
 
   const index = hashCode(config);
 
-  /*if (reqCache.cache[index]) {
-    console.log('Cached preview!!!');
-    const cachedData = reqCache.cache[index].data;
-    dispatch(success(cachedData));
-    return;
-  }*/
 
   dispatch(running());
 
@@ -91,8 +85,7 @@ export const getPreviewCaja = (filtrosSeleccionados: FiltrosCajaState['seleccion
   }
 
   function success(preview: PreviewCajaState['preview']): PreviewCajaActionTypes {
-    /*  console.log('preview');
-    console.log(preview); */
+
     return { type: PreviewCajaAction.GET_DATA_SUCCESS, preview };
   }
 
@@ -108,3 +101,4 @@ export const clearPreviewCaja = (): ThunkResult => (dispatch, getState) => {
     return { type: PreviewCajaAction.CLEAR };
   }
 };
+ */

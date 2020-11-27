@@ -1,5 +1,5 @@
 import { CaretRightOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Checkbox, Col, DatePicker, Divider, Empty, Form, List, Row, Select } from 'antd';
+import { Breadcrumb, Button, Checkbox, Col, DatePicker, Divider, Empty, Form, List, Row, Select, Typography } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
@@ -11,17 +11,10 @@ import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getTiposCaja,
-  getTiposContenidoCaja,
-  getTiposPlantilla,
-  setTipoCajaSeleccionado,
-  setTipoContenidoCajaSeleccionado,
-  setTipoPlantillaSeleccionado,
-} from 'src/actions/cajas/caja-filtros';
+
 import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
 import { saveCaja } from 'src/actions/cajas/caja-info';
-import { clearPreviewCaja, getPreviewCaja } from 'src/actions/cajas/caja-preview';
+
 import {
   PreviewCajaDetalleResponse,
   PreviewCajaDocumentoResponse,
@@ -43,6 +36,7 @@ import styles from './style.module.less';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const { Text, Link } = Typography;
 
 interface UIState {
   selectTipoContenido?: { visible: boolean };
@@ -102,7 +96,7 @@ export const IngresarCaja: React.FC = (props) => {
   // useEffects
 
   useEffect(() => {
-    dispatch(getTiposCaja());
+    //  dispatch(getTiposCaja());
   }, []);
 
   useEffect(() => {
@@ -110,9 +104,9 @@ export const IngresarCaja: React.FC = (props) => {
   });
 
   useEffect(() => {
-    if (uIState?.preview) {
+    /*   if (uIState?.preview) {
       dispatch(getPreviewCaja(cajas.filtros.seleccionado));
-    }
+    } */
   }, [uIState?.preview]);
 
   useEffect(() => {
@@ -209,8 +203,8 @@ export const IngresarCaja: React.FC = (props) => {
     const fieldsToReset = ['tipoContenido', 'tipoPlantilla', 'fechaVigencia', 'descripcion', 'restringir'];
     form.resetFields(fieldsToReset);
 
-    dispatch(setTipoCajaSeleccionado(tipoCaja)); // *
-    dispatch(getTiposContenidoCaja(tipoCaja));
+    //  dispatch(setTipoCajaSeleccionado(tipoCaja)); // *
+    // dispatch(getTiposContenidoCaja(tipoCaja));
     setUIState({ selectTipoContenido: { visible: true } });
   };
 
@@ -227,10 +221,10 @@ export const IngresarCaja: React.FC = (props) => {
     if (descripcion === CAJA_DETALLE) fieldsToReset.push('fechaVigencia');
     form.resetFields(fieldsToReset);
 
-    dispatch(setTipoContenidoCajaSeleccionado(tipoContenido)); // *
+    //  dispatch(setTipoContenidoCajaSeleccionado(tipoContenido)); // *
 
     if (descripcion === CAJA_DETALLE) {
-      dispatch(getTiposPlantilla(tipoContenido));
+      //    dispatch(getTiposPlantilla(tipoContenido));
       setUIState((prev) => ({
         ...prev,
         selectTipoPlantilla: { visible: true },
@@ -267,7 +261,7 @@ export const IngresarCaja: React.FC = (props) => {
     const { value: id, label: descripcion } = form.getFieldValue('tipoPlantilla');
     const tipoPlantilla: Elemento = { id, descripcion };
 
-    dispatch(setTipoPlantillaSeleccionado(tipoPlantilla)); // *
+    //  dispatch(setTipoPlantillaSeleccionado(tipoPlantilla)); // *
 
     setUIState((prev) => ({
       ...prev,
@@ -394,6 +388,7 @@ export const IngresarCaja: React.FC = (props) => {
               allowClear
               onChange={handleFechaVigencia}
             />
+            {uIState.labelFechaVigencia?.visible && <Text strong>Ant Design (strong)</Text>}
           </Form.Item>
         )}
 

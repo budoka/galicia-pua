@@ -1,6 +1,6 @@
 // Action
 
-import { FiltrosCajas } from 'src/views/cajas/cajas/filtros';
+import { FiltrosCajas } from 'src/features/cajas-pendientes/types';
 
 export enum FiltrosCajasPendientesAction {
   SET_FILTROS = 'FiltroCajasPendientesAction/SET_FILTERS',

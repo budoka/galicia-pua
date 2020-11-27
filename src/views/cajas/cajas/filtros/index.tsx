@@ -3,22 +3,15 @@ import { useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CajasBodyRequest, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
 import { setFiltrosCajasPendientes } from 'src/actions/cajas/caja-pendientes-filtros';
 
 import { DATE_DEFAULT_FORMAT } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { getExpirationTime } from 'src/utils/api';
+import { FiltrosCajas } from 'src/features/cajas-pendientes/types';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-
-export interface FiltrosCajas {
-  estado?: string;
-  fecha?: moment.Moment[];
-  sector?: number;
-  usuario?: string;
-}
 
 export const Filtros: React.FC = (props) => {
   const dispatch = useDispatch();
@@ -38,7 +31,7 @@ export const Filtros: React.FC = (props) => {
   };
 
   const onFilter = (values: FiltrosCajas) => {
-    const bodyRequest: CajasBodyRequest = {
+    /*    const bodyRequest: CajasBodyRequest = {
       idUsuario: sesion.infoSesion?.idUsuario!,
       roles: [sesion.infoSesion?.perfil!],
       centroCosto: filtrosCajasPendientes.sector,
@@ -56,7 +49,7 @@ export const Filtros: React.FC = (props) => {
 
     const expiration = getExpirationTime(15);
 
-    dispatch(getCajasPendientes(bodyRequest, { expiration, force: true }));
+    dispatch(getCajasPendientes(bodyRequest, { expiration, force: true })); */
   };
 
   const onReset = () => {

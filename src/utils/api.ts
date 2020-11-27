@@ -1,56 +1,8 @@
 import dayjs from 'dayjs';
-import _ from 'lodash';
-import { APIError } from 'src/exceptions/api';
-import { apis, ResourceAPI } from 'src/services/apis-data';
 import { getVar } from './environment';
-
-export type HttpVerb = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-
-export interface ResourceData {
-  url: string;
-  resource: ResourceAPI;
-}
-
-interface ICache<T> {
-  [key: string]: T;
-}
-
-const cache: ICache<ResourceData> = {};
-
-/**
- * Get the data of an API from an array of APIs.
- * @param apiId API id.
- * @param resourceId Resource id.
- */
-export function getResourceData(apiId: string, resourceId: string): ResourceData {
-  const index = `${apiId}_${resourceId}`;
-  if (cache[index]) return cache[index];
-
-  const api = apis.find((api) => api.id === apiId);
-
-  if (!api) throw new APIError(`API '${apiId}' not found.`);
-
-  const baseURL = api.baseURL;
-
-  const resource = api.resources.find((resource) => resource.id === resourceId);
-
-  if (!resource) throw new APIError(`Method id: '${resourceId}' not found.`);
-
-  // Cache the value and return it.
-  return (cache[index] = { url: baseURL, resource: resource });
-}
-
-/**
- * Get the url of an API from an array of APIs.
- * @param apiId API id.
- */
-export function getBaseURL(apiId: string) {
-  const api = apis.find((api) => api.id === apiId);
-
-  if (!api) throw new APIError(`API '${apiId}' not found.`);
-
-  return api.baseURL;
-}
+import { apis } from 'src/api/setup-apis';
+import { AxiosRequestConfig } from 'axios';
+import { APIs, API, Resource } from 'src/api/types';
 
 /**
  * Build the url of an API.
@@ -72,4 +24,24 @@ export function buildBaseURL(apiId: string) {
  */
 export function getExpirationTime(value: number = 15, unit: 'second' | 'minute' = 'second') {
   return dayjs().add(value, unit).unix();
+}
+
+export function buildEndpoint(baseURL: string, path: string) {
+  return `${baseURL}/${path}`;
+}
+
+/**
+ * Build the axios request config.
+ * @param api API
+ * @param resource resource
+ * @param data body request
+ */
+export function buildAxiosRequestConfig<ResourceType>(api: API<ResourceType>, resource: Resource, data?: any) {
+  const { baseURL } = api;
+  const { verb, path, headers } = resource;
+  const endpoint = buildEndpoint(baseURL, path);
+
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data };
+
+  return config;
 }

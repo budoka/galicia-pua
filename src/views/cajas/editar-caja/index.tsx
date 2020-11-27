@@ -10,17 +10,10 @@ import _ from 'lodash';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  getTiposCaja,
-  getTiposContenidoCaja,
-  getTiposPlantilla,
-  setTipoCajaSeleccionado,
-  setTipoContenidoCajaSeleccionado,
-  setTipoPlantillaSeleccionado,
-} from 'src/actions/cajas/caja-filtros';
+
 import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
 import { saveCaja } from 'src/actions/cajas/caja-info';
-import { clearPreviewCaja, getPreviewCaja } from 'src/actions/cajas/caja-preview';
+
 import {
   PreviewCajaDetalleResponse,
   PreviewCajaDocumentoResponse,
@@ -104,7 +97,7 @@ export const EditarCaja: React.FC = (props) => {
   // useEffects
 
   useEffect(() => {
-    dispatch(getTiposCaja());
+    //  dispatch(getTiposCaja());
   }, []);
 
   useEffect(() => {
@@ -113,7 +106,7 @@ export const EditarCaja: React.FC = (props) => {
 
   useEffect(() => {
     if (uIState?.preview) {
-      dispatch(getPreviewCaja(cajas.filtros.seleccionado));
+      //  dispatch(getPreviewCaja(cajas.filtros.seleccionado));
     }
   }, [uIState?.preview]);
 
@@ -209,8 +202,8 @@ export const EditarCaja: React.FC = (props) => {
     const tipoCaja: Elemento = { id, descripcion };
 
     form.resetFields(['tipoContenido', 'tipoPlantilla', 'descripcion', 'restringir']);
-    dispatch(setTipoCajaSeleccionado(tipoCaja)); // *
-    dispatch(getTiposContenidoCaja(tipoCaja));
+    //  dispatch(setTipoCajaSeleccionado(tipoCaja)); // *
+    //  dispatch(getTiposContenidoCaja(tipoCaja));
     setUIState({ selectTipoContenido: { visible: true } });
   };
 
@@ -224,10 +217,10 @@ export const EditarCaja: React.FC = (props) => {
     else if (descripcion === CAJA_DOCUMENTO) tipoContenido.id = 2;
 
     form.resetFields(['tipoPlantilla']);
-    dispatch(setTipoContenidoCajaSeleccionado(tipoContenido)); // *
+    //  dispatch(setTipoContenidoCajaSeleccionado(tipoContenido)); // *
 
     if (descripcion === CAJA_DETALLE) {
-      dispatch(getTiposPlantilla(tipoContenido));
+      //   dispatch(getTiposPlantilla(tipoContenido));
       setUIState((prev) => ({
         ...prev,
         selectTipoPlantilla: { visible: true },
@@ -252,7 +245,7 @@ export const EditarCaja: React.FC = (props) => {
     const { value: id, label: descripcion } = form.getFieldValue('tipoPlantilla');
     const tipoPlantilla: Elemento = { id, descripcion };
 
-    dispatch(setTipoPlantillaSeleccionado(tipoPlantilla)); // *
+    //   dispatch(setTipoPlantillaSeleccionado(tipoPlantilla)); // *
 
     setUIState((prev) => ({
       ...prev,

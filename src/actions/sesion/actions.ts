@@ -1,9 +1,8 @@
 import { message } from 'antd';
-import axios, { AxiosRequestConfig } from 'axios';
+/*import axios, { AxiosRequestConfig } from 'axios';
 import { Message } from 'src/constants/messages';
 import { RequestOptions } from 'src/interfaces';
-import { API } from 'src/services/apis-data';
-import { getResourceData } from 'src/utils/api';
+
 import { CacheMemory } from 'src/utils/cache';
 import { hashCode } from 'src/utils/string';
 import { ThunkResult } from '..';
@@ -29,12 +28,12 @@ export const getInfoSesion = (data: SesionBodyRequest, options?: RequestOptions)
 
   if (isRunning) return;
 
-  const apiName = API.INFO_SESION;
-  const idMethod = 'infoSesion';
-  const api = getResourceData(apiName, idMethod);
+  const apiId = API.INFO_SESION;
+  const resourceId = 'infoSesion';
+  const resourceData = getResourceData(apiId, resourceId);
 
-  const { url } = api;
-  const { verb, path, timeout, headers } = api.resource;
+  const { url } = resourceData;
+  const { verb, path, timeout, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -94,3 +93,4 @@ export const getInfoSesion = (data: SesionBodyRequest, options?: RequestOptions)
     return { type: SesionAction.GET_DATA_FAILURE };
   }
 };
+ */

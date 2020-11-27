@@ -1,12 +1,13 @@
-import { message } from 'antd';
+export const a = {};
+/* import { message } from 'antd';
 import axios, { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import { ThunkResult } from 'src/actions';
 import { Message } from 'src/constants/messages';
 import { RequestOptions } from 'src/interfaces';
-import { API } from 'src/services/apis-data';
-import { getResourceData } from 'src/utils/api';
+import { apis } from 'src/api/setup-apis';
+
 import { CacheMemory } from 'src/utils/cache';
 import { hashCode, splitStringByWords } from 'src/utils/string';
 import { InfoCajaAction, InfoCajaState, InfoCajaActionTypes } from '../caja-info';
@@ -50,16 +51,18 @@ export const getCajasPendientes = (data: CajasBodyRequest, options?: RequestOpti
   dispatch(clearCajasPendientes());
 
   const isRunning = getState().cajas.pendientes.isRunning;
-  console.log(data);
 
   if (isRunning) return;
 
-  const apiName = API.CAJA;
-  const idMethod = 'detalleCaja';
-  const api = getResourceData(apiName, idMethod);
+  apis
 
-  const { url } = api;
-  const { verb, path, timeout, headers } = api.resource;
+
+  const apiId = API.CAJA;
+  const resourceId = 'detalleCaja';
+  const resourceData = getResourceData(apiId, resourceId);
+
+  const { url } = resourceData;
+  const { verb, path, timeout, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -122,3 +125,4 @@ export const getCajasPendientes = (data: CajasBodyRequest, options?: RequestOpti
     return { type: CajasPendientesAction.GET_DATA_FAILURE };
   }
 };
+ */

@@ -2,7 +2,7 @@ import { Tag } from 'antd';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CajasBodyRequest, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
+//import { CajasBodyRequest, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
 import { setFiltrosCajasPendientes } from 'src/actions/cajas/caja-pendientes-filtros';
 import { ContentInfo } from 'src/components/content-info';
 import { IColumn, Table } from 'src/components/table';
@@ -14,6 +14,7 @@ import { compare } from 'src/utils/string';
 import { Filtros } from './filtros';
 
 import styles from './style.module.less';
+import { DetalleCaja } from 'src/actions/cajas/caja-pendientes';
 
 export interface CajasProps {}
 
@@ -92,15 +93,15 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
 
     const expiration = getExpirationTime();
 
-    const bodyRequest: CajasBodyRequest = {
+    /*     const bodyRequest: CajasBodyRequest = {
       idUsuario: sesion.infoSesion?.idUsuario!,
       roles: [sesion.infoSesion?.perfil!],
       centroCosto: filtrosCajasPendientes.sector,
       estado: filtrosCajasPendientes.estado,
       nombre: filtrosCajasPendientes.usuario,
     };
-
-    dispatch(getCajasPendientes(bodyRequest, { expiration }));
+ */
+    //   dispatch(getCajasPendientes(bodyRequest, { expiration }));
   }, [fetch]);
 
   /*   const onRefresh = async () => {
@@ -134,8 +135,8 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
           // bordered
           size={'small'}
           fill
-          columns={columns as ColumnsType<DetalleCaja>}
-          dataSource={cajasPendientes.detallesCaja}
+          //     columns={columns as ColumnsType<DetalleCaja>}
+          //      dataSource={cajasPendientes.detallesCaja}
           loading={cajasPendientes.isRunning}
           hideRowSelection
           extraColumns={{ showKeyColumn: false, showActionsColumn: false }}

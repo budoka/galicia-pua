@@ -1,8 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { ThunkResult } from 'src/actions';
+/* import { ThunkResult } from 'src/actions';
 import { Dictionary, QueryParams } from 'src/interfaces';
-import { API } from 'src/services/apis-data';
-import { getResourceData, ResourceData } from 'src/utils/api';
+
 import { parseObject } from 'src/utils/parse';
 import { hashCode } from 'src/utils/string';
 import {
@@ -16,13 +15,6 @@ import {
 import { FiltrosCajaAction, FiltrosCajaActionTypes, FiltrosCajaState } from './types';
 // import { Option } from 'src/actions/cajas/caja-filters/interfaces'
 
-/*
-Example ...
-const instance = axios.create({
-  baseURL: 'https://some-domain.com/api/',
-  timeout: 1000,
-  headers: {'X-Custom-Header': 'foobar'}
-})*/
 
 export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (dispatch, getState) => {
   const isRunning = getState().cajas.filtros.isRunning;
@@ -34,25 +26,18 @@ export const getTiposCaja = (queryParams?: QueryParams): ThunkResult => async (d
     ...queryParams,
   };
 
-  const apiName = API.TIPO_CAJA;
-  const idMethod = 'tipoCaja';
-  const api = getResourceData(apiName, idMethod);
+  const apiId = API.TIPO_CAJA;
+  const resourceId = 'tipoCaja';
+  const resourceData = getResourceData(apiId, resourceId);
 
-  const { url } = api;
-  const { verb, path, headers } = api.resource;
+  const { url } = resourceData;
+  const { verb, path, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
   const config: AxiosRequestConfig = { method: verb, url: endpoint, headers };
 
   const index = hashCode(config);
-
-  /*if (reqCache.cache[index]) {
-    console.log('Cached tipoCaja!!!');
-    const cachedData = reqCache.cache[index].data;
-    dispatch(success(cachedData));
-    return;
-  }*/
 
   dispatch(running(true));
 
@@ -91,12 +76,12 @@ export const getTiposContenidoCaja = (tipoCaja: FiltrosCajaState['seleccionado']
 
   if (isRunning) return;
 
-  const apiName = API.TIPO_CAJA;
-  const idMethod = 'tipoDeContenido';
-  const api = getResourceData(apiName, idMethod);
+  const apiId = API.TIPO_CAJA;
+  const resourceId = 'tipoDeContenido';
+  const resourceData = getResourceData(apiId, resourceId);
 
-  const { url } = api;
-  const { verb, path, headers } = api.resource;
+  const { url } = resourceData;
+  const { verb, path, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
@@ -104,19 +89,10 @@ export const getTiposContenidoCaja = (tipoCaja: FiltrosCajaState['seleccionado']
     tipoCaja: tipoCaja?.descripcion as string,
   };
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest /*tipoCaja*/ };
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest };
 
   const index = hashCode(config);
 
-  // Desactivado hasta que se arregle la request
-  /*if (reqCache.cache[index]) {
-    console.log('Cached tipoDeContenido!!!');
-    const cachedData = reqCache.cache[index].data;
-    console.log(cachedData);
-
-    dispatch(success(cachedData));
-    return;
-  }*/
 
   dispatch(running(true));
 
@@ -158,30 +134,24 @@ export const getTiposPlantilla = (tipoContenidoCaja: FiltrosCajaState['seleccion
 
   if (isRunning) return;
 
-  const apiName = API.PLANTILLAS_SECTOR;
-  const idMethod = 'plantillasPorSector';
-  const api = getResourceData(apiName, idMethod);
+  const apiId = API.PLANTILLAS_SECTOR;
+  const resourceId = 'plantillasPorSector';
+  const resourceData = getResourceData(apiId, resourceId);
 
-  const { url } = api;
-  const { verb, path, headers } = api.resource;
+  const { url } = resourceData;
+  const { verb, path, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
   const dataRequest = {
     //idSector: state.cajas.filters.selected.cajaContentType?.value as string,
-    idSector: /*state.user.idSector ?? */ 1243,
+    idSector: //state.user.idSector ??  1243,
   };
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest /*tipoContenidoCaja*/ };
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: dataRequest };
 
   const index = hashCode(config);
 
-  /* if (reqCache.cache[index]) {
-    console.log('Cached plantillasPorSector!!!');
-    const cachedData = reqCache.cache[index].data;
-    dispatch(success(cachedData));
-    return;
-  }*/
 
   dispatch(running(true));
 
@@ -239,3 +209,4 @@ export const setTipoPlantillaSeleccionado = (idTipoPlantilla: FiltrosCajaState['
     return { type: FiltrosCajaAction.SELECT_BOX_DETAIL_TEMPLATE, preview: tipoPlantilla };
   }
 };
+ */

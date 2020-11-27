@@ -10,10 +10,7 @@ export interface DetalleCaja extends IElement {
   usuario: string;
 }
 
-export interface CajasPendientes {
-  detallesCaja: DetalleCaja[];
-}
-
+export type CajasPendientes = DetalleCaja[];
 // Action
 
 export enum CajasPendientesAction {

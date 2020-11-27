@@ -1,72 +1,78 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { ThunkResult } from 'src/actions';
 
-import { API } from 'src/services/apis-data';
-import { getResourceData } from 'src/utils/api';
 import { goTo } from 'src/utils/history';
 import { hashCode } from 'src/utils/string';
 import { InfoCajaAction, InfoCajaState, InfoCajaActionTypes } from '../caja-info';
 import { Caja, InfoCaja, ContenidoCaja, GuardarCajaBodyRequest } from '../interfaces';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { apis } from 'src/api/setup-apis';
+import { buildEndpoint, buildAxiosRequestConfig } from 'src/utils/api';
+import { useDispatch } from 'react-redux';
 
-export const saveCaja = (data: GuardarCajaBodyRequest): ThunkResult => async (dispatch, getState) => {
-  const isRunning = getState().cajas.info.isRunning;
+export interface VencimientoCajaRequestBody {
+  idTipoCaja: number;
+  tipoContenido: string;
+}
 
-  if (isRunning || !data) return;
+export type VencimientoCajaResponseBody = number;
 
-  const apiName = API.CAJA;
-  const idMethod = 'guardarCaja';
-  const api = getResourceData(apiName, idMethod);
+export const getVencimientoCaja = createAsyncThunk('cajas/getVencimientoCaja', async (data: VencimientoCajaRequestBody, thunkApi) => {
+  const { dispatch, getState } = thunkApi;
 
-  const { url } = api;
-  const { verb, path, headers } = api.resource;
+  const api = apis['TIPO_CAJA'];
+  const resource = api.resources['VENCIMIENTO_CAJA'];
+  const config: AxiosRequestConfig = buildAxiosRequestConfig(api, resource, data);
 
-  const endpoint = `${url}/${path}`;
+  const response = await axios.request<VencimientoCajaResponseBody>(config);
+  return response.data;
+});
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data };
+export interface GuardarCajaRequestBody {
+  idTipoCaja: number | null;
+  idTipoContenido: number | null;
+  idPlantilla: number | null;
+  idUsuarioAlta: number | null;
+  idSectorOrigen: number | null;
+  descripcion: string | null;
+  restringida: number | null;
+  fechaGeneracion: string | null;
+  fechaVencimiento: string | null;
+  fechaDesde: string | null;
+  fechaHasta: string | null;
+}
 
-  const index = hashCode(config);
+export interface GuardarCajaResponseBody {
+  numero: number;
+}
 
-  /*if (reqCache.cache[index]) {
-    console.log('Cached tipoCaja!!!');
-    const cachedData = reqCache.cache[index].data;
-    dispatch(success(cachedData));
-    return;
-  }*/
+export const saveCaja = createAsyncThunk('cajas/saveCaja', async (data: GuardarCajaRequestBody, thunkApi) => {
+  const { dispatch, getState } = thunkApi;
 
-  dispatch(running());
+  const api = apis['CAJA'];
+  const resource = api.resources['GUARDAR_CAJA'];
+  const config: AxiosRequestConfig = buildAxiosRequestConfig(api, resource, data);
 
-  return await axios
-    .request(/* <Caja> */ config)
-    .then((response) => {
-      console.log(response);
-      // No se usa
-      const idCaja = response.data.id;
-      const infoCaja = response.data.info;
-      const caja: Caja = { id: idCaja, info: infoCaja, contenido: [] };
-      //  reqCache.cache[index] = { data: caja };
-      // EOF - No se usa
+  const response = await axios.request<GuardarCajaResponseBody>(config);
+  const responseData = response.data;
+  goTo(`/editar-caja/${responseData.numero}`);
+  return responseData;
+});
 
-      goTo(`/editar-caja/${response.data.numero}`);
+export const getCaja = createAsyncThunk('cajas/saveCaja', async (data: VencimientoCajaRequestBody, thunkApi) => {
+  const { dispatch, getState } = thunkApi;
 
-      dispatch(success(caja));
-    })
-    .catch((error) => {
-      dispatch(failure());
-    });
+  const api = apis['CAJA'];
+  const resource = api.resources['GUARDAR_CAJA'];
+  const config: AxiosRequestConfig = buildAxiosRequestConfig(api, resource, data);
 
-  function running(): InfoCajaActionTypes {
-    return { type: InfoCajaAction.RUNNING };
-  }
+  const response = await axios.request<VencimientoCajaResponseBody>(config);
+  const responseData = response.data;
+  goTo(`/editar-caja/${responseData}`);
+  return responseData;
+});
 
-  function success(data: Caja): InfoCajaActionTypes {
-    return { type: InfoCajaAction.CREATE_BOX_SUCCESS, caja: data }; // # Ver con Pablo. Debe retornar la caja completa y no solo el ID.
-  }
-
-  function failure(): InfoCajaActionTypes {
-    return { type: InfoCajaAction.CREATE_BOX_FAILURE };
-  }
-};
-
+/* 
 export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, getState) => {
   if (!idCaja) return;
 
@@ -74,25 +80,18 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
 
   if (isRunning) return;
 
-  const apiName = API.CAJA;
-  const idMethod = 'infoCaja';
-  const api = getResourceData(apiName, idMethod);
+  const apiId = API.CAJA;
+  const resourceId = 'infoCaja';
+  const resourceData = getResourceData(apiId, resourceId);
 
-  const { url } = api;
-  const { verb, path, headers } = api.resource;
+  const { url } = resourceData;
+  const { verb, path, headers } = resourceData.resource;
 
   const endpoint = `${url}/${path}`;
 
   const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data: { idCaja } };
 
   const index = hashCode(config);
-
-  /* if (reqCache.cache[index]) {
-    console.log('Cached tipoCaja!!!');
-    const cachedData = reqCache.cache[index].data;
-    dispatch(success(cachedData));
-    return;
-  }*/
 
   dispatch(running());
 
@@ -123,3 +122,45 @@ export const getCaja = (idCaja: Caja['id']): ThunkResult => async (dispatch, get
     return { type: InfoCajaAction.CREATE_BOX_FAILURE };
   }
 };
+
+export const getVencimientoCaja2 = (data: VencimientoCajaRequestBody): ThunkResult => async (dispatch, getState) => {
+  const isRunning = getState().cajas.info.isRunning;
+
+  if (isRunning) return;
+
+  const endpoint = `${url}/${path}`;
+
+  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, data };
+
+  const index = hashCode(config);
+
+  dispatch(running());
+
+  return await axios
+    .request<Caja>(config)
+    .then((response) => {
+      const caja = response.data;
+
+      //  reqCache.cache[index] = { data: caja };
+
+      // const caja = { numero: cajaId } as Caja;
+
+      dispatch(success(caja));
+    })
+    .catch((error) => {
+      dispatch(failure());
+    });
+
+  function running(): InfoCajaActionTypes {
+    return { type: InfoCajaAction.RUNNING };
+  }
+
+  function success(caja: Caja): InfoCajaActionTypes {
+    return { type: InfoCajaAction.CREATE_BOX_SUCCESS, caja };
+  }
+
+  function failure(): InfoCajaActionTypes {
+    return { type: InfoCajaAction.CREATE_BOX_FAILURE };
+  }
+};
+ */

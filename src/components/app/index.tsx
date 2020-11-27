@@ -15,7 +15,7 @@ import { Sider } from 'src/components/sider';
 import { SiderChildItem, SiderItem } from 'src/components/sider/types';
 import { APP_TITLE } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
-import 'src/services/setup-axios';
+import 'src/api/setup-axios';
 import { getExpirationTime } from 'src/utils/api';
 import { getLegajo } from 'src/utils/galicia';
 import { getRoute } from 'src/utils/history';
