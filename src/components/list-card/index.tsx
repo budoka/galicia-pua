@@ -14,6 +14,7 @@ interface ListCardProps extends BasicComponenetProps<HTMLDivElement> {
   header?: React.ReactNode;
   headerStyle?: React.CSSProperties;
   bodyStyle?: React.CSSProperties;
+  hoverable?: boolean;
   showZero?: boolean;
   theme?: MenuTheme;
   unselectable?: boolean;
@@ -47,7 +48,7 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
 
   const renderCard = (item: IListCardItem) => {
     return (
-      <Card.Grid className={styles.cardGrid}>
+      <Card.Grid className={styles.cardGrid} hoverable={props.hoverable}>
         <span>{item.description}</span>
         {item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={props.showZero} />}
       </Card.Grid>

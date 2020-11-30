@@ -8,9 +8,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from 'src/service-worker';
 import { history, persistor, store } from 'src/store';
+import { AuthProvider } from './auth/azure/useAzureAuth';
 import { App } from 'src/components/app';
 import 'src/styles/global.less'; // last
-import { AuthProvider } from './auth/azure/useAzureAuth';
 
 if (process.env.NODE_ENV !== 'production') {
   const whyDidYouRender = require('@welldone-software/why-did-you-render');

@@ -11,7 +11,7 @@ export const apis: APIs = {
     resources: {
       DETALLE_CAJA: { verb: 'POST', path: 'detalleCaja' },
       PREVIEW: { verb: 'POST', path: 'v2/preview' },
-      GUARDAR_CAJA: { verb: 'POST', path: 'guardarCaja' },
+      GUARDAR_CAJA: { verb: 'POST', path: 'v2/guardarCaja' },
       CERRAR_CAJA: { verb: 'POST', path: 'cerrarCaja' },
       ELIMINAR_CAJA: { verb: 'DELETE', path: 'eliminarCaja' },
       INFO_CAJA: { verb: 'POST', path: 'infoCaja' },
