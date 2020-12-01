@@ -1,3 +1,4 @@
+import { PayloadAction } from '@reduxjs/toolkit';
 import { Button, Checkbox, Col, DatePicker, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
@@ -26,14 +27,16 @@ import {
   fetchTiposPlantilla,
   fetchVistaPrevia,
   saveCaja,
-  /*   setFechaVigencia,
-  setTipoCaja,
-  setTipoContenido,
-  setTipoPlantilla, */
   setInputs,
   setUI,
 } from 'src/features/ingresar-caja/ingresar-caja.slice';
-import { Filtro, VistaPreviaCajaDetalle, VistaPreviaCajaDocumento, VistaPreviaCajaEtiqueta } from 'src/features/ingresar-caja/types';
+import {
+  Filtro,
+  Inputs,
+  VistaPreviaCajaDetalle,
+  VistaPreviaCajaDocumento,
+  VistaPreviaCajaEtiqueta,
+} from 'src/features/ingresar-caja/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
 import { Reglas } from 'src/types';
@@ -44,17 +47,6 @@ import styles from './style.module.less';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
-
-interface UIState {
-  selectTipoContenido?: { visible: boolean };
-  selectTipoPlantilla?: { visible: boolean };
-  datePickerFechaVigencia?: { visible: boolean };
-  labelFechaVigencia?: { visible: boolean };
-  inputDescripcion?: { visible: boolean };
-  checkboxRestringida?: { visible: boolean };
-  preview?: { visible: boolean };
-  buttonCrear?: { visible: boolean };
-}
 
 const reglas: Reglas = {
   tipoCaja: [
@@ -93,16 +85,11 @@ const tailLayout = {
 };
 
 export const IngresarCaja: React.FC = (props) => {
-  const [form] = useForm();
+  const [form] = useForm<Inputs>();
 
   const dispatch = useAppDispatch();
 
-  const sesion = useSelector((state: RootState) => state.sesion);
-  const cajas = useSelector((state: RootState) => state.cajas);
-
   const ingresarCajas = useSelector((state: RootState) => state.ingresarCajas);
-
-  //const [uIState, setUIState] = useState<UIState>();
 
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
@@ -110,19 +97,15 @@ export const IngresarCaja: React.FC = (props) => {
   // useEffects
 
   useEffect(() => {
-    /* dispatch(clearUI());
-    dispatch(clearInputs()); */
-    dispatch(clearState());
     dispatch(fetchTiposCaja());
-    console.log('asd');
+    return () => {
+      dispatch(clearState());
+    };
   }, []);
 
   useEffect(() => {
-    //console.log('rendr ingresarcaja');
-  });
-
-  useEffect(() => {
-    if (ingresarCajas.ui.vistaPrevia?.visible) dispatch(fetchVistaPrevia());
+    const { tipoCaja, tipoContenido, tipoPlantilla } = ingresarCajas.inputs;
+    if (ingresarCajas.ui.vistaPrevia?.visible) dispatch(fetchVistaPrevia({ tipoCaja, tipoContenido, tipoPlantilla }));
   }, [ingresarCajas.ui.vistaPrevia]);
 
   useEffect(() => {
@@ -140,13 +123,6 @@ export const IngresarCaja: React.FC = (props) => {
         return {
           id: preview.descripcion,
           title,
-          /*      dataType: preview.tipoDato,
-          rules: [{ required: preview.requerido === 'R' }],
-
-            required: !preview.opcional,
-          length: preview.longitud,
-          order: preview.orden,
-          align: 'center',*/
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
         } as IColumn<ContenidoCaja>;
       });
@@ -159,39 +135,12 @@ export const IngresarCaja: React.FC = (props) => {
         return {
           id: preview.id,
           title: preview.titulo,
-          /*  dataType: preview.tipo,
-          rules: [{ required: !preview.opcional, len: preview.longitud }],
-          order: preview.orden,
-          sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 }, */
         } as IColumn<ContenidoCaja>;
       });
 
       setColumns(columns);
     } else if ('legacy' in preview[0]) {
       const previewEtiqueta: VistaPreviaCajaEtiqueta[] = preview as VistaPreviaCajaEtiqueta[];
-
-      /*     const columns: IColumn<ContenidoCaja>[] = [
-        {
-          key: 'etiqueta',
-          dataIndex: 'etiqueta',
-          title: 'Etiqueta',
-          editable: true,
-          dataType: 'texto',
-          inputType: 'text',
-          sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
-        } as IColumn<ContenidoCaja>,
-        {
-          key: 'valor',
-          dataIndex: 'valor',
-          // title: 'Seleccionado',
-          editable: true,
-          forceEditing: true,
-          dataType: 'boolean',
-          inputType: 'checkbox',
-
-          // render: (value) => <Checkbox onChange={() => console.log(value)} />,
-        } as IColumn<ContenidoCaja>,
-      ]; */
 
       const data: CajaEtiqueta[] = previewEtiqueta.map((preview, index) => {
         return {
@@ -206,81 +155,35 @@ export const IngresarCaja: React.FC = (props) => {
     }
   }, [ingresarCajas.data.vistaPrevia]);
 
-  /* useEffect(() => {
-    if (ingresarCajas.ui.labelFechaVigencia?.visible && !ingresarCajas.inputs.fechaVigencia) {
-      dispatch(
-        setUI({
-          ...ingresarCajas.ui,
-          labelFechaVigencia: { visible: false },
-        }),
-      );
-    }
-  }, [ingresarCajas.inputs.fechaVigencia]); */
-
-  /*   useEffect(() => {
-    if (ingresarCajas.inputs.fechaVigencia) {
-      dispatch(setUI({ ...ingresarCajas.ui, labelFechaVigencia: { visible: true } }));
-    } else if (!ingresarCajas.loading.añosVencimiento && !ingresarCajas.data.añosVencimiento) {
-      dispatch(setUI({ ...ingresarCajas.ui, labelFechaVigencia: { visible: false } }));
-    }
-  }, [ingresarCajas.loading.añosVencimiento]); */
-
-  /*  useEffect(() => {
-    if (ingresarCajas.data.añosVencimiento) {
-      dispatch(
-        setUI({
-          ...ingresarCajas.ui,
-          labelFechaVigencia: { visible: true },
-          inputDescripcion: { visible: true },
-          checkboxRestringir: { visible: true },
-          buttonCrear: { visible: true },
-        }),
-      );
-    } else {
-      dispatch(
-        setUI({
-          ...ingresarCajas.ui,
-          inputDescripcion: { visible: false },
-          checkboxRestringir: { visible: false },
-          buttonCrear: { visible: false },
-        }),
-      );
-    }
-  }, [ingresarCajas.data.añosVencimiento]); */
-
   // handlers
 
   const handleTipoCaja = () => {
-    const { value: id, label: descripcion } = form.getFieldValue('tipoCaja');
-    const tipoCaja: Filtro = { id, descripcion };
+    const tipoCaja: Filtro = form.getFieldsValue().tipoCaja!;
 
     const fieldsToReset = ['tipoContenido', 'tipoPlantilla', 'fechaVigencia', 'descripcion', 'restringida'];
     form.resetFields(fieldsToReset);
 
     dispatch(setInputs({ tipoCaja }));
-    // dispatch(setTipoCaja(tipoCaja));
-    dispatch(fetchTiposContenido());
     dispatch(setUI({ selectTipoContenido: { visible: true } }));
+    dispatch(fetchTiposContenido(tipoCaja));
   };
 
   const handleTipoContenido = (fieldValue: any) => {
-    const { value: id, label: descripcion } = fieldValue; //form.getFieldValue('tipoContenido');
-    const tipoContenido: Filtro = { id, descripcion };
+    const tipoContenido: Filtro = form.getFieldsValue().tipoContenido!;
+    const { label } = tipoContenido;
 
     // Se debe cambiar el servicio tipoDeContenido para que devuelva un objeto {id: number, descripcion: string}
-    if (descripcion === CAJA_ETIQUETA) tipoContenido.id = 0;
-    else if (descripcion === CAJA_DETALLE) tipoContenido.id = 1;
-    else if (descripcion === CAJA_DOCUMENTO) tipoContenido.id = 2;
+    if (label === CAJA_ETIQUETA) tipoContenido.value = 0;
+    else if (label === CAJA_DETALLE) tipoContenido.value = 1;
+    else if (label === CAJA_DOCUMENTO) tipoContenido.value = 2;
 
     const fieldsToReset = ['tipoPlantilla', 'fechaVigencia', 'descripcion', 'restringida'];
     form.resetFields(fieldsToReset);
 
     const { tipoCaja } = ingresarCajas.inputs;
     dispatch(setInputs({ tipoCaja, tipoContenido }));
-    // dispatch(setTipoContenido(tipoContenido));
 
-    if (descripcion === CAJA_DETALLE) {
-      dispatch(fetchTiposPlantilla());
+    if (label === CAJA_DETALLE) {
       dispatch(
         setUI({
           ...ingresarCajas.ui,
@@ -292,7 +195,8 @@ export const IngresarCaja: React.FC = (props) => {
           buttonCrear: { visible: false },
         }),
       );
-    } else if (descripcion === CAJA_ETIQUETA) {
+      dispatch(fetchTiposPlantilla());
+    } else if (label === CAJA_ETIQUETA) {
       dispatch(
         setUI({
           ...ingresarCajas.ui,
@@ -304,7 +208,7 @@ export const IngresarCaja: React.FC = (props) => {
           buttonCrear: { visible: false },
         }),
       );
-    } else if (descripcion === CAJA_DOCUMENTO) {
+    } else if (label === CAJA_DOCUMENTO) {
       dispatch(
         setUI({
           ...ingresarCajas.ui,
@@ -320,13 +224,10 @@ export const IngresarCaja: React.FC = (props) => {
   };
 
   const handleTipoPlantilla = (fieldValue: any) => {
-    const { value: id, label: descripcion } = fieldValue;
-    //const { value: id, label: descripcion } = form.getFieldValue('tipoPlantilla');
-    const tipoPlantilla: Elemento = { id, descripcion };
+    const tipoPlantilla: Filtro = form.getFieldsValue().tipoPlantilla!;
 
     const { tipoCaja, tipoContenido, fechaVigencia } = ingresarCajas.inputs;
     dispatch(setInputs({ tipoCaja, tipoContenido, tipoPlantilla, fechaVigencia }));
-    //dispatch(setTipoPlantilla(tipoPlantilla));
     dispatch(
       setUI({
         ...ingresarCajas.ui,
@@ -343,25 +244,26 @@ export const IngresarCaja: React.FC = (props) => {
     dispatch(
       setUI({
         ...ingresarCajas.ui,
-        labelFechaVigencia: { visible: true },
+        labelFechaVencimiento: { visible: true },
         inputDescripcion: { visible: true },
         checkboxRestringida: { visible: true },
         buttonCrear: { visible: true },
       }),
     );
-    if (fechaVigencia) dispatch(fetchAñosVencimiento());
+    if (fechaVigencia) dispatch(fetchAñosVencimiento({ tipoCaja, tipoContenido }));
   };
 
   const handleForm = () => {
     console.log('creando caja');
 
-    const descripcion = form.getFieldValue('descripcion');
-    const restringida = form.getFieldValue('restringida') ? 1 : 0;
-    dispatch(setInputs({ ...ingresarCajas.inputs, descripcion, restringida }));
-
-    dispatch(saveCaja())
+    const descripcion = form.getFieldsValue().descripcion;
+    const restringida = form.getFieldsValue().restringida ? 1 : 0;
+    const inputs = { ...ingresarCajas.inputs, descripcion, restringida };
+    dispatch(setInputs(inputs));
+    dispatch(saveCaja(inputs))
       .then((action) => {
-        goTo(`/editar-caja/${action.payload}`);
+        const id = action.payload;
+        goTo(`/editar-caja/${id}`);
         message.success('Caja creada correctamente.');
       })
       .catch((err) => {
@@ -381,8 +283,8 @@ export const IngresarCaja: React.FC = (props) => {
     if (!options) return;
 
     return options.map((option, index) => (
-      <Option key={option.id} value={option.id} id={option.id}>
-        {option.descripcion}
+      <Option key={option.key || option.value} value={option.value}>
+        {option.label}
       </Option>
     ));
   };
@@ -407,7 +309,6 @@ export const IngresarCaja: React.FC = (props) => {
               labelInValue
               loading={ingresarCajas.loading.tiposContenido}
               placeholder="Seleccione un tipo de contenido"
-              optionLabelProp="children"
               optionFilterProp="children"
               filterOption={(input, option) => option && option.value && option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               disabled={ingresarCajas.loading.tiposContenido}
@@ -423,7 +324,6 @@ export const IngresarCaja: React.FC = (props) => {
               labelInValue
               loading={ingresarCajas.loading.tiposPlantilla}
               placeholder="Seleccione una plantilla"
-              optionLabelProp="children"
               optionFilterProp="children"
               disabled={ingresarCajas.loading.tiposPlantilla}
               onChange={handleTipoPlantilla}>
@@ -450,8 +350,8 @@ export const IngresarCaja: React.FC = (props) => {
           </Form.Item>
         )}
 
-        {ingresarCajas.ui?.labelFechaVigencia?.visible && (ingresarCajas.inputs.fechaVigencia || ingresarCajas.loading.añosVencimiento) && (
-          <Form.Item /* label={'Fecha de Vencimiento'} */ name={'fechaVigencia'} wrapperCol={{ offset: layout.labelCol.span }}>
+        {ingresarCajas.ui?.labelFechaVencimiento?.visible && (ingresarCajas.inputs.fechaVigencia || ingresarCajas.loading.añosVencimiento) && (
+          <Form.Item name={'fechaVigencia'} wrapperCol={{ offset: layout.labelCol.span }}>
             {ingresarCajas.loading.añosVencimiento ? (
               <Loading text="Calculando fecha de vencimiento" />
             ) : (
@@ -494,7 +394,7 @@ export const IngresarCaja: React.FC = (props) => {
       <>
         {!ingresarCajas.ui?.vistaPrevia?.visible ? undefined : (
           <Wrapper direction="row" horizontal="center">
-            {ingresarCajas.inputs.tipoContenido?.descripcion === CAJA_ETIQUETA ? (
+            {ingresarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
               <ListCard
                 scrollHeight={326}
                 className={styles.previewList}

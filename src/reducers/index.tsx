@@ -3,16 +3,20 @@ import { History } from 'history';
 import { combineReducers } from '@reduxjs/toolkit';
 import cajas from 'src/reducers/cajas';
 import configuracionReducer from 'src/features/configuracion/configuracion.slice';
+import menuReducer from 'src/features/menu/menu.slice';
 import cajasPendientesReducer from 'src/features/cajas-pendientes/cajas-pendientes.slice';
 import ingresarCajasReducer from 'src/features/ingresar-caja/ingresar-caja.slice';
+import editarCajasReducer from 'src/features/editar-caja/editar-caja.slice';
 import sesionReducer from 'src/features/sesion/sesion.slice';
 
 const reducers = {
   cajas,
   configuracion: configuracionReducer,
+  menu: menuReducer,
   sesion: sesionReducer,
   cajasPendientes: cajasPendientesReducer,
   ingresarCajas: ingresarCajasReducer,
+  editarCajas: editarCajasReducer,
 };
 
 export const createRootReducer = (history: History) => {

@@ -1,20 +1,15 @@
-import { Action, createAsyncThunk, createSlice, PayloadAction, Reducer, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import moment from 'moment';
 import { apis } from 'src/api/setup-apis';
 import { CAJA_ETIQUETA, CAJA_DETALLE, CAJA_DOCUMENTO } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/utils/api';
-import { goTo } from 'src/utils/history';
-import { splitStringByWords } from 'src/utils/string';
 import {
   AñosVencimiento,
-  FechaVigencia,
-  Filtro,
-  GuardarCajaRequestBody,
-  GuardarCajaResponseBody,
-  IngresarCajaSliceState,
+  ModificarCajaRequestBody,
+  ModificarCajaResponseBody,
+  EditarCajaSliceState,
   Inputs,
   TiposCaja,
   TiposCajaResponseBody,
@@ -33,11 +28,43 @@ import {
   VistaPreviaCajaEtiqueta,
   VistaPreviaRequestBody,
   VistaPreviaResponseBody,
+  InfoCajaRequestBody,
+  InfoCajaResponseBody,
+  Caja,
+  FiltroResponseBody,
+  Filtro,
+  Info,
 } from './types';
 
-const FEATURE_NAME = 'ingresarCaja';
+const FEATURE_NAME = 'editarCaja';
 
 // Async actions
+
+const fetchInfoCaja = createAsyncThunk<Caja, string | number, { state: RootState }>(
+  FEATURE_NAME + '/fetchInfoCaja',
+  async (idCaja, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+
+    // Mapeo de la solicitud
+    const requestData: InfoCajaRequestBody = {
+      idCaja: +idCaja,
+    };
+
+    // Configuracion del servicio
+    const api = apis['CAJA'];
+    const resource = api.resources['INFO_CAJA'];
+    const config = buildAxiosRequestConfig(api, resource, requestData);
+
+    // Respuesta del servicio
+    const response = await axios.request<InfoCajaResponseBody>(config);
+    const responseData = response.data;
+
+    // Mapeo de la respuesta
+    const infoCaja = responseData;
+
+    return infoCaja;
+  },
+);
 
 const fetchTiposCaja = createAsyncThunk<TiposCaja, void, { state: RootState }>(FEATURE_NAME + '/fetchTiposCaja', async (_, thunkApi) => {
   const { dispatch, getState } = thunkApi;
@@ -70,7 +97,7 @@ const fetchTiposContenido = createAsyncThunk<TiposContenido, Filtro, { state: Ro
 
     // Mapeo de la solicitud
     const requestData: TiposContenidoRequestBody = {
-      tipoCaja: tipoCaja.label?.toString()!, //|| getState().ingresarCajas.inputs.tipoCaja?.label?.toString()!,
+      tipoCaja: tipoCaja.label?.toString()!, //|| getState().editarCajas.inputs.tipoCaja?.label?.toString()!,
     };
 
     // Configuracion del servicio
@@ -139,9 +166,9 @@ const fetchVistaPrevia = createAsyncThunk<VistaPrevia, Pick<Inputs, 'tipoCaja' |
 
     // Mapeo de la solicitud
     const requestData: VistaPreviaRequestBody = {
-      /*   idTipoCaja: +getState().ingresarCajas.inputs.tipoCaja?.value!,
-      idTipoContenido: +getState().ingresarCajas.inputs.tipoContenido?.value!,
-      idPlantilla: +getState().ingresarCajas.inputs.tipoPlantilla?.value!, */
+      /*   idTipoCaja: +getState().editarCajas.inputs.tipoCaja?.value!,
+      idTipoContenido: +getState().editarCajas.inputs.tipoContenido?.value!,
+      idPlantilla: +getState().editarCajas.inputs.tipoPlantilla?.value!, */
       idTipoCaja: +inputs.tipoCaja?.value!,
       idTipoContenido: +inputs.tipoContenido?.value!,
       idPlantilla: +inputs.tipoPlantilla?.value!,
@@ -159,7 +186,6 @@ const fetchVistaPrevia = createAsyncThunk<VistaPrevia, Pick<Inputs, 'tipoCaja' |
     // Mapeo de la respuesta
     // Type Guards # Cuando las response devuelvan el tipoContenido y idPlanilla, se debería corregir.
 
-    console.log(responseData);
     if (!responseData || !Array.isArray(responseData) || responseData.length === 0) {
     } else if ('inclusiones' in responseData[0]) {
       const vistaPreviaDocumento: VistaPreviaCajaDocumento[] = responseData as VistaPreviaCajaDocumento[];
@@ -182,10 +208,10 @@ const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 't
 
     // Mapeo de la solicitud
     const requestData: VencimientoCajaRequestBody = {
-      /*   idTipoCaja: +getState().ingresarCajas.inputs.tipoCaja?.value!,
-      tipoContenido: getState().ingresarCajas.inputs.tipoContenido?.value.toString()!, */
+      /*   idTipoCaja: +getState().editarCajas.inputs.tipoCaja?.value!,
+      tipoContenido: getState().editarCajas.inputs.tipoContenido?.value.toString()!, */
       idTipoCaja: +inputs.tipoCaja?.value!,
-      tipoContenido: inputs.tipoContenido?.value.toString()!,
+      tipoContenido: inputs.tipoContenido?.label?.toString()!,
     };
 
     // Configuracion del servicio
@@ -204,53 +230,52 @@ const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 't
   },
 );
 
-const saveCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_NAME + '/saveCaja', async (inputs, thunkApi) => {
+const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_NAME + '/updateCaja', async (inputs, thunkApi) => {
   const { dispatch, getState } = thunkApi;
 
+  const fechaDesde = inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()) : null;
+  const fechaHasta = inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()) : null;
+
+  const añosVencimiento = getState().editarCajas.data.añosVencimiento!;
+  const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format('YYYY-MM-DD') : null;
+
   // Mapeo de la solicitud
-  const requestData: GuardarCajaRequestBody = {
-    /*     idTipoCaja: +getState().ingresarCajas.inputs.tipoCaja?.value!,
-    idTipoContenido: +getState().ingresarCajas.inputs.tipoContenido?.value!,
-    idPlantilla: +getState().ingresarCajas.inputs.tipoPlantilla?.value!,
-    idUsuarioAlta: getState().sesion.data?.idUsuario!,
-    idSectorOrigen: getState().sesion.data?.idSector!,
-    descripcion: getState().ingresarCajas.inputs.descripcion!,
-    restringida: getState().ingresarCajas.inputs.restringida!, */
+  const requestData: ModificarCajaRequestBody = {
+    numero: getState().editarCajas.data.caja?.id!,
     idTipoCaja: +inputs.tipoCaja?.value!,
-    idTipoContenido: +inputs.tipoContenido?.value!,
+    //idTipoContenido: +inputs.tipoContenido?.value!,
+    tipoContenido: inputs.tipoContenido?.label?.toString()!,
     idPlantilla: +inputs.tipoPlantilla?.value!,
-    idUsuarioAlta: getState().sesion.data?.idUsuario!,
-    idSectorOrigen: getState().sesion.data?.idSector!,
     descripcion: inputs.descripcion!,
     restringida: inputs.restringida!,
-    fechaGeneracion: dayjs().format('YYYY-MM-DD HH:mm:ss.SSS'),
-    fechaVencimiento: dayjs().add(10, 'year').format('YYYY-MM-DD'),
-    fechaDesde:
-      inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()).format('YYYY-MM-DD') : null,
-    fechaHasta:
-      inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()).format('YYYY-MM-DD') : null,
+    fechaVencimiento,
+    fechaDesde: fechaDesde && fechaDesde.format('YYYY-MM-DD'),
+    fechaHasta: fechaHasta && fechaHasta.format('YYYY-MM-DD'),
   };
 
   // Configuracion del servicio
   const api = apis['CAJA'];
-  const resource = api.resources['GUARDAR_CAJA'];
+  const resource = api.resources['MODIFICAR_CAJA'];
   const config = buildAxiosRequestConfig(api, resource, requestData);
 
   // Respuesta del servicio
-  const response = await axios.request<GuardarCajaResponseBody>(config);
+  const response = await axios.request<ModificarCajaResponseBody>(config);
   const responseData = response.data;
 
   // Mapeo de la respuesta
   const idCaja = responseData.numero;
+
+  dispatch(setInfo({ ...getState().editarCajas.info, fechaModificacion: dayjs().format('DD/MM/YYYY HH:mm:ss'), fechaVencimiento }));
 
   return idCaja;
 });
 
 // Slice
 
-const initialState: IngresarCajaSliceState = {
+const initialState: EditarCajaSliceState = {
   data: {},
   inputs: {},
+  info: {},
   ui: {},
   loading: {},
   error: null,
@@ -260,11 +285,20 @@ const slice = createSlice({
   name: FEATURE_NAME,
   initialState,
   reducers: {
+    loading(state, action: PayloadAction<boolean>) {
+      state.loading.datos = action.payload;
+    },
     setInputs(state, action: PayloadAction<Inputs>) {
       state.inputs = action.payload;
     },
     clearInputs(state) {
       state.inputs = {};
+    },
+    setInfo(state, action: PayloadAction<Info>) {
+      state.info = action.payload;
+    },
+    clearInfo(state) {
+      state.info = {};
     },
     setUI(state, action: PayloadAction<UIState>) {
       state.ui = action.payload;
@@ -278,119 +312,142 @@ const slice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchInfoCaja.pending, (state) => {
+        state.loading = { ...state.loading, caja: true };
+        state.data.caja = null;
+        state.error = null;
+      })
+      .addCase(fetchInfoCaja.fulfilled, (state, action) => {
+        state.loading = { ...state.loading, caja: false };
+        state.data.caja = action.payload;
+        /*   state.info = {
+          caja: state.data.caja.id,
+          estado: state.data.caja.estado,
+          usuario: { nombre: state.data.caja.nombre, legajo: state.data.caja.legajo },
+          sector: { nombre: state.data.caja.nombreSector, id: state.data.caja.idSectorOrigen },
+          fechaGeneracion: state.data.caja.fechaGeneracion,
+          fechaModificacion: state.data.caja.fechaUltimaTransicion,
+          fechaVencimiento: state.data.caja.fechaVencimiento,
+        }; */
+      })
+      .addCase(fetchInfoCaja.rejected, (state, action) => {
+        state.loading = { ...state.loading, caja: false, datos: false };
+        state.data.caja = null;
+        state.error = action.error.message ?? null;
+        state.ui.notFound = { visible: true };
+      });
+    builder
       .addCase(fetchTiposCaja.pending, (state) => {
-        state.loading = { tiposCaja: true };
+        state.loading = { ...state.loading, tiposCaja: true };
         state.data.tiposCaja = [];
         state.error = null;
       })
       .addCase(fetchTiposCaja.fulfilled, (state, action) => {
-        state.loading = { tiposCaja: false };
+        state.loading = { ...state.loading, tiposCaja: false };
         state.data.tiposCaja = action.payload;
       })
       .addCase(fetchTiposCaja.rejected, (state, action) => {
-        state.loading = { tiposCaja: false };
+        state.loading = { ...state.loading, tiposCaja: false };
         state.data.tiposCaja = [];
         state.error = action.error.message ?? null;
       });
     builder
       .addCase(fetchTiposContenido.pending, (state) => {
-        state.loading = { tiposContenido: true };
+        state.loading = { ...state.loading, tiposContenido: true };
         state.data.tiposContenido = [];
         state.error = null;
       })
       .addCase(fetchTiposContenido.fulfilled, (state, action) => {
-        state.loading = { tiposContenido: false };
+        state.loading = { ...state.loading, tiposContenido: false };
         state.data.tiposContenido = action.payload;
       })
       .addCase(fetchTiposContenido.rejected, (state, action) => {
-        state.loading = { tiposContenido: false };
+        state.loading = { ...state.loading, tiposContenido: false };
         state.data.tiposContenido = [];
         state.error = action.error.message ?? null;
       });
     builder
       .addCase(fetchTiposPlantilla.pending, (state) => {
-        state.loading = { tiposPlantilla: true };
+        state.loading = { ...state.loading, tiposPlantilla: true };
         state.data.tiposPlantilla = [];
         state.error = null;
       })
       .addCase(fetchTiposPlantilla.fulfilled, (state, action) => {
-        state.loading = { tiposPlantilla: false };
+        state.loading = { ...state.loading, tiposPlantilla: false };
         state.data.tiposPlantilla = action.payload;
       })
       .addCase(fetchTiposPlantilla.rejected, (state, action) => {
-        state.loading = { tiposPlantilla: false };
+        state.loading = { ...state.loading, tiposPlantilla: false };
         state.data.tiposPlantilla = [];
         state.error = action.error.message ?? null;
       });
     builder
       .addCase(fetchVistaPrevia.pending, (state) => {
-        state.loading = { vistaPrevia: true };
+        state.loading = { ...state.loading, vistaPrevia: true };
         state.data.vistaPrevia = null;
         state.error = null;
       })
       .addCase(fetchVistaPrevia.fulfilled, (state, action) => {
-        state.loading = { vistaPrevia: false };
+        state.loading = { ...state.loading, vistaPrevia: false };
         state.data.vistaPrevia = action.payload;
       })
       .addCase(fetchVistaPrevia.rejected, (state, action) => {
-        state.loading = { vistaPrevia: false };
+        state.loading = { ...state.loading, vistaPrevia: false };
         state.data.vistaPrevia = null;
         state.error = action.error.message ?? null;
       });
     builder
       .addCase(fetchAñosVencimiento.pending, (state) => {
-        state.loading = { añosVencimiento: true };
+        state.loading = { ...state.loading, añosVencimiento: true };
         state.data.añosVencimiento = null;
         state.error = null;
       })
       .addCase(fetchAñosVencimiento.fulfilled, (state, action) => {
-        state.loading = { añosVencimiento: false };
+        state.loading = { ...state.loading, añosVencimiento: false };
         state.data.añosVencimiento = action.payload;
       })
       .addCase(fetchAñosVencimiento.rejected, (state, action) => {
-        state.loading = { añosVencimiento: false };
+        state.loading = { ...state.loading, añosVencimiento: false };
         state.data.añosVencimiento = null;
         state.error = action.error.message ?? null;
       });
     builder
-      .addCase(saveCaja.pending, (state) => {
-        state.loading = { guardandoCaja: true };
+      .addCase(updateCaja.pending, (state) => {
+        state.loading = { ...state.loading, guardandoCaja: true };
         state.error = null;
       })
-      .addCase(saveCaja.fulfilled, (state) => {
-        state.loading = { guardandoCaja: false };
+      .addCase(updateCaja.fulfilled, (state) => {
+        state.loading = { ...state.loading, guardandoCaja: false };
+        /*   state.info = {
+          fechaModificacion: state.data.caja?.fechaUltimaTransicion,
+          fechaVencimiento: state.data.caja?.fechaVencimiento,
+        }; */
       })
-      .addCase(saveCaja.rejected, (state, action) => {
-        state.loading = { guardandoCaja: false };
+      .addCase(updateCaja.rejected, (state, action) => {
+        state.loading = { ...state.loading, guardandoCaja: false };
         state.error = action.error.message ?? null;
       });
   },
 });
 
-const {
-  /* setTipoCaja, setTipoContenido, setTipoPlantilla, setFechaVigencia, */ setInputs,
-  clearInputs,
-  setUI,
-  clearUI,
-  clearState,
-} = slice.actions;
+const { loading, setInputs, clearInputs, setInfo, clearInfo, setUI, clearUI, clearState } = slice.actions;
 
 export {
-  /*   setTipoCaja,
-  setTipoContenido,
-  setTipoPlantilla,
-  setFechaVigencia, */
+  loading,
   setInputs,
   clearInputs,
+  setInfo,
+  clearInfo,
   setUI,
   clearUI,
   clearState,
+  fetchInfoCaja,
   fetchTiposCaja,
   fetchTiposContenido,
   fetchTiposPlantilla,
   fetchVistaPrevia,
   fetchAñosVencimiento,
-  saveCaja,
+  updateCaja,
 };
 
 //export default slice.reducer;

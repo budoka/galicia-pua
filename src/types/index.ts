@@ -1,4 +1,5 @@
 import { Rule } from 'antd/lib/form';
+import { LabeledValue, SelectValue } from 'antd/lib/select';
 
 export interface BasicComponenetProps<HTMLElement>
   extends React.DetailedHTMLProps<Omit<React.HTMLAttributes<HTMLElement>, 'unselectable'>, HTMLElement> {}
@@ -40,3 +41,19 @@ export interface RequestOptions {
   expiration?: number;
   force?: boolean;
 }
+
+export interface Opcion extends LabeledValue {
+  /*   key?: React.Key;
+  valor: number | string;
+  descripcion: string; */
+}
+
+declare module 'antd/lib/select' {
+  // export interface OptionProps extends Opcion {}
+  // export interface OptionProps extends FiltroTipoCajaResponse, FiltroTipoContenidoCajaResponse, FiltroPlantillaRequest
+}
+
+/* declare module 'antd/lib/select' {
+  export interface OptionProps extends Opcion {}
+}
+ */

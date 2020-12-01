@@ -1,8 +1,10 @@
-import { Opcion } from 'src/types';
+import { ReactNode } from 'react';
+import { IElement, Opcion } from 'src/types';
 
-export interface IngresarCajaSliceState {
+export interface EditarCajaSliceState {
   data: FetchedData;
   inputs: Inputs;
+  info: Info;
   loading: Loading;
   error: string | null;
   ui: UIState;
@@ -10,11 +12,65 @@ export interface IngresarCajaSliceState {
 
 // Modelo front
 
+export interface Caja {
+  id: number | null; // id
+  idTipoCaja: number | null;
+  tipoContenido: number | null; // se debe cambiar por idTipoContenido
+  idPlantilla: number | null;
+  estado: string | null;
+  idUsuarioAlta: number | null;
+  idSectorOrigen: number | null;
+  restringida: number | null;
+  legajo: string | null;
+  nombre: string | null;
+  //cliente: string | null;
+  nombreSector: string | null;
+  // nombreTipoCaja: string | null;
+  descripcion: string | null;
+  // descripcionContenido: string | null;
+  // descripcionPlantilla: string | null;
+  fechaGeneracion: string | null;
+  fechaVencimiento: string | null;
+  fechaUltimaTransicion: string | null;
+  fechaDesde: string | null;
+  fechaHasta: string | null;
+  contenido: ContenidoCaja[]; // contenido
+}
+
+export type ContenidoCaja = CajaDocumento | CajaDetalle | CajaEtiqueta;
+
+export interface CajaDocumento extends IElement {
+  id: number | null;
+  idTipoDocumento: number | null;
+  tipoDocumental: string | null;
+  numeroProducto: string | null;
+  detalle: string | null;
+  dniCuitTitular: number | null;
+  nombreTitular: string | null;
+  idSectorPropietario: number | null;
+  claveExterna: number | null;
+  fechaDocumental: string | null;
+  fechaCierre: string | null;
+  fechaDesde: string | null;
+  fechaHasta: string | null;
+}
+
+export interface CajaDetalle extends IElement {
+  id: number;
+  columnas: CajaDetalleColumna[];
+}
+
+export interface CajaDetalleColumna {
+  idColumna: number;
+  valor: string;
+}
+
+export interface CajaEtiqueta extends IElement {
+  id: number; // Se va a quitar
+  idEtiqueta: number;
+}
+
 export type Filtro = Opcion;
-/* export interface Filtro {
-  id: number | string;
-  descripcion: string;
-} */
 
 export type VistaPrevia = VistaPreviaCajaDocumento[] | VistaPreviaCajaDetalle[] | VistaPreviaCajaEtiqueta[];
 
@@ -49,9 +105,10 @@ export interface VistaPreviaCajaEtiqueta {
   version: number;
 }
 
-export type FechaVigencia = string[];
+export type FechaVigencia = (string | moment.Moment)[];
 
 export interface FetchedData {
+  caja?: Caja | null;
   tiposCaja?: TiposCaja;
   tiposContenido?: TiposContenido; // TODO Se debería cambiar el servicio tipoDeContenido (request y response)
   tiposPlantilla?: TiposPlantilla;
@@ -68,7 +125,19 @@ export interface Inputs {
   restringida?: number | null;
 }
 
+export interface Info {
+  caja?: number | null;
+  estado?: string | null;
+  usuario?: { nombre: string | null; legajo: string | null } | null;
+  sector?: { nombre: string | null; id: number | null } | null;
+  fechaGeneracion?: string | null;
+  fechaVencimiento?: string | null;
+  fechaModificacion?: string | null;
+}
+
 export interface Loading {
+  datos?: boolean;
+  caja?: boolean;
   tiposCaja?: boolean;
   tiposContenido?: boolean;
   tiposPlantilla?: boolean;
@@ -86,6 +155,8 @@ export interface UIState {
   checkboxRestringida?: { visible: boolean };
   vistaPrevia?: { visible: boolean };
   buttonCrear?: { visible: boolean };
+  notFound?: { visible: boolean };
+  unavailable?: { visible: boolean };
 }
 
 export type TiposCaja = Filtro[];
@@ -99,6 +170,12 @@ export interface FiltroResponseBody {
   id: number | string;
   descripcion: string;
 }
+
+export interface InfoCajaRequestBody {
+  idCaja: number;
+}
+
+export type InfoCajaResponseBody = Caja;
 
 export type TiposCajaResponseBody = FiltroResponseBody[];
 
@@ -125,20 +202,19 @@ export interface VencimientoCajaRequestBody {
 }
 export type VencimientoCajaResponseBody = AñosVencimiento;
 
-export interface GuardarCajaRequestBody {
+export interface ModificarCajaRequestBody {
+  numero: number | null;
   idTipoCaja: number | null;
-  idTipoContenido: number | null;
+  tipoContenido: string | null;
+  //idTipoContenido: number | null;
   idPlantilla: number | null;
-  idUsuarioAlta: number | null;
-  idSectorOrigen: number | null;
   descripcion: string | null;
   restringida: number | null;
-  fechaGeneracion: string | null;
   fechaDesde: string | null;
   fechaHasta: string | null;
   fechaVencimiento: string | null;
 }
 
-export interface GuardarCajaResponseBody {
+export interface ModificarCajaResponseBody {
   numero: number;
 }

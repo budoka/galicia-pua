@@ -41,6 +41,7 @@ export interface ResourcesCaja {
   DETALLE_CAJA: Resource;
   PREVIEW: Resource;
   GUARDAR_CAJA: Resource;
+  MODIFICAR_CAJA: Resource;
   CERRAR_CAJA: Resource;
   ELIMINAR_CAJA: Resource;
   INFO_CAJA: Resource;

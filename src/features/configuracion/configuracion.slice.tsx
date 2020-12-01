@@ -10,10 +10,6 @@ const FEATURE_NAME = 'configuracion';
 const initialState: ConfiguracionSliceState = {
   device: getDeviceType(),
   orientation: getScreenOrientation({ width: window.innerWidth, height: window.innerHeight }),
-  collapsed: false,
-  forcedCollapsed: false,
-  buttonVisible: true,
-  openMenu: undefined,
 };
 
 const slice = createSlice({
@@ -26,22 +22,10 @@ const slice = createSlice({
     setOrientation(state, action: PayloadAction<ScreenOrientation>) {
       state.orientation = action.payload;
     },
-    setOpenMenu(state, action: PayloadAction<string>) {
-      state.openMenu = action.payload;
-    },
-    toggleCollapse(state, action: PayloadAction<boolean>) {
-      state.collapsed = action.payload;
-    },
-    toggleForcedCollapse(state, action: PayloadAction<boolean>) {
-      state.forcedCollapsed = action.payload;
-    },
-    toggleButtonVisible(state, action: PayloadAction<boolean>) {
-      state.buttonVisible = action.payload;
-    },
   },
 });
 
-export const { setDevice, setOrientation, setOpenMenu, toggleCollapse, toggleForcedCollapse, toggleButtonVisible } = slice.actions;
+export const { setDevice, setOrientation } = slice.actions;
 
 //export default slice.reducer;
 export default slice.reducer as Reducer<typeof initialState>;

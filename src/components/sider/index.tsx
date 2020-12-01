@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
-import { setOpenMenu } from 'src/features/configuracion/configuracion.slice';
+import { setOpenMenu } from 'src/features/menu/menu.slice';
 import { ObjectLiteral } from 'src/types';
 import { RootState } from 'src/reducers';
 import { getMatchedPathname } from 'src/utils/history';
@@ -29,7 +29,7 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
   const siderClassNames = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.sider);
 
   const dispatch = useDispatch();
-  const settings = useSelector((state: RootState) => state.configuracion);
+  const menu = useSelector((state: RootState) => state.menu);
   const router = useSelector((state: RootState) => state.router);
 
   useEffect(() => {
@@ -55,19 +55,19 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
 
     Object.entries(views).some(([key, view]) => {
       if (key === pathname) {
-        const menu = (view as View).title;
-        if (!settings.collapsed && key !== settings.openMenu && menu !== settings.openMenu) dispatch(setOpenMenu((view as View).title));
+        const menuTitle = (view as View).title;
+        if (!menu.collapsed && key !== menu.openMenu && menuTitle !== menu.openMenu) dispatch(setOpenMenu((view as View).title));
         return true;
       }
     });
-  }, [router.location.pathname, settings.collapsed]);
+  }, [router.location.pathname, menu.collapsed]);
 
   const onOpenChange = (currentMenu: React.Key[]) => {
     if (currentMenu.length > 0) {
-      const menu = currentMenu[currentMenu.length - 1].toString();
-      if (settings.openMenu === menu) return;
-      dispatch(setOpenMenu(menu));
-    } else if (settings.openMenu) dispatch(setOpenMenu(''));
+      const menuTitle = currentMenu[currentMenu.length - 1].toString();
+      if (menu.openMenu === menuTitle) return;
+      dispatch(setOpenMenu(menuTitle));
+    } else if (menu.openMenu) dispatch(setOpenMenu(''));
   };
 
   const renderMenu = (items: SiderItem[]) => {
@@ -91,7 +91,7 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
             title={
               <span>
                 {item.icon}
-                {!settings.collapsed ? title : ''}
+                {!menu.collapsed ? title : ''}
               </span>
             }>
             {renderMenu((item as SiderParentItem).children)}
@@ -117,14 +117,14 @@ export const Sider: React.FC<SiderProps> = React.memo((props) => {
   const selectedKey = getMatchedPathname();
 
   return (
-    <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={settings.collapsed}>
+    <SiderAnt className={siderClassNames} trigger={null} collapsible={true} collapsed={menu.collapsed}>
       <Menu
         selectedKeys={selectedKey ? [selectedKey] : undefined}
         // selectedKeys={[window.location.pathname]}
-        openKeys={settings.openMenu ? [settings.openMenu] : []}
+        openKeys={menu.openMenu ? [menu.openMenu] : []}
         onOpenChange={onOpenChange}
         onSelect={({ item, key, keyPath, selectedKeys, domEvent }) => {
-          if (settings.collapsed) dispatch(setOpenMenu(''));
+          if (menu.collapsed) dispatch(setOpenMenu(''));
         }}
         theme={props.theme ?? 'light'}
         mode={props.mode ?? 'inline'}>

@@ -20,6 +20,7 @@ import { getLegajo } from 'src/utils/galicia';
 import { views } from 'src/views';
 import styles from './style.module.less';
 import './style.less';
+import _ from 'lodash';
 
 const { Content } = Layout;
 
@@ -57,11 +58,11 @@ export const siderItems: SiderItem[] = [
 export const App = () => {
   const dispatch = useDispatch();
   const auth = useAzureAuth();
-  const router = useSelector((state: RootState) => state.router);
-  const sesion = useSelector((state: RootState) => state.sesion);
+  const location = useSelector((state: RootState) => state.router.location);
+  const sesion = useSelector((state: RootState) => state.sesion.data);
 
   useEffect(() => {
-    if (!auth.data) return;
+    if (!auth.data || !_.isEmpty(sesion)) return;
     const nombreUsuario = auth.data.account.name;
     const legajo = getLegajo(auth.data.account.username)!;
     dispatch(fetchInfoSesion({ nombreUsuario, legajo }));
@@ -69,7 +70,7 @@ export const App = () => {
 
   const getTitle = () => {
     const view = Object.values(views).find((v) =>
-      matchPath(router.location.pathname, {
+      matchPath(location.pathname, {
         path: v.path,
         exact: true,
         strict: true,
@@ -79,8 +80,8 @@ export const App = () => {
     const title = view ? view.title : views.Not_Found.title;
     return title;
   };
-
-  return !auth.disabled && !sesion.data ? (
+  console.log(sesion);
+  return !auth.disabled && _.isEmpty(sesion) ? (
     <LoadingContent />
   ) : (
     <>

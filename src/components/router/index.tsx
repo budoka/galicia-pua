@@ -1,20 +1,15 @@
-import { Layout } from 'antd';
-import _ from 'lodash';
 import React, { useEffect } from 'react';
 import { Redirect, Route } from 'react-router';
 import { Switch } from 'react-router-dom';
 import { getUser } from 'src/utils/store';
-import { getKey } from 'src/utils/string';
 import { View, Views } from 'src/views';
-import { Inicio } from 'src/views/inicio';
-import { NotFound } from 'src/views/not-found';
 import { PrivateRoute } from './privateRouter';
 
 type RouterProps = {
   views: Views;
 };
 
-export function Router(props: RouterProps) {
+export const Router: React.FC<RouterProps> = React.memo((props) => {
   useEffect(() => console.log('router'));
 
   const renderViews = (views: Views) => {
@@ -38,5 +33,10 @@ export function Router(props: RouterProps) {
       });
   };
 
-  return <Switch>{renderViews(props.views)}</Switch>;
-}
+  return (
+    <Switch>
+      <Redirect from="/:url*(/+)" to={window.location.pathname.slice(0, -1)} />
+      {renderViews(props.views)}
+    </Switch>
+  );
+});

@@ -1,5 +1,3 @@
-import { LabeledValue, OptionProps, SelectValue } from 'antd/lib/select';
-
 ///////////////////// Interfaces Front /////////////////////
 
 export interface Elemento {

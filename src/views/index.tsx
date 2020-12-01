@@ -1,9 +1,9 @@
 import React from 'react';
 import { View } from 'src/views/types';
 import { Inicio } from 'src/views/inicio';
-import { NotFound } from 'src/views/not-found';
+import { NotFound } from 'src/components/not-found';
 import { IngresarCaja } from 'src/views/cajas/ingresar-caja';
-import { Unavailable } from './unavailable';
+import { Unavailable } from 'src/components/unavailable';
 import { Cajas } from './cajas/cajas';
 import { EditarCaja } from './cajas/editar-caja';
 

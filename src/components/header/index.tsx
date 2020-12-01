@@ -6,13 +6,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
-import {
-  setOrientation,
-  setOpenMenu,
-  toggleButtonVisible,
-  toggleCollapse,
-  toggleForcedCollapse,
-} from 'src/features/configuracion/configuracion.slice';
+import { setOrientation } from 'src/features/configuracion/configuracion.slice';
+import { toggleButtonVisible, setOpenMenu, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
 import { RootState } from 'src/reducers';
 import { goHome } from 'src/utils/history';
 import { useWindowSize } from 'src/utils/hooks';
@@ -28,6 +23,7 @@ interface HeaderProps extends LayoutProps {
 export const Header: React.FC<HeaderProps> = (props) => {
   const sesion = useSelector((state: RootState) => state.sesion);
   const settings = useSelector((state: RootState) => state.configuracion);
+  const menu = useSelector((state: RootState) => state.menu);
   const dispatch = useDispatch();
   const size = useWindowSize();
 
@@ -51,38 +47,38 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
     const shouldCollapse = size.width <= 612;
     if (shouldCollapse) {
-      if (shouldCollapse !== settings.collapsed || shouldCollapse === settings.forcedCollapsed) {
-        if (settings.buttonVisible) dispatch(toggleButtonVisible(false));
-        if (settings.openMenu) dispatch(setOpenMenu(''));
+      if (shouldCollapse !== menu.collapsed || shouldCollapse === menu.forcedCollapsed) {
+        if (menu.buttonVisible) dispatch(toggleButtonVisible(false));
+        if (menu.openMenu) dispatch(setOpenMenu(''));
       }
     } else {
-      if (shouldCollapse !== settings.collapsed) {
-        if (!settings.buttonVisible) dispatch(toggleButtonVisible(true));
-        if (!settings.forcedCollapsed) handleCollapsed(false);
+      if (shouldCollapse !== menu.collapsed) {
+        if (!menu.buttonVisible) dispatch(toggleButtonVisible(true));
+        if (!menu.forcedCollapsed) handleCollapsed(false);
       }
     }
   }, [size]);
 
   useEffect(() => {
-    if (!settings.collapsed && (!settings.buttonVisible || settings.forcedCollapsed)) handleCollapsed(true);
-    //if (!settings.openMenu && !settings.collapsed) handleCollapsed(true);
-  }, [settings.openMenu]);
+    if (!menu.collapsed && (!menu.buttonVisible || menu.forcedCollapsed)) handleCollapsed(true);
+    //if (!menu.openMenu && !menu.collapsed) handleCollapsed(true);
+  }, [menu.openMenu]);
 
   useEffect(() => {
     const shouldIgnore = size.width <= 612;
     if (shouldIgnore) return;
-    else if (settings.forcedCollapsed) {
-      if (settings.openMenu) dispatch(setOpenMenu(''));
+    else if (menu.forcedCollapsed) {
+      if (menu.openMenu) dispatch(setOpenMenu(''));
       else handleCollapsed(true);
     } else handleCollapsed(false);
-  }, [settings.forcedCollapsed]);
+  }, [menu.forcedCollapsed]);
 
   const handleCollapsed = (shouldCollapse: boolean) => {
-    if (shouldCollapse !== settings.collapsed) dispatch(toggleCollapse(shouldCollapse));
+    if (shouldCollapse !== menu.collapsed) dispatch(toggleCollapse(shouldCollapse));
   };
 
   const handleForcedCollapsed = (shouldForceCollapse: boolean) => {
-    if (shouldForceCollapse !== settings.forcedCollapsed) dispatch(toggleForcedCollapse(shouldForceCollapse));
+    if (shouldForceCollapse !== menu.forcedCollapsed) dispatch(toggleForcedCollapse(shouldForceCollapse));
   };
 
   const renderLogo = () => {
@@ -98,9 +94,9 @@ export const Header: React.FC<HeaderProps> = (props) => {
   };
 
   const renderSiderButton = () => {
-    return !props.hideSiderButton && settings.buttonVisible /*!(settings.device === 'mobile' && settings.orientation === 'portrait')*/ ? (
+    return !props.hideSiderButton && menu.buttonVisible /*!(menu.device === 'mobile' && menu.orientation === 'portrait')*/ ? (
       <div className={styles.siderButtonWrapper}>
-        {settings.collapsed ? (
+        {menu.collapsed ? (
           <MenuUnfoldOutlined className={styles.siderButton} onClick={() => handleForcedCollapsed(false)} />
         ) : (
           <MenuFoldOutlined className={styles.siderButton} onClick={() => handleForcedCollapsed(true)} />
