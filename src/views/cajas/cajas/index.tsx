@@ -1,23 +1,19 @@
 import { Tag } from 'antd';
 import { ColumnsType } from 'rc-table/lib/interface';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 //import { CajasBodyRequest, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
-
 import { ContentInfo } from 'src/components/content-info';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
+import { fetchCajas, setFilters } from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
+import { DetalleCaja, FiltrosCajas } from 'src/features/cajas/cajas-pendientes/types';
 import { RootState } from 'src/reducers';
-import { getExpirationTime } from 'src/utils/api';
+import { useAppDispatch } from 'src/store';
 import { useQuery } from 'src/utils/history';
 import { compare } from 'src/utils/string';
 import { Filtros } from './filtros';
-
 import styles from './style.module.less';
-
-import { fetchCajas, setFilters } from 'src/features/cajas-pendientes/cajas-pendientes.slice';
-import { DetalleCaja, FiltrosCajas } from 'src/features/cajas-pendientes/types';
-import { useAppDispatch } from 'src/store';
 
 export interface CajasProps {}
 

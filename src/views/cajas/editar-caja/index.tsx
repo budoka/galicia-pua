@@ -1,4 +1,4 @@
-import { Badge, Button, Checkbox, Col, DatePicker, Descriptions, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
+import { Button, Checkbox, Col, DatePicker, Descriptions, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
 import TextArea from 'antd/lib/input/TextArea';
@@ -8,12 +8,12 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
 import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
 import { ContentInfo } from 'src/components/content-info';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
+import { NotFound } from 'src/components/not-found';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DEFAULT_FORMAT } from 'src/constants/constants';
@@ -28,11 +28,11 @@ import {
   fetchTiposPlantilla,
   fetchVistaPrevia,
   loading,
-  updateCaja,
+  setInfo,
   setInputs,
   setUI,
-  setInfo,
-} from 'src/features/editar-caja/editar-caja.slice';
+  updateCaja,
+} from 'src/features/cajas/editar-caja/editar-caja.slice';
 import {
   FechaVigencia,
   Filtro,
@@ -43,15 +43,12 @@ import {
   VistaPreviaCajaDetalle,
   VistaPreviaCajaDocumento,
   VistaPreviaCajaEtiqueta,
-} from 'src/features/editar-caja/types';
+} from 'src/features/cajas/editar-caja/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
 import { Reglas } from 'src/types';
-import { goTo } from 'src/utils/history';
 import { compare, splitStringByWords } from 'src/utils/string';
-import { NotFound } from 'src/components/not-found';
 import styles from './style.module.less';
-import dayjs from 'dayjs';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -82,7 +79,7 @@ const reglas: Reglas = {
 
 const layout = {
   labelCol: {
-    span: 9,
+    span: 8,
   } as ColProps,
   wrapperCol: {
     span: 15,
@@ -609,9 +606,16 @@ export const EditarCaja: React.FC = React.memo((props) => {
     );
   };
 
+  const loadingContent = _.isEmpty(editarCajas.loading) || editarCajas.loading.datos;
+
   return (
-    <Wrapper contentWrapper unselectable direction="column" horizontal="center" style={{ minWidth: 1460 }}>
-      {_.isEmpty(editarCajas.loading) || editarCajas.loading.datos ? (
+    <Wrapper
+      contentWrapper
+      unselectable
+      direction="column"
+      horizontal="center"
+      style={{ minWidth: loadingContent || editarCajas.ui.notFound || editarCajas.ui.unavailable ? '100%' : 1460 }}>
+      {loadingContent ? (
         <LoadingContent />
       ) : editarCajas.ui.notFound ? (
         <NotFound />
@@ -621,11 +625,11 @@ export const EditarCaja: React.FC = React.memo((props) => {
         <>
           <ContentInfo />
           <Row justify="center" style={{ width: '100%', height: '100%' }}>
-            <Col span={9}>{renderForm()}</Col>
+            <Col span={layout.labelCol.span}>{renderForm()}</Col>
             <Col>
               <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
             </Col>
-            <Col span={14}>{renderInfo()}</Col>
+            <Col span={layout.wrapperCol.span}>{renderInfo()}</Col>
           </Row>
 
           <Divider />

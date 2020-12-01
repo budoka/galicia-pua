@@ -58,7 +58,7 @@ export const siderItems: SiderItem[] = [
 export const App = () => {
   const dispatch = useDispatch();
   const auth = useAzureAuth();
-  const location = useSelector((state: RootState) => state.router.location);
+  const router = useSelector((state: RootState) => state.router);
   const sesion = useSelector((state: RootState) => state.sesion.data);
 
   useEffect(() => {
@@ -69,13 +69,17 @@ export const App = () => {
   }, [auth.data]);
 
   const getTitle = () => {
-    const view = Object.values(views).find((v) =>
-      matchPath(location.pathname, {
+    console.log(router.location.pathname);
+    const view = Object.values(views).find((v) => {
+      console.log(v.path);
+      return matchPath(router.location.pathname, {
         path: v.path,
         exact: true,
         strict: true,
-      }),
-    );
+      });
+    });
+
+    console.log(view);
 
     const title = view ? view.title : views.Not_Found.title;
     return title;

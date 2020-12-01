@@ -13,7 +13,7 @@ import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
 import { ContentInfo } from 'src/components/content-info';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
-import { Loading } from 'src/components/loading';
+import { Loading, LoadingContent } from 'src/components/loading';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DEFAULT_FORMAT } from 'src/constants/constants';
@@ -29,14 +29,14 @@ import {
   saveCaja,
   setInputs,
   setUI,
-} from 'src/features/ingresar-caja/ingresar-caja.slice';
+} from 'src/features/cajas/ingresar-caja/ingresar-caja.slice';
 import {
   Filtro,
   Inputs,
   VistaPreviaCajaDetalle,
   VistaPreviaCajaDocumento,
   VistaPreviaCajaEtiqueta,
-} from 'src/features/ingresar-caja/types';
+} from 'src/features/cajas/ingresar-caja/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
 import { Reglas } from 'src/types';
@@ -73,7 +73,7 @@ const reglas: Reglas = {
 
 const layout = {
   labelCol: {
-    span: 9,
+    span: 8,
   } as ColProps,
   wrapperCol: {
     span: 15,
@@ -426,16 +426,24 @@ export const IngresarCaja: React.FC = (props) => {
     );
   };
 
+  const loadingContent = ingresarCajas.loading.tiposCaja;
+
   return (
-    <Wrapper contentWrapper unselectable direction="column" horizontal="center" style={{ minWidth: 1200 }}>
-      <ContentInfo />
-      <Row justify="center" style={{ width: '100%', height: '100%' }}>
-        <Col span={9}>{renderForm()}</Col>
-        <Col>
-          <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
-        </Col>
-        <Col span={14}>{renderPreview()}</Col>
-      </Row>
+    <Wrapper contentWrapper unselectable direction="column" horizontal="center" style={{ minWidth: loadingContent ? '100%' : 1315 }}>
+      {loadingContent ? (
+        <LoadingContent />
+      ) : (
+        <>
+          <ContentInfo />
+          <Row justify="center" style={{ width: '100%', height: '100%' }}>
+            <Col span={layout.labelCol.span}>{renderForm()}</Col>
+            <Col>
+              <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
+            </Col>
+            <Col span={layout.wrapperCol.span}>{renderPreview()}</Col>
+          </Row>
+        </>
+      )}
     </Wrapper>
   );
 };

@@ -3,12 +3,10 @@ import { useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { DATE_DEFAULT_FORMAT } from 'src/constants/constants';
+import { fetchCajas, setFilters } from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
+import { FiltrosCajas } from 'src/features/cajas/cajas-pendientes/types';
 import { RootState } from 'src/reducers';
-import { getExpirationTime } from 'src/utils/api';
-import { FiltrosCajas } from 'src/features/cajas-pendientes/types';
-import { fetchCajas, setFilters } from 'src/features/cajas-pendientes/cajas-pendientes.slice';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
