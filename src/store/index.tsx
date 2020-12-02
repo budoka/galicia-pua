@@ -15,7 +15,7 @@ export const history = createBrowserHistory();
 const persistConfig = {
   key: 'AppStore',
   storage,
-  blacklist: ['router', 'cajas', 'ingresarCajas', 'editarCajas'],
+  whitelist: ['menu', 'sesion'],
 } as PersistConfig<RootState>;
 
 const persistedReducer = persistReducer(persistConfig, createRootReducer(history));

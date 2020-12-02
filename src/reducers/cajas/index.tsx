@@ -1,14 +1,13 @@
-import { combineReducers } from 'redux';
-//import contenido from 'src/reducers/cajas/caja-contenido.tsx_';
-import filtros from 'src/reducers/cajas/caja-filtros';
-import info from 'src/reducers/cajas/caja-info';
-import preview from 'src/reducers/cajas/caja-preview';
+import { combineReducers } from '@reduxjs/toolkit';
+
+import cajasPendientesReducer from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
+import ingresarCajasReducer from 'src/features/cajas/ingresar-caja/ingresar-caja.slice';
+import editarCajasReducer from 'src/features/cajas/editar-caja/editar-caja.slice';
 
 const reducers = {
-  //contenido,
-  filtros,
-  info,
-  preview,
+  pendientes: cajasPendientesReducer,
+  creacion: ingresarCajasReducer,
+  edicion: editarCajasReducer,
 };
 
 export default combineReducers({

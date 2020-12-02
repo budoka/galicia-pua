@@ -236,12 +236,12 @@ const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATUR
   const fechaDesde = inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()) : null;
   const fechaHasta = inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()) : null;
 
-  const añosVencimiento = getState().editarCajas.data.añosVencimiento!;
+  const añosVencimiento = getState().cajas.edicion.data.añosVencimiento!;
   const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format('YYYY-MM-DD') : null;
 
   // Mapeo de la solicitud
   const requestData: ModificarCajaRequestBody = {
-    numero: getState().editarCajas.data.caja?.id!,
+    numero: getState().cajas.edicion.data.caja?.id!,
     idTipoCaja: +inputs.tipoCaja?.value!,
     //idTipoContenido: +inputs.tipoContenido?.value!,
     tipoContenido: inputs.tipoContenido?.label?.toString()!,
@@ -265,13 +265,25 @@ const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATUR
   // Mapeo de la respuesta
   const idCaja = responseData.numero;
 
-  dispatch(setInfo({ ...getState().editarCajas.info, fechaModificacion: dayjs().format('DD/MM/YYYY HH:mm:ss'), fechaVencimiento }));
+  dispatch(setInfo({ ...getState().cajas.edicion.info, fechaModificacion: dayjs().format('DD/MM/YYYY HH:mm:ss'), fechaVencimiento }));
 
   return idCaja;
 });
 
 // Slice
+/* 
+export type ContenidoCajaActionTypes =
+  | RUNNING_CONTENT
+  | CREATE_LOCAL_CONTENT
+  | CLEAN_LOCAL_CONTENT
+  | ADD_CONTENT_SUCCESS
+  | ADD_CONTENT_FAILURE
+  | UPDATE_CONTENT_SUCCESS
+  | UPDATE_CONTENT_FAILURE
+  | REMOVE_CONTENT_SUCCESS
+  | REMOVE_CONTENT_FAILURE;
 
+ */
 const initialState: EditarCajaSliceState = {
   data: {},
   inputs: {},

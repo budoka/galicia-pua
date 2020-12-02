@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { matchPath } from 'react-router-dom';
+import { Link, matchPath } from 'react-router-dom';
 import 'src/api/setup-axios';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 import { Footer } from 'src/components/footer';
@@ -21,6 +21,7 @@ import { views } from 'src/views';
 import styles from './style.module.less';
 import './style.less';
 import _ from 'lodash';
+import { version } from '../../../package.json';
 
 const { Content } = Layout;
 
@@ -69,9 +70,7 @@ export const App = () => {
   }, [auth.data]);
 
   const getTitle = () => {
-    console.log(router.location.pathname);
     const view = Object.values(views).find((v) => {
-      console.log(v.path);
       return matchPath(router.location.pathname, {
         path: v.path,
         exact: true,
@@ -79,12 +78,10 @@ export const App = () => {
       });
     });
 
-    console.log(view);
-
     const title = view ? view.title : views.Not_Found.title;
     return title;
   };
-  console.log(sesion);
+
   return !auth.disabled && _.isEmpty(sesion) ? (
     <LoadingContent />
   ) : (
@@ -98,7 +95,7 @@ export const App = () => {
           <Sider items={siderItems} />
           <Content className={styles.content}>
             <Router views={views} />
-            <Footer />
+            <Footer info={<Link to="#">Portal Unificado v{version}</Link>} />
           </Content>
         </Layout>
       </Layout>

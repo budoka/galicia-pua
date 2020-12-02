@@ -67,7 +67,7 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   const query = useQuery();
 
   const sesion = useSelector((state: RootState) => state.sesion);
-  const cajasPendientes = useSelector((state: RootState) => state.cajasPendientes);
+  const cajasPendientes = useSelector((state: RootState) => state.cajas.pendientes);
   const dispatch = useAppDispatch();
 
   const estado = query.get('estado') || undefined;

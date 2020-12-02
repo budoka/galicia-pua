@@ -48,6 +48,10 @@ export interface Opcion extends LabeledValue {
   descripcion: string; */
 }
 
+export interface CacheableState {
+  cache: { key: string; expiration?: number };
+}
+
 declare module 'antd/lib/select' {
   // export interface OptionProps extends Opcion {}
   // export interface OptionProps extends FiltroTipoCajaResponse, FiltroTipoContenidoCajaResponse, FiltroPlantillaRequest

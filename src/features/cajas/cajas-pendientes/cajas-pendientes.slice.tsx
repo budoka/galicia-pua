@@ -21,7 +21,7 @@ const FEATURE_NAME = 'cajasPendientes';
 const fetchCajas = createAsyncThunk<CajasPendientes, void, { state: RootState }>(FEATURE_NAME + '/fetchCajas', async (_, thunkApi) => {
   const { dispatch, getState } = thunkApi;
 
-  const filters: FiltrosCajas = getState().cajasPendientes.filters;
+  const filters: FiltrosCajas = getState().cajas.pendientes.filters;
 
   // Mapeo de la solicitud
   const requestData: CajasPendientesRequestBody = {

@@ -1,3 +1,4 @@
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Checkbox, Col, DatePicker, Descriptions, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
@@ -8,7 +9,7 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
+
 import { ContentInfo } from 'src/components/content-info';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
@@ -16,7 +17,7 @@ import { Loading, LoadingContent } from 'src/components/loading';
 import { NotFound } from 'src/components/not-found';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
-import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DEFAULT_FORMAT } from 'src/constants/constants';
+import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import {
   clearInputs,
   clearState,
@@ -34,6 +35,8 @@ import {
   updateCaja,
 } from 'src/features/cajas/editar-caja/editar-caja.slice';
 import {
+  CajaEtiqueta,
+  ContenidoCaja,
   FechaVigencia,
   Filtro,
   Inputs,
@@ -95,7 +98,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   const dispatch = useAppDispatch();
 
-  const editarCajas = useSelector((state: RootState) => state.editarCajas);
+  const editarCajas = useSelector((state: RootState) => state.cajas.editar);
 
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
@@ -377,13 +380,11 @@ export const EditarCaja: React.FC = React.memo((props) => {
     const restringida = form.getFieldsValue().restringida ? 1 : 0;
     const inputs = { ...editarCajas.inputs, descripcion, restringida };
     dispatch(setInputs(inputs));
+
     dispatch(updateCaja(inputs))
-      .then(() => {
-        message.success('Caja modificada correctamente.');
-      })
-      .catch((err) => {
-        message.error('Error al modificar la caja.');
-      });
+      .then(unwrapResult)
+      .then(() => message.success('Caja modificada correctamente.'))
+      .catch(() => message.error('Error al modificar la caja.'));
   };
 
   const handleReset = () => {
@@ -391,13 +392,6 @@ export const EditarCaja: React.FC = React.memo((props) => {
     dispatch(clearUI());
     dispatch(clearInputs());
   };
-
-  // helpers
-
-  /* const getFechaVencimiento = () => {
-    if(!editarCajas.data.caja?.fechaVencimiento) return 'N/A';
-    return moment()
-  } */
 
   // renders
 
@@ -458,7 +452,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
           <Form.Item label={'Fecha de Vigencia'} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
             <RangePicker
               style={{ width: '100%' }}
-              format={DATE_DEFAULT_FORMAT}
+              format={DATE_DD_MM_YYYY_FORMAT}
               ranges={{
                 Hoy: [moment(), moment()],
                 '1 Mes': [moment(), moment().add(1, 'month')],
@@ -536,34 +530,6 @@ export const EditarCaja: React.FC = React.memo((props) => {
         </Descriptions.Item>
         <Descriptions.Item label="Fecha de vencimiento">
           {editarCajas.info.fechaVencimiento ? moment(editarCajas.info.fechaVencimiento).format('DD/MM/YYYY') : 'N/A'}
-        </Descriptions.Item>
-      </Descriptions>
-    );
-  };
-
-  const renderInfo2 = () => {
-    return (
-      <Descriptions /* title="User Info"  */ column={2} bordered>
-        <Descriptions.Item label="Caja">{editarCajas.data.caja?.id}</Descriptions.Item>
-        <Descriptions.Item label="Estado">{splitStringByWords(editarCajas.data.caja?.estado!)?.join(' ')}</Descriptions.Item>
-        <Descriptions.Item label="Usuario">
-          {editarCajas.data.caja?.nombre}
-          <br />
-          {`(${editarCajas.data.caja?.legajo})`}
-        </Descriptions.Item>
-        <Descriptions.Item label="Sector">
-          {editarCajas.data.caja?.nombreSector}
-          <br />
-          {`(${editarCajas.data.caja?.idSectorOrigen})`}
-        </Descriptions.Item>
-        <Descriptions.Item label="Fecha de generación">
-          {moment(editarCajas.data.caja?.fechaGeneracion).format('DD/MM/YYYY HH:mm:ss')}
-        </Descriptions.Item>
-        <Descriptions.Item label="Fecha de modificación">
-          {moment(editarCajas.data.caja?.fechaUltimaTransicion).format('DD/MM/YYYY HH:mm:ss')}
-        </Descriptions.Item>
-        <Descriptions.Item label="Fecha de vencimiento">
-          {editarCajas.data.caja?.fechaVencimiento ? moment(editarCajas.data.caja?.fechaVencimiento).format('DD/MM/YYYY') : 'N/A'}
         </Descriptions.Item>
       </Descriptions>
     );

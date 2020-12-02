@@ -1,4 +1,4 @@
-import { PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction, unwrapResult } from '@reduxjs/toolkit';
 import { Button, Checkbox, Col, DatePicker, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
@@ -8,15 +8,14 @@ import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Elemento } from 'src/actions/cajas/caja-filtros/interfaces';
-import { CajaEtiqueta, ContenidoCaja } from 'src/actions/cajas/interfaces';
 import { ContentInfo } from 'src/components/content-info';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
-import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DEFAULT_FORMAT } from 'src/constants/constants';
+import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
+import { CajaEtiqueta, ContenidoCaja } from 'src/features/cajas/editar-caja/types';
 import {
   clearInputs,
   clearState,
@@ -89,7 +88,7 @@ export const IngresarCaja: React.FC = (props) => {
 
   const dispatch = useAppDispatch();
 
-  const ingresarCajas = useSelector((state: RootState) => state.ingresarCajas);
+  const ingresarCajas = useSelector((state: RootState) => state.cajas.creacion);
 
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
@@ -261,8 +260,8 @@ export const IngresarCaja: React.FC = (props) => {
     const inputs = { ...ingresarCajas.inputs, descripcion, restringida };
     dispatch(setInputs(inputs));
     dispatch(saveCaja(inputs))
-      .then((action) => {
-        const id = action.payload;
+      .then(unwrapResult)
+      .then((id) => {
         goTo(`/editar-caja/${id}`);
         message.success('Caja creada correctamente.');
       })
@@ -336,7 +335,7 @@ export const IngresarCaja: React.FC = (props) => {
           <Form.Item label={'Fecha de Vigencia'} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
             <RangePicker
               style={{ width: '100%' }}
-              format={DATE_DEFAULT_FORMAT}
+              format={DATE_DD_MM_YYYY_FORMAT}
               ranges={{
                 Hoy: [moment(), moment()],
                 '1 Mes': [moment(), moment().add(1, 'month')],

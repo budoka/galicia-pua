@@ -3,7 +3,7 @@ import { useForm } from 'antd/lib/form/Form';
 import moment from 'moment';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DATE_DEFAULT_FORMAT } from 'src/constants/constants';
+import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import { fetchCajas, setFilters } from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
 import { FiltrosCajas } from 'src/features/cajas/cajas-pendientes/types';
 import { RootState } from 'src/reducers';
@@ -15,7 +15,7 @@ export const Filtros: React.FC = (props) => {
   const dispatch = useDispatch();
   const [form] = useForm<FiltrosCajas>();
   const sesion = useSelector((state: RootState) => state.sesion);
-  const filtros = useSelector((state: RootState) => state.cajasPendientes.filters);
+  const filtros = useSelector((state: RootState) => state.cajas.pendientes.filters);
 
   useEffect(() => {
     form.setFieldsValue({ ...filtros });
@@ -54,7 +54,7 @@ export const Filtros: React.FC = (props) => {
 
       <Form.Item name="fecha" style={{ width: 250, paddingRight: 10 }}>
         <RangePicker
-          format={DATE_DEFAULT_FORMAT}
+          format={DATE_DD_MM_YYYY_FORMAT}
           ranges={{
             Hoy: [moment(), moment()],
             'Mes actual': [moment().startOf('month'), moment().endOf('month')],

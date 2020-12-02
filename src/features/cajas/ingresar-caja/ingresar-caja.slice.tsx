@@ -209,13 +209,6 @@ const saveCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_
 
   // Mapeo de la solicitud
   const requestData: GuardarCajaRequestBody = {
-    /*     idTipoCaja: +getState().ingresarCajas.inputs.tipoCaja?.value!,
-    idTipoContenido: +getState().ingresarCajas.inputs.tipoContenido?.value!,
-    idPlantilla: +getState().ingresarCajas.inputs.tipoPlantilla?.value!,
-    idUsuarioAlta: getState().sesion.data?.idUsuario!,
-    idSectorOrigen: getState().sesion.data?.idSector!,
-    descripcion: getState().ingresarCajas.inputs.descripcion!,
-    restringida: getState().ingresarCajas.inputs.restringida!, */
     idTipoCaja: +inputs.tipoCaja?.value!,
     idTipoContenido: +inputs.tipoContenido?.value!,
     idPlantilla: +inputs.tipoPlantilla?.value!,
