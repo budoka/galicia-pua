@@ -19,6 +19,7 @@ export enum Texts {
   PROFILE = 'Perfil',
   STATUS = 'Estado',
   ADD = 'Agregar',
+  EDIT = 'Editar',
   SAVE = 'Guardar',
   UPDATE = 'Actualizar',
   DELETE = 'Eliminar',

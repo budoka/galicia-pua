@@ -389,38 +389,34 @@ export const IngresarCaja: React.FC = (props) => {
 
   const renderPreview = () => {
     return (
-      <>
-        {!ingresarCajas.ui?.vistaPrevia?.visible ? undefined : (
-          <Wrapper direction="row" horizontal="center">
-            {ingresarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
-              <ListCard
-                scrollHeight={326}
-                className={styles.previewList}
-                hoverable={false}
-                header="Etiquetas"
-                items={list.map((item) => {
-                  return {
-                    description: item.descripcion,
-                  } as IListCardItem;
-                })}
-              />
-            ) : (
-              <Table<ContenidoCaja>
-                className={styles.previewTable}
-                size={'small'}
-                columns={columns as ColumnsType<ContenidoCaja>}
-                dataSource={[]}
-                loading={ingresarCajas.loading.vistaPrevia}
-                hideRowSelection
-                hideHeader
-                hideFooter
-                hidePagination
-                locale={{ emptyText: <Empty description="Vista preliminar" /> }}
-              />
-            )}
-          </Wrapper>
+      <Wrapper direction="row" horizontal="center">
+        {ingresarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
+          <ListCard
+            scrollHeight={326}
+            className={styles.previewList}
+            hoverable={false}
+            header="Etiquetas"
+            items={list.map((item) => {
+              return {
+                description: item.descripcion,
+              } as IListCardItem;
+            })}
+          />
+        ) : (
+          <Table<ContenidoCaja>
+            className={styles.previewTable}
+            size={'small'}
+            columns={columns as ColumnsType<ContenidoCaja>}
+            dataSource={[]}
+            loading={ingresarCajas.loading.vistaPrevia}
+            hideRowSelection
+            hideHeader
+            hideFooter
+            hidePagination
+            locale={{ emptyText: <Empty description="Vista preliminar" /> }}
+          />
         )}
-      </>
+      </Wrapper>
     );
   };
 
@@ -438,7 +434,7 @@ export const IngresarCaja: React.FC = (props) => {
             <Col>
               <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
             </Col>
-            <Col span={layout.wrapperCol.span}>{renderPreview()}</Col>
+            <Col span={layout.wrapperCol.span}>{ingresarCajas.ui?.vistaPrevia?.visible && renderPreview()}</Col>
           </Row>
         </>
       )}

@@ -72,6 +72,7 @@ export const Cell = (props: ICellProps) => {
   };
 
   const renderOptions = () => {
+    if (!options) return null;
     return options!.map((option, index) => {
       const title = (option.label as ReactElement).props?.children ?? option.label;
       return (

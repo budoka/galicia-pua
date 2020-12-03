@@ -51,6 +51,7 @@ import {
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
 import { Reglas } from 'src/types';
+import { inferType } from 'src/utils/galicia';
 import { compare, splitStringByWords } from 'src/utils/string';
 import styles from './style.module.less';
 
@@ -101,6 +102,9 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   const editarCajas = useSelector((state: RootState) => state.cajas.edicion);
 
+  // pasar a slice
+  const [data, setData] = useState<any[]>([{ key: 1, dniCuitTitular: 'asd', nombreTitular: 'asd' }]);
+
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
 
@@ -143,6 +147,10 @@ export const EditarCaja: React.FC = React.memo((props) => {
           fechaVencimiento,
         }),
       );
+
+      // Display table
+
+      // Fetch Lists and set inputs
       (async () => {
         let inputs: Inputs = {};
         // Fetch Tipo Caja
@@ -159,7 +167,6 @@ export const EditarCaja: React.FC = React.memo((props) => {
             if (tipoContenido?.value === 1) {
               await dispatch(fetchTiposPlantilla()).then((action) => {
                 const tiposPlantilla = action.payload as TiposPlantilla;
-                console.log(tiposPlantilla);
                 const tipoPlantilla = tiposPlantilla?.find((t) => t.value === editarCajas.data.caja?.idPlantilla);
                 inputs = { ...inputs, tipoPlantilla };
               });
@@ -182,6 +189,8 @@ export const EditarCaja: React.FC = React.memo((props) => {
                 inputDescripcion: { visible: true },
                 checkboxRestringida: { visible: true },
                 buttonCrear: { visible: true },
+                // vistaPrevia: { visible: true },
+                vistaContenido: { visible: true },
               }),
             );
             dispatch(loading(false));
@@ -193,8 +202,9 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   useEffect(() => {
     const { tipoCaja, tipoContenido, tipoPlantilla } = editarCajas.inputs;
-    if (editarCajas.ui.vistaPrevia?.visible) dispatch(fetchVistaPrevia({ tipoCaja, tipoContenido, tipoPlantilla }));
-  }, [editarCajas.ui.vistaPrevia]);
+    if (editarCajas.ui.vistaPrevia?.visible || editarCajas.ui.vistaContenido?.visible)
+      dispatch(fetchVistaPrevia({ tipoCaja, tipoContenido, tipoPlantilla }));
+  }, [editarCajas.ui.vistaPrevia, editarCajas.ui.vistaContenido]);
 
   useEffect(() => {
     const preview = editarCajas.data.vistaPrevia;
@@ -205,18 +215,21 @@ export const EditarCaja: React.FC = React.memo((props) => {
       const previewDocumento: VistaPreviaCajaDocumento[] = preview as VistaPreviaCajaDocumento[];
 
       const columns: IColumn<ContenidoCaja>[] = previewDocumento[0].inclusiones.map((preview, index) => {
-        const title = splitStringByWords(preview.descripcion.split('Inclusion')[1])?.join(' ');
+        const description = preview.descripcion.split('Inclusion')[1];
+        const title = splitStringByWords(description)?.join(' ');
+        const id = _.camelCase(description);
 
         return {
-          id: preview.descripcion,
+          id,
+          dataIndex: id,
           title,
-          /*      dataType: preview.tipoDato,
+          inputType: inferType(preview.tipoDato),
           rules: [{ required: preview.requerido === 'R' }],
-
-            required: !preview.opcional,
-          length: preview.longitud,
-          order: preview.orden,
-          align: 'center',*/
+          editable: true,
+          //required: !preview.requerido,
+          //length: preview.longitud,
+          //order: preview.orden,
+          align: 'center',
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
         } as IColumn<ContenidoCaja>;
       });
@@ -274,6 +287,23 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
       setList(data);
     }
+  }, [editarCajas.data.vistaPrevia]);
+
+  useEffect(() => {
+    console.table(columns);
+  }, [columns]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  useEffect(() => {
+    const content = editarCajas.data.caja?.contenido;
+    console.log(content);
+
+    // if (!content || _.isEmpty(content) || _.isEmpty(columns)) return;
+
+    setData([{ key: 1, dniCuitTitular: 'asd', nombreTitular: 'asd' }]);
   }, [editarCajas.data.vistaPrevia]);
 
   // handlers
@@ -536,38 +566,87 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   const renderPreview = () => {
     return (
-      <>
-        {!editarCajas.ui?.vistaPrevia?.visible ? undefined : (
-          <Wrapper direction="row" horizontal="center">
-            {editarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
-              <ListCard
-                scrollHeight={326}
-                className={styles.previewList}
-                hoverable={false}
-                header={Texts.LABELS}
-                items={list.map((item) => {
-                  return {
-                    description: item.descripcion,
-                  } as IListCardItem;
-                })}
-              />
-            ) : (
-              <Table<ContenidoCaja>
-                className={styles.previewTable}
-                size={'small'}
-                columns={columns as ColumnsType<ContenidoCaja>}
-                dataSource={[]}
-                loading={editarCajas.loading.vistaPrevia}
-                hideRowSelection
-                hideHeader
-                hideFooter
-                hidePagination
-                locale={{ emptyText: <Empty description={Texts.PREVIEW} /> }}
-              />
-            )}
-          </Wrapper>
+      <Wrapper direction="row" horizontal="center">
+        {editarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
+          <ListCard
+            scrollHeight={326}
+            className={styles.previewList}
+            hoverable={false}
+            header={Texts.LABELS}
+            items={list.map((item) => {
+              return {
+                description: item.descripcion,
+              } as IListCardItem;
+            })}
+          />
+        ) : (
+          <Table<ContenidoCaja>
+            className={styles.previewTable}
+            size={'small'}
+            columns={columns as ColumnsType<ContenidoCaja>}
+            dataSource={[]}
+            loading={editarCajas.loading.vistaPrevia}
+            hideRowSelection
+            hideHeader
+            hideFooter
+            hidePagination
+            locale={{ emptyText: <Empty description={Texts.PREVIEW} /> }}
+          />
         )}
-      </>
+      </Wrapper>
+    );
+  };
+
+  const renderEditableContent = () => {
+    return (
+      <Wrapper direction="row" horizontal="center">
+        {editarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
+          <ListCard
+            scrollHeight={326}
+            className={styles.previewList}
+            hoverable={false}
+            header={Texts.LABELS}
+            items={list.map((item) => {
+              return {
+                description: item.descripcion,
+              } as IListCardItem;
+            })}
+          />
+        ) : (
+          <Table<ContenidoCaja>
+            className={styles.previewTable}
+            size={'small'}
+            columns={columns as ColumnsType<ContenidoCaja>}
+            dataSource={data}
+            loading={editarCajas.loading.vistaPrevia}
+            setData={setData}
+            extraColumns={{ showKeyColumn: true, showActionsColumn: true }}
+            extraComponents={[
+              {
+                key: 'add',
+                node: 'add-button',
+                position: 'top',
+              },
+              {
+                key: 'delete',
+                node: 'delete-button',
+                position: 'top',
+              },
+              /*   {
+                key: 'refresh',
+                node: 'refresh-button',
+                position: 'top',
+              }, */
+              {
+                key: 'records-count-tag',
+                node: 'records-count-tag',
+                position: 'top',
+                style: { marginLeft: 'auto' },
+              },
+            ]}
+          />
+        )}
+      </Wrapper>
     );
   };
 
@@ -601,7 +680,8 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
           <Row>
             <Col offset={2} span={20}>
-              {renderPreview()}
+              {editarCajas.ui?.vistaPrevia?.visible && renderPreview()}
+              {editarCajas.ui?.vistaContenido?.visible && renderEditableContent()}
             </Col>
           </Row>
         </>

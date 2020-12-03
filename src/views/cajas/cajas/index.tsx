@@ -87,6 +87,8 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   }, []);
 
   const disabledExport = cajasPendientes.data.length <= 0;
+  console.log(columns);
+  console.log(cajasPendientes.data);
 
   const exportToExcel = () => {
     dispatch(exportCajas())

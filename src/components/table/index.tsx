@@ -21,7 +21,6 @@ import { RecordsCounter } from './extra/record-counter-tag';
 import { RefreshButton } from './extra/refresh-button';
 import styles from './style.module.less';
 
-export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
 export type InputType = 'text' | 'date' | 'select' | 'checkbox';
 export type Action = 'idle' | 'adding' | 'editing' | 'deleting';
 export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button' | 'records-count-tag';
@@ -31,7 +30,6 @@ export type Position = 'top' | 'bottom' | 'both';
 export interface IColumn<RecordType> extends ColumnType<RecordType> {
   editable?: boolean;
   forceEditing?: boolean;
-  dataType?: DataType;
   inputType?: InputType;
   options?: LabeledValue[];
   rules?: Rule[];
@@ -240,29 +238,38 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
         switch (node) {
           case 'add-button':
+            const addDisabled = !isEditable;
             return {
               key,
-              component: <AddButton editing={!!state.editingRow.current} onAdd={handleAddRecord} onCancel={handleCancelRecord} />,
+              component: (
+                <AddButton
+                  disabled={addDisabled}
+                  editing={!!state.editingRow.current}
+                  onAdd={handleAddRecord}
+                  onCancel={handleCancelRecord}
+                />
+              ),
               style,
             };
           //   return { key, component: AddButton, style };
 
           case 'delete-button':
-            const disabled = !(state.selectedRows.length > 0 && state.action.current !== 'adding');
+            const deleteDisabled = !isEditable || !(state.selectedRows.length > 0 && state.action.current !== 'adding');
             // console.log()
             return {
               key,
-              component: <DeleteButton disabled={disabled} onDelete={() => handleDeleteRecord(state.selectedRows)} />,
+              component: <DeleteButton disabled={deleteDisabled} onDelete={() => handleDeleteRecord(state.selectedRows)} />,
               style,
             };
           //  return { key, component: DeleteButton, style };
 
           case 'refresh-button':
+            const refreshDisabled = !isEditable || state.action.current !== 'idle' || stateRefreshButton;
             return {
               key,
               component: (
                 <RefreshButton
-                  disabled={state.action.current !== 'idle' || stateRefreshButton}
+                  disabled={refreshDisabled}
                   running={stateRefreshButton}
                   setRefresh={setStateRefreshButton}
                   //task={task as () => Promise<void>}
@@ -288,6 +295,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       });
   };
 
+  const isEditable = !!setData;
   const isEditing = (record: RecordType) => record.key === state.editingRow.current;
 
   const handleAddRecord = () => {
@@ -310,7 +318,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   };
 
   const handleSaveRecord = async (key: React.Key) => {
-    if (!setData) return;
+    if (!isEditable) return;
 
     try {
       const record = (await form.validateFields()) as RecordType;
@@ -322,7 +330,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       const records = [...dataSource];
       records[index] = { ...records[index], ...record };
 
-      setData(records);
+      setData!(records);
 
       setState((prev) => ({
         ...prev,
@@ -350,10 +358,10 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   };
 
   const handleDeleteRecord = (keys: React.Key[]) => {
-    if (dataSource.length === 0 || !setData) return;
+    if (dataSource.length === 0 || !isEditable) return;
     const records = _.reject(dataSource, (e) => _.includes(keys, e.key));
 
-    setData(records);
+    setData!(records);
 
     setState((prev) => ({
       ...prev,
@@ -364,11 +372,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   };
 
   const handleCancelRecord = () => {
-    if (dataSource.length === 0 || !setData) return;
+    if (dataSource.length === 0 || !isEditable) return;
 
     if (state.action.current === 'adding') {
       const records = dataSource.slice(0, dataSource.length - 1);
-      setData(records);
+      setData!(records);
     }
 
     setState((prev) => ({
@@ -429,28 +437,30 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     );
 
     function renderButtonEdit() {
+      const disabled = !isEditable || state.action.current !== 'idle';
       return (
         <div className={styles.buttonWrapper}>
           <Button
             className={styles.buttonEdit}
-            disabled={state.action.current !== 'idle'}
+            disabled={disabled}
             type="link"
             onFocus={preventFocus}
             onClick={(e) => {
               handleEditRecord(record);
             }}>
-            Editar
+            {Texts.EDIT}
           </Button>
         </div>
       );
     }
 
     function renderButtonDelete() {
+      const disabled = !isEditable || state.action.current !== 'idle';
       return (
         <div className={styles.buttonWrapper}>
           <Popconfirm
             placement="left"
-            disabled={state.action.current !== 'idle'}
+            disabled={disabled}
             title={Texts.DELETE_ROW}
             okText={Texts.YES}
             cancelText={Texts.NO}
@@ -461,7 +471,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             }}>
             <Button
               className={styles.buttonDelete}
-              disabled={state.action.current !== 'idle'}
+              disabled={disabled}
               type="link"
               onFocus={(e) => {
                 e.stopPropagation();
@@ -474,10 +484,12 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     }
 
     function renderButtonSave() {
+      const disabled = !isEditable;
       return (
         <div className={styles.buttonWrapper}>
           <Button
             className={styles.buttonSave}
+            disabled={disabled}
             type="link"
             onFocus={preventFocus}
             onClick={(e) => {
@@ -490,10 +502,12 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     }
 
     function renderButtonCancel() {
+      const disabled = !isEditable;
       return (
         <div className={styles.buttonWrapper}>
           <Button
             className={styles.buttonCancel}
+            disabled={disabled}
             type="link"
             onFocus={preventFocus}
             onClick={(e) => {

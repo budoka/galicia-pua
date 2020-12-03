@@ -12,6 +12,8 @@ export interface EditarCajaSliceState {
 
 // Modelo front
 
+export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean' | 'lista';
+
 export interface Caja {
   id: number | null; // id
   idTipoCaja: number | null;
@@ -82,7 +84,7 @@ export interface VistaPreviaCajaDocumento {
 
 export interface InclusionCajaDocumento {
   descripcion: string;
-  tipoDato: string;
+  tipoDato: DataType;
   requerido: string;
 }
 
@@ -113,6 +115,7 @@ export interface FetchedData {
   tiposContenido?: TiposContenido; // TODO Se debería cambiar el servicio tipoDeContenido (request y response)
   tiposPlantilla?: TiposPlantilla;
   vistaPrevia?: any;
+  vistaContenido?: any;
   añosVencimiento?: AñosVencimiento | null; // TODO Se debería cambiar el servicio vencimientoCaja (request y response)
 }
 
@@ -154,6 +157,7 @@ export interface UIState {
   inputDescripcion?: { visible: boolean };
   checkboxRestringida?: { visible: boolean };
   vistaPrevia?: { visible: boolean };
+  vistaContenido?: { visible: boolean };
   buttonCrear?: { visible: boolean };
   notFound?: { visible: boolean };
   unavailable?: { visible: boolean };
