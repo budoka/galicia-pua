@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { Texts } from 'src/constants/texts';
 import { IElement } from 'src/types';
 import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
@@ -15,14 +16,15 @@ import { Cell, ICellProps } from './cell';
 import { Column } from './column';
 import { AddButton } from './extra/add-button';
 import { DeleteButton } from './extra/delete-button';
-import { RecordsCounter } from './extra/record-counter';
+import { ExportButton } from './extra/export-button';
+import { RecordsCounter } from './extra/record-counter-tag';
 import { RefreshButton } from './extra/refresh-button';
 import styles from './style.module.less';
 
 export type DataType = 'texto' | 'entero' | 'fecha' | 'boolean';
 export type InputType = 'text' | 'date' | 'select' | 'checkbox';
 export type Action = 'idle' | 'adding' | 'editing' | 'deleting';
-export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button' | 'records-count';
+export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button' | 'records-count-tag';
 export type Position = 'top' | 'bottom' | 'both';
 
 // Column properties
@@ -52,7 +54,7 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
     key?: React.Key;
     node: ActionNode | /*| ((records: RecordType[]) => ReactNode) */ ReactNode;
     position: Position;
-    task?: () => Promise<void>;
+    //task?: (() => any) | (() => Promise<any>);
     order?: (number | null)[];
     style?: CSSProperties;
   }[];
@@ -70,10 +72,6 @@ interface TableState<RecordType> {
 
 export const Table = <RecordType extends IElement = any>(props: ITableProps<RecordType>) => {
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    console.log('rendering tableeee initt');
-  }, []);
 
   const [state, setState] = useState<TableState<RecordType>>({
     action: { current: 'idle' },
@@ -106,7 +104,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       ({
         key: 'actions',
         dataIndex: 'actions',
-        title: 'Acciones',
+        title: Texts.ACTIONS,
         fixed: 'right',
         width: 210,
       } as IColumn<RecordType>),
@@ -238,7 +236,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       ?.filter((component) => position.test(component.position))
       .sort((a, b) => compare(_.isEmpty(a.order) ? null : a.order![index], _.isEmpty(b.order) ? null : b.order![index]))
       .map((component) => {
-        const { key, style, task, node } = component;
+        const { key, style, /*  task, */ node } = component;
 
         switch (node) {
           case 'add-button':
@@ -267,13 +265,13 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
                   disabled={state.action.current !== 'idle' || stateRefreshButton}
                   running={stateRefreshButton}
                   setRefresh={setStateRefreshButton}
-                  task={task}
+                  //task={task as () => Promise<void>}
                 />
               ),
               style,
             };
 
-          case 'records-count':
+          case 'records-count-tag':
             return { key, component: <RecordsCounter count={dataSource.length} />, style };
           // return { key, component: RecordsCount, style };
 
@@ -332,11 +330,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         action: { previous: state.action.current, current: 'idle' },
       }));
 
-      if (state.action.current === 'adding') message.success('Registro agregado correctamente');
-      else if (state.action.current === 'editing') message.success('Registro actualizado correctamente');
+      if (state.action.current === 'adding') message.success(Texts.SAVE_REGISTRY_SUCCESS);
+      else if (state.action.current === 'editing') message.success(Texts.UPDATE_REGISTRY_SUCCESS);
     } catch (err) {
-      console.log('Validate Failed:', err);
-      message.error('Error al validar los campos: ' + err.errorFields.map((f: any) => f.name).join(', '));
+      // console.log('Validate Failed:', err);
+      message.error(Texts.FIELDS_VALIDATION_FAILURE + ': ' + err.errorFields.map((f: any) => f.name).join(', '));
     }
   };
 
@@ -348,9 +346,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       action: { previous: state.action.current, current: 'editing' },
     }));
 
-    //*setEditingRow({ previous: stateT.editingRow.current, current: record.key });
-    //*setState({ previous: stateT.state.current, current: 'editing' });
-    //*setSelectedRows([record.key]);
     form.setFieldsValue({ ...record });
   };
 
@@ -366,10 +361,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       editingRow: { previous: state.editingRow.current, current: undefined },
       action: { previous: 'deleting', current: 'idle' },
     }));
-
-    //*setEditingRow({ previous: stateT.editingRow.current, current: undefined });
-    //*setState({ previous: 'deleting', current: 'idle' });
-    //*setSelectedRows([]);
   };
 
   const handleCancelRecord = () => {
@@ -414,8 +405,6 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         ...prev,
         selectedRows: keys,
       }));
-
-      //* setSelectedRows(keys);
     },
     getCheckboxProps: (record: RecordType) => ({
       //* name: record.name,
@@ -462,9 +451,9 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           <Popconfirm
             placement="left"
             disabled={state.action.current !== 'idle'}
-            title="¿Desea eliminar la fila?"
-            okText="Sí"
-            cancelText="No"
+            title={Texts.DELETE_ROW}
+            okText={Texts.YES}
+            cancelText={Texts.NO}
             okButtonProps={{ onFocus: preventFocus }}
             cancelButtonProps={{ onFocus: preventFocus }}
             onConfirm={(e) => {
@@ -477,7 +466,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
               onFocus={(e) => {
                 e.stopPropagation();
               }}>
-              Eliminar
+              {Texts.DELETE}
             </Button>
           </Popconfirm>
         </div>
@@ -494,7 +483,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             onClick={(e) => {
               handleSaveRecord(record.key);
             }}>
-            Guardar
+            {Texts.SAVE}
           </Button>
         </div>
       );
@@ -510,7 +499,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             onClick={(e) => {
               handleCancelRecord();
             }}>
-            Cancelar
+            {Texts.CANCEL}
           </Button>
         </div>
       );
@@ -541,18 +530,18 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
   const renderTitle = () => {
     const regex = /top|both/;
-    const hasComponents = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
+    const hasExtra = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
     // console.log(extraComponents);
     const components = renderComponents(regex);
-    return hasComponents && !_.isEmpty(components) ? components : undefined;
+    return hasExtra && !_.isEmpty(components) ? components : undefined;
   };
 
   const renderFooter = () => {
     const regex = /bottom|both/;
-    const hasComponents = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
+    const hasExtra = extraComponents && extraComponents.filter((component) => regex.test(component.position)).length > 0;
 
     const components = renderComponents(regex);
-    return hasComponents && !_.isEmpty(components) ? components : undefined;
+    return hasExtra && !_.isEmpty(components) ? components : undefined;
   };
 
   return (
@@ -560,7 +549,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       <Form form={form} component={false}>
         <TableAnt
           {...restProps}
-          loading={restProps.loading ? { indicator: <Loading />, tip: 'Cargando' } : restProps.loading}
+          loading={restProps.loading ? { indicator: <Loading />, tip: Texts.LOADING } : restProps.loading}
           className={className}
           components={{
             header: {

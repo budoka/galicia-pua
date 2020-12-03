@@ -1,17 +1,20 @@
-import { Action, createAsyncThunk, createSlice, PayloadAction, Reducer, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver';
 import moment from 'moment';
 import { apis } from 'src/api/setup-apis';
 import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/utils/api';
 import { splitStringByWords } from 'src/utils/string';
+import { sleep } from 'src/utils/various';
 import {
   CajasPendientes,
   CajasPendientesRequestBody,
   CajasPendientesResponseBody,
+  CajasPendientesSliceState,
   DetalleCaja,
   FiltrosCajas,
-  CajasPendientesSliceState,
 } from './types';
 
 const FEATURE_NAME = 'cajasPendientes';
@@ -58,12 +61,48 @@ const fetchCajas = createAsyncThunk<CajasPendientes, void, { state: RootState }>
   return cajas;
 });
 
+const exportCajas = createAsyncThunk<void, void, { state: RootState }>(FEATURE_NAME + '/exportCajas', async (_, thunkApi) => {
+  const { dispatch, getState } = thunkApi;
+
+  // Excel
+  const workbook = new Workbook();
+  // Hojas
+  const sheet = workbook.addWorksheet('Datos', {
+    properties: { defaultColWidth: 90 },
+  });
+  // Estilo del header
+  sheet.getRow(1).font = {
+    bold: true,
+  };
+  sheet.getRow(1).alignment = { horizontal: 'center' };
+
+  // Columnas
+  sheet.columns = [
+    { header: 'Caja', key: 'numero', width: 20 },
+    { header: 'Descripción', key: 'descripcion', width: 20 },
+    { header: 'Estado', key: 'estado', width: 20 },
+    { header: 'Fecha emisión', key: 'fechaEmision', width: 20 },
+    { header: 'Sector', key: 'sector', width: 20 },
+    { header: 'Usuario', key: 'usuario', width: 20 },
+  ];
+
+  // Filas
+  const data = getState().cajas.pendientes.data;
+  sheet.addRows(data);
+
+  // Creacion de archivo
+  const buffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([buffer]), 'test.xlsx');
+
+  await sleep(1000);
+});
+
 // Slice
 
 const initialState: CajasPendientesSliceState = {
   data: [],
   filters: {},
-  loading: false,
+  loading: {},
   error: null,
 };
 
@@ -81,16 +120,28 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCajas.pending, (state) => {
-        state.loading = true;
+        state.loading.busqueda = true;
         state.data = [];
         state.error = null;
       })
       .addCase(fetchCajas.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.busqueda = false;
         state.data = action.payload;
       })
       .addCase(fetchCajas.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.busqueda = false;
+        state.error = action.error.message ?? null;
+      });
+    builder
+      .addCase(exportCajas.pending, (state) => {
+        state.loading.exportacion = true;
+        state.error = null;
+      })
+      .addCase(exportCajas.fulfilled, (state) => {
+        state.loading.exportacion = false;
+      })
+      .addCase(exportCajas.rejected, (state, action) => {
+        state.loading.exportacion = false;
         state.error = action.error.message ?? null;
       });
   },
@@ -98,7 +149,7 @@ const slice = createSlice({
 
 const { setFilters, clearFilters } = slice.actions;
 
-export { fetchCajas, setFilters, clearFilters };
+export { fetchCajas, exportCajas, setFilters, clearFilters };
 
 //export default slice.reducer;
 export default slice.reducer as Reducer<typeof initialState>;

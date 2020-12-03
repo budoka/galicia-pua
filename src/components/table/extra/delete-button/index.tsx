@@ -1,5 +1,6 @@
 import { Button, Popconfirm } from 'antd';
 import React, { useEffect } from 'react';
+import { Texts } from 'src/constants/texts';
 import { Action } from '../..';
 
 interface DeleteButtonProps {
@@ -11,9 +12,9 @@ export const DeleteButton = React.memo((props: DeleteButtonProps) => {
   const { disabled, onDelete } = props;
 
   return (
-    <Popconfirm title="¿Desea eliminar las filas seleccionadas?" onConfirm={onDelete} okText="Sí" cancelText="No" disabled={disabled}>
+    <Popconfirm title={Texts.DELETE_SELECTED_ROWS} onConfirm={onDelete} okText={Texts.YES} cancelText={Texts.NO} disabled={disabled}>
       <Button type="primary" danger disabled={disabled}>
-        Eliminar
+        {Texts.DELETE}
       </Button>
     </Popconfirm>
   );

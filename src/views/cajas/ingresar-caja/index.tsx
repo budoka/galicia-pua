@@ -15,6 +15,7 @@ import { Loading, LoadingContent } from 'src/components/loading';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
+import { Texts } from 'src/constants/texts';
 import { CajaEtiqueta, ContenidoCaja } from 'src/features/cajas/editar-caja/types';
 import {
   clearInputs,
@@ -253,8 +254,6 @@ export const IngresarCaja: React.FC = (props) => {
   };
 
   const handleForm = () => {
-    console.log('creando caja');
-
     const descripcion = form.getFieldsValue().descripcion;
     const restringida = form.getFieldsValue().restringida ? 1 : 0;
     const inputs = { ...ingresarCajas.inputs, descripcion, restringida };
@@ -263,10 +262,10 @@ export const IngresarCaja: React.FC = (props) => {
       .then(unwrapResult)
       .then((id) => {
         goTo(`/editar-caja/${id}`);
-        message.success('Caja creada correctamente.');
+        message.success(Texts.SAVE_BOX_SUCCESS);
       })
       .catch((err) => {
-        message.error('Error al crear la caja.');
+        message.error(Texts.SAVE_BOX_FAILURE);
       });
   };
 
@@ -291,11 +290,11 @@ export const IngresarCaja: React.FC = (props) => {
   const renderForm = () => {
     return (
       <Form {...layout} className={styles.form} form={form} name="ingresarCaja" onFinish={handleForm}>
-        <Form.Item label={'Tipo de Caja'} name={'tipoCaja'} rules={reglas['tipoCaja']} required>
+        <Form.Item label={Texts.BOX_TYPE} name={'tipoCaja'} rules={reglas['tipoCaja']} required>
           <Select
             labelInValue
             loading={ingresarCajas.loading.tiposCaja}
-            placeholder="Seleccione un tipo de caja"
+            placeholder={Texts.SELECT_BOX_TYPE}
             disabled={ingresarCajas.loading.tiposCaja}
             onChange={handleTipoCaja}>
             {renderOptions(ingresarCajas.data.tiposCaja)}
@@ -303,11 +302,11 @@ export const IngresarCaja: React.FC = (props) => {
         </Form.Item>
 
         {ingresarCajas.ui?.selectTipoContenido?.visible && (
-          <Form.Item label={'Tipo de Contenido'} name={'tipoContenido'} rules={reglas['tipoContenido']} required>
+          <Form.Item label={Texts.CONTENT_TYPE} name={'tipoContenido'} rules={reglas['tipoContenido']} required>
             <Select
               labelInValue
               loading={ingresarCajas.loading.tiposContenido}
-              placeholder="Seleccione un tipo de contenido"
+              placeholder={Texts.SELECT_CONTENT_TYPE}
               optionFilterProp="children"
               filterOption={(input, option) => option && option.value && option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               disabled={ingresarCajas.loading.tiposContenido}
@@ -318,11 +317,11 @@ export const IngresarCaja: React.FC = (props) => {
         )}
 
         {ingresarCajas.ui?.selectTipoPlantilla?.visible && (
-          <Form.Item label={'Plantilla'} name={'tipoPlantilla'} rules={reglas['tipoPlantilla']} required>
+          <Form.Item label={Texts.TEMPLATE} name={'tipoPlantilla'} rules={reglas['tipoPlantilla']} required>
             <Select
               labelInValue
               loading={ingresarCajas.loading.tiposPlantilla}
-              placeholder="Seleccione una plantilla"
+              placeholder={Texts.SELECT_TEMPLATE}
               optionFilterProp="children"
               disabled={ingresarCajas.loading.tiposPlantilla}
               onChange={handleTipoPlantilla}>
@@ -332,16 +331,16 @@ export const IngresarCaja: React.FC = (props) => {
         )}
 
         {ingresarCajas.ui?.datePickerFechaVigencia?.visible && (
-          <Form.Item label={'Fecha de Vigencia'} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
+          <Form.Item label={Texts.EFFECTIVE_DATE} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
             <RangePicker
               style={{ width: '100%' }}
               format={DATE_DD_MM_YYYY_FORMAT}
               ranges={{
                 Hoy: [moment(), moment()],
-                '1 Mes': [moment(), moment().add(1, 'month')],
-                '3 Meses': [moment(), moment().add(3, 'month')],
-                '6 Meses': [moment(), moment().add(6, 'month')],
-                '1 Año': [moment(), moment().add(1, 'year')],
+                [`1 ${Texts.MONTH}`]: [moment(), moment().add(1, 'month')],
+                [`3 ${Texts.MONTHS}`]: [moment(), moment().add(3, 'month')],
+                [`6 ${Texts.MONTHS}`]: [moment(), moment().add(6, 'month')],
+                [`1 ${Texts.YEAR}`]: [moment(), moment().add(1, 'year')],
               }}
               allowClear
               onChange={handleFechaVigencia}
@@ -352,23 +351,23 @@ export const IngresarCaja: React.FC = (props) => {
         {ingresarCajas.ui?.labelFechaVencimiento?.visible && (ingresarCajas.inputs.fechaVigencia || ingresarCajas.loading.añosVencimiento) && (
           <Form.Item name={'fechaVigencia'} wrapperCol={{ offset: layout.labelCol.span }}>
             {ingresarCajas.loading.añosVencimiento ? (
-              <Loading text="Calculando fecha de vencimiento" />
+              <Loading text={Texts.GET_EXPIRATION_DATE} />
             ) : (
-              <Text strong>{`Fecha de vencimiento: ${moment(ingresarCajas.inputs.fechaVigencia![1])
+              <Text strong>{`${Texts.EXPIRATION_DATE}:  ${moment(ingresarCajas.inputs.fechaVigencia![1])
                 .add(ingresarCajas.data.añosVencimiento, 'year')
-                .format('DD/MM/YYYY')}`}</Text>
+                .format(DATE_DD_MM_YYYY_FORMAT)}`}</Text>
             )}
           </Form.Item>
         )}
 
         {ingresarCajas.ui?.inputDescripcion?.visible && (
-          <Form.Item label={'Descripción'} name={'descripcion'}>
-            <TextArea placeholder="Ingrese una descripción" autoSize={{ minRows: 4, maxRows: 4 }} />
+          <Form.Item label={Texts.DESCRIPTION} name={'descripcion'}>
+            <TextArea placeholder={Texts.INSERT_DESCRIPTION} autoSize={{ minRows: 4, maxRows: 4 }} />
           </Form.Item>
         )}
 
         {ingresarCajas.ui?.checkboxRestringida?.visible && (
-          <Form.Item label={'Restringir'} name={'restringida'} valuePropName="checked">
+          <Form.Item label={Texts.RESTRICT} name={'restringida'} valuePropName="checked">
             <Checkbox />
           </Form.Item>
         )}

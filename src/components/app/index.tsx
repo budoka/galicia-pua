@@ -22,18 +22,19 @@ import styles from './style.module.less';
 import './style.less';
 import _ from 'lodash';
 import { version } from '../../../package.json';
+import { Texts } from 'src/constants/texts';
 
 const { Content } = Layout;
 
 export const siderItems: SiderItem[] = [
   { view: views['Inicio'], icon: <HomeOutlined /> },
   {
-    title: 'Documentos',
+    title: Texts.DOCUMENTS,
     icon: <FileOutlined />,
     children: [{ view: views['Buscar_Legajo'] }],
   },
   {
-    title: 'Cajas',
+    title: Texts.BOXES,
     icon: <InboxOutlined />,
     children: [
       { view: views.Cajas, hidden: true },
@@ -44,7 +45,7 @@ export const siderItems: SiderItem[] = [
     ],
   },
   {
-    title: 'Pedidos',
+    title: Texts.ORDERS,
     icon: <ShoppingCartOutlined />,
     children: [{ view: views.Buscar_Caja2 }, { view: views.Buscar_Legajo_Doc }, { view: views.Buscar_Pedido }],
   },

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
 import { toggleButtonVisible, setOpenMenu, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
 import { RootState } from 'src/reducers';
@@ -109,15 +110,15 @@ export const Header: React.FC<HeaderProps> = (props) => {
     return (
       <div className={styles.rightWrapper}>
         <span className={styles.right}>
-          {'Usuario:  '}
+          {Texts.USER + ': '}
           <span className={styles.info}>
             {sesion.data?.nombreUsuario} ({sesion.data?.legajo})
           </span>
 
-          {'Sector:  '}
+          {Texts.SECTOR + ': '}
           <span className={styles.info}>{sesion.data?.nombreSector}</span>
 
-          {'Perfil:  '}
+          {Texts.PROFILE + ': '}
           <span className={styles.info}>{sesion.data?.perfil}</span>
         </span>
       </div>

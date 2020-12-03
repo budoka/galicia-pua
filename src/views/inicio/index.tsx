@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/interfaces';
 import { Wrapper } from 'src/components/wrapper';
+import { Texts } from 'src/constants/texts';
 import { views } from 'src/views';
 import styles from './style.module.less';
 
@@ -14,32 +15,32 @@ export const Inicio: React.FC = (props) => {
 
   const cards: IListCard[] = [
     {
-      title: 'Cajas',
+      title: Texts.BOXES,
       items: [
-        { description: 'Pendientes de Cierre', count: 20, path: views['Cajas'].path, query: '?estado=PendienteCierre' },
-        { description: 'Pendientes de Devolución', count: 5, path: views['Cajas'].path, query: '?estado=PendienteRecepcion' },
+        { description: Texts.PENDING_CLOSE, count: 20, path: views['Cajas'].path, query: '?estado=PendienteCierre' },
+        { description: Texts.PENDING_RETURN, count: 5, path: views['Cajas'].path, query: '?estado=PendienteRecepcion' },
       ],
     },
     {
-      title: 'Documentación',
-      items: [{ description: 'Pendientes de Devolución', count: 200 }],
+      title: Texts.DOCUMENTS,
+      items: [{ description: Texts.PENDING_RETURN, count: 200 }],
     },
     {
-      title: 'Pedidos',
+      title: Texts.ORDERS,
       items: [
-        { description: 'Pendientes de Envío', count: 5 },
-        { description: 'Por Resolver', count: 15 },
-        { description: 'Resueltos', count: 300 },
-        { description: 'Rechazados', count: 50 },
+        { description: Texts.PENDING_SEND, count: 5 },
+        { description: Texts.TO_RESOLVE, count: 15 },
+        { description: Texts.RESOLVED, count: 300 },
+        { description: Texts.REJECTED, count: 50 },
       ],
     },
     {
-      title: 'Mis Digitalizaciones',
+      title: Texts.MY_SCANS,
       items: [
-        { description: 'Disponibles', count: 25 },
-        { description: 'Enviados', count: 15 },
-        { description: 'Indexados', count: 10 },
-        { description: 'Errores', count: 30 },
+        { description: Texts.AVAILABLE, count: 25 },
+        { description: Texts.SENT, count: 15 },
+        { description: Texts.INDEXED, count: 10 },
+        { description: Texts.ERRORS, count: 30 },
       ],
     },
   ];

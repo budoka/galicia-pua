@@ -1,5 +1,6 @@
 import { Button } from 'antd';
 import React, { ReactChild, ReactNode, useEffect } from 'react';
+import { Texts } from 'src/constants/texts';
 
 interface AddButtonProps {
   editing: boolean;
@@ -12,11 +13,11 @@ export const AddButton = React.memo((props: AddButtonProps) => {
 
   return !editing ? (
     <Button type="primary" onClick={onAdd}>
-      Agregar
+      {Texts.ADD}
     </Button>
   ) : (
     <Button type="ghost" onClick={onCancel}>
-      Cancelar
+      {Texts.CANCEL}
     </Button>
   );
 });

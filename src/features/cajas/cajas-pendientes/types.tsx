@@ -3,7 +3,7 @@ import { IElement } from 'src/types';
 export interface CajasPendientesSliceState {
   data: CajasPendientes;
   filters: FiltrosCajas;
-  loading: boolean;
+  loading: Loading;
   error: string | null;
 }
 
@@ -26,6 +26,11 @@ export interface FiltrosCajas {
 }
 
 export type CajasPendientes = DetalleCaja[];
+
+export interface Loading {
+  busqueda?: boolean;
+  exportacion?: boolean;
+}
 
 // Modelo back
 

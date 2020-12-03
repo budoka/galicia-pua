@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
 
-import { ELLIPSIS } from 'src/constants/constants';
+import { DATE_DD_MM_YYYY_FORMAT, ELLIPSIS } from 'src/constants/constants';
 import { BasicComponenetProps } from 'src/types';
 import { InputType } from '..';
 import styles from './style.module.less';
@@ -67,7 +67,7 @@ export const Cell = (props: ICellProps) => {
 
       child.scrollTo({ behavior: 'auto', left: Math.ceil(offSetParent + delta) });
     } catch (error) {
-      console.log('Unable to scroll on focus: ' + error);
+      // console.log('Unable to scroll on focus: ' + error);
     }
   };
 
@@ -113,8 +113,8 @@ export const Cell = (props: ICellProps) => {
   };
 
   const renderDatePicker = () => {
-    if (editing) return <DatePicker format={'DD/MM/YYYY'} placeholder={''} allowClear />;
-    const date = isMoment(value) ? (value as Moment).format('DD/MM/YYYY') : value;
+    if (editing) return <DatePicker format={DATE_DD_MM_YYYY_FORMAT} placeholder={''} allowClear />;
+    const date = isMoment(value) ? (value as Moment).format(DATE_DD_MM_YYYY_FORMAT) : value;
     return <span title={date as string}>{date}</span>;
     //return <>{children}</>;
   };

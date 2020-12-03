@@ -2,11 +2,11 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
+import { Texts } from 'src/constants/texts';
 import { BasicComponenetProps } from 'src/types';
 import { Wrapper } from '../wrapper';
-import styles from './style.module.less';
 
-interface LoadingProps extends BasicComponenetProps<HTMLDivElement> {
+interface LoadingProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'style'> {
   className?: string;
   spinClass?: string;
   color?: string;
@@ -30,4 +30,4 @@ export const Loading: React.FC<LoadingProps> = (props) => {
   );
 };
 
-export const LoadingContent = () => <Loading style={{ height: '100vh' }} size={26} text={'Cargando'} />;
+export const LoadingContent = () => <Loading style={{ height: '100vh' }} size={26} text={Texts.LOADING} />;

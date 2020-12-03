@@ -17,7 +17,8 @@ import { Loading, LoadingContent } from 'src/components/loading';
 import { NotFound } from 'src/components/not-found';
 import { IColumn, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
-import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
+import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATETIME_HH_MM_SS_FORMAT, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
+import { Texts } from 'src/constants/texts';
 import {
   clearInputs,
   clearState,
@@ -98,7 +99,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   const dispatch = useAppDispatch();
 
-  const editarCajas = useSelector((state: RootState) => state.cajas.editar);
+  const editarCajas = useSelector((state: RootState) => state.cajas.edicion);
 
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
@@ -374,8 +375,6 @@ export const EditarCaja: React.FC = React.memo((props) => {
   };
 
   const handleForm = () => {
-    console.log('modificando caja');
-
     const descripcion = form.getFieldsValue().descripcion;
     const restringida = form.getFieldsValue().restringida ? 1 : 0;
     const inputs = { ...editarCajas.inputs, descripcion, restringida };
@@ -383,8 +382,8 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
     dispatch(updateCaja(inputs))
       .then(unwrapResult)
-      .then(() => message.success('Caja modificada correctamente.'))
-      .catch(() => message.error('Error al modificar la caja.'));
+      .then(() => message.success(Texts.UPDATE_BOX_SUCCESS))
+      .catch(() => message.error(Texts.UPDATE_BOX_FAILURE));
   };
 
   const handleReset = () => {
@@ -408,11 +407,11 @@ export const EditarCaja: React.FC = React.memo((props) => {
   const renderForm = () => {
     return (
       <Form {...layout} className={styles.form} form={form} name="ingresarCaja" onFinish={handleForm}>
-        <Form.Item label={'Tipo de Caja'} name={'tipoCaja'} rules={reglas['tipoCaja']} required>
+        <Form.Item label={Texts.BOX_TYPE} name={'tipoCaja'} rules={reglas['tipoCaja']} required>
           <Select
             labelInValue
             loading={editarCajas.loading.tiposCaja}
-            placeholder="Seleccione un tipo de caja"
+            placeholder={Texts.SELECT_BOX_TYPE}
             disabled={editarCajas.loading.tiposCaja}
             onChange={handleTipoCaja}>
             {renderOptions(editarCajas.data.tiposCaja)}
@@ -420,11 +419,11 @@ export const EditarCaja: React.FC = React.memo((props) => {
         </Form.Item>
 
         {editarCajas.ui?.selectTipoContenido?.visible && (
-          <Form.Item label={'Tipo de Contenido'} name={'tipoContenido'} rules={reglas['tipoContenido']} required>
+          <Form.Item label={Texts.CONTENT_TYPE} name={'tipoContenido'} rules={reglas['tipoContenido']} required>
             <Select
               labelInValue
               loading={editarCajas.loading.tiposContenido}
-              placeholder="Seleccione un tipo de contenido"
+              placeholder={Texts.SELECT_CONTENT_TYPE}
               optionFilterProp="children"
               filterOption={(input, option) => option && option.value && option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               disabled={editarCajas.loading.tiposContenido}
@@ -435,11 +434,11 @@ export const EditarCaja: React.FC = React.memo((props) => {
         )}
 
         {editarCajas.ui?.selectTipoPlantilla?.visible && (
-          <Form.Item label={'Plantilla'} name={'tipoPlantilla'} rules={reglas['tipoPlantilla']} required>
+          <Form.Item label={Texts.TEMPLATE} name={'tipoPlantilla'} rules={reglas['tipoPlantilla']} required>
             <Select
               labelInValue
               loading={editarCajas.loading.tiposPlantilla}
-              placeholder="Seleccione una plantilla"
+              placeholder={Texts.SELECT_TEMPLATE}
               optionFilterProp="children"
               disabled={editarCajas.loading.tiposPlantilla}
               onChange={handleTipoPlantilla}>
@@ -449,16 +448,16 @@ export const EditarCaja: React.FC = React.memo((props) => {
         )}
 
         {editarCajas.ui?.datePickerFechaVigencia?.visible && (
-          <Form.Item label={'Fecha de Vigencia'} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
+          <Form.Item label={Texts.EFFECTIVE_DATE} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
             <RangePicker
               style={{ width: '100%' }}
               format={DATE_DD_MM_YYYY_FORMAT}
               ranges={{
                 Hoy: [moment(), moment()],
-                '1 Mes': [moment(), moment().add(1, 'month')],
-                '3 Meses': [moment(), moment().add(3, 'month')],
-                '6 Meses': [moment(), moment().add(6, 'month')],
-                '1 Año': [moment(), moment().add(1, 'year')],
+                [`1 ${Texts.MONTH}`]: [moment(), moment().add(1, 'month')],
+                [`3 ${Texts.MONTHS}`]: [moment(), moment().add(3, 'month')],
+                [`6 ${Texts.MONTHS}`]: [moment(), moment().add(6, 'month')],
+                [`1 ${Texts.YEAR}`]: [moment(), moment().add(1, 'year')],
               }}
               allowClear
               onChange={handleFechaVigencia}
@@ -469,23 +468,23 @@ export const EditarCaja: React.FC = React.memo((props) => {
         {editarCajas.ui?.labelFechaVencimiento?.visible && (editarCajas.inputs.fechaVigencia || editarCajas.loading.añosVencimiento) && (
           <Form.Item name={'fechaVigencia'} wrapperCol={{ offset: layout.labelCol.span }}>
             {editarCajas.loading.añosVencimiento ? (
-              <Loading text="Calculando fecha de vencimiento" />
+              <Loading text={Texts.GET_EXPIRATION_DATE} />
             ) : (
-              <Text strong>{`Fecha de vencimiento: ${moment(editarCajas.inputs.fechaVigencia![1])
+              <Text strong>{`${Texts.EXPIRATION_DATE}: ${moment(editarCajas.inputs.fechaVigencia![1])
                 .add(editarCajas.data.añosVencimiento, 'year')
-                .format('DD/MM/YYYY')}`}</Text>
+                .format(DATE_DD_MM_YYYY_FORMAT)}`}</Text>
             )}
           </Form.Item>
         )}
 
         {editarCajas.ui?.inputDescripcion?.visible && (
-          <Form.Item label={'Descripción'} name={'descripcion'}>
-            <TextArea placeholder="Ingrese una descripción" autoSize={{ minRows: 4, maxRows: 4 }} />
+          <Form.Item label={Texts.DESCRIPTION} name={'descripcion'}>
+            <TextArea placeholder={Texts.INSERT_DESCRIPTION} autoSize={{ minRows: 4, maxRows: 4 }} />
           </Form.Item>
         )}
 
         {editarCajas.ui?.checkboxRestringida?.visible && (
-          <Form.Item label={'Restringir'} name={'restringida'} valuePropName="checked">
+          <Form.Item label={Texts.RESTRICT} name={'restringida'} valuePropName="checked">
             <Checkbox />
           </Form.Item>
         )}
@@ -493,11 +492,11 @@ export const EditarCaja: React.FC = React.memo((props) => {
         {editarCajas.ui?.buttonCrear?.visible && (
           <Form.Item {...tailLayout}>
             <Button type="primary" htmlType="submit">
-              Modificar
+              {Texts.UPDATE}
             </Button>
 
             <Button type="link" htmlType="button" onClick={handleReset}>
-              Limpiar
+              {Texts.CLEAN}
             </Button>
           </Form.Item>
         )}
@@ -508,28 +507,28 @@ export const EditarCaja: React.FC = React.memo((props) => {
   const renderInfo = () => {
     return (
       <Descriptions /* title="User Info"  */ column={2} bordered>
-        <Descriptions.Item label="Caja">{editarCajas.info.caja}</Descriptions.Item>
-        <Descriptions.Item label="Estado">
+        <Descriptions.Item label={Texts.BOX}>{editarCajas.info.caja}</Descriptions.Item>
+        <Descriptions.Item label={Texts.STATUS}>
           {editarCajas.info.estado && splitStringByWords(editarCajas.info.estado)?.join(' ')}
         </Descriptions.Item>
-        <Descriptions.Item label="Usuario">
+        <Descriptions.Item label={Texts.USER}>
           {editarCajas.info.usuario?.nombre}
           <br />
           {`(${editarCajas.info.usuario?.legajo})`}
         </Descriptions.Item>
-        <Descriptions.Item label="Sector">
+        <Descriptions.Item label={Texts.SECTOR}>
           {editarCajas.info.sector?.nombre}
           <br />
           {`(${editarCajas.info.sector?.id})`}
         </Descriptions.Item>
-        <Descriptions.Item label="Fecha de generación">
-          {moment(editarCajas.info.fechaGeneracion).format('DD/MM/YYYY HH:mm:ss')}
+        <Descriptions.Item label={Texts.CREATION_DATE}>
+          {moment(editarCajas.info.fechaGeneracion).format(DATETIME_HH_MM_SS_FORMAT)}
         </Descriptions.Item>
-        <Descriptions.Item label="Fecha de modificación">
-          {moment(editarCajas.info.fechaModificacion).format('DD/MM/YYYY HH:mm:ss')}
+        <Descriptions.Item label={Texts.MODIFICATION_DATE}>
+          {moment(editarCajas.info.fechaModificacion).format(DATETIME_HH_MM_SS_FORMAT)}
         </Descriptions.Item>
-        <Descriptions.Item label="Fecha de vencimiento">
-          {editarCajas.info.fechaVencimiento ? moment(editarCajas.info.fechaVencimiento).format('DD/MM/YYYY') : 'N/A'}
+        <Descriptions.Item label={Texts.EXPIRATION_DATE}>
+          {editarCajas.info.fechaVencimiento ? moment(editarCajas.info.fechaVencimiento).format(DATE_DD_MM_YYYY_FORMAT) : Texts.NA}
         </Descriptions.Item>
       </Descriptions>
     );
@@ -545,7 +544,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
                 scrollHeight={326}
                 className={styles.previewList}
                 hoverable={false}
-                header="Etiquetas"
+                header={Texts.LABELS}
                 items={list.map((item) => {
                   return {
                     description: item.descripcion,
@@ -563,7 +562,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
                 hideHeader
                 hideFooter
                 hidePagination
-                locale={{ emptyText: <Empty description="Vista preliminar" /> }}
+                locale={{ emptyText: <Empty description={Texts.PREVIEW} /> }}
               />
             )}
           </Wrapper>
