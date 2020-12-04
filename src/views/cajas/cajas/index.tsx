@@ -3,14 +3,13 @@ import { message, Tag } from 'antd';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-//import { CajasBodyRequest, DetalleCaja, getCajasPendientes } from 'src/actions/cajas/caja-pendientes';
-import { ContentInfo } from 'src/components/content-info';
+import { ContentHeaderWithCart } from 'src/components/app';
 import { IColumn, Table } from 'src/components/table';
 import { ExportButton } from 'src/components/table/extra/export-button';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
-import { exportCajas, fetchCajas, setFilters } from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
-import { DetalleCaja, FiltrosCajas } from 'src/features/cajas/cajas-pendientes/types';
+import { clearState, exportCajas, fetchCajas, setFilters } from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
+import { DetalleCaja, EstadosCaja, FiltrosCajas } from 'src/features/cajas/cajas-pendientes/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
 import { useQuery } from 'src/utils/history';
@@ -32,7 +31,7 @@ const columns = [
     key: 'descripcion',
     dataIndex: 'descripcion',
     title: Texts.DESCRIPTION,
-    width: 300,
+    width: 350,
     sorter: { compare: (a, b) => compare(a.descripcion, b.descripcion), multiple: -1 },
   },
   {
@@ -73,7 +72,8 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   const cajasPendientes = useSelector((state: RootState) => state.cajas.pendientes);
   const dispatch = useAppDispatch();
 
-  const estado = query.get('estado') || undefined;
+  const queryEstado = query.get('estado');
+  const estado = queryEstado ? (queryEstado as EstadosCaja) : undefined;
 
   useEffect(() => {
     const filtros: FiltrosCajas = {
@@ -84,9 +84,12 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
     };
     dispatch(setFilters(filtros));
     dispatch(fetchCajas());
+    return () => {
+      dispatch(clearState());
+    };
   }, []);
 
-  const disabledExport = cajasPendientes.data.length <= 0;
+  const disabledExport = cajasPendientes.data.cajas.length <= 0;
   console.log(columns);
   console.log(cajasPendientes.data);
 
@@ -99,30 +102,29 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
 
   const Tabla = () => {
     return (
-      <Wrapper direction="row" horizontal="center" style={{ width: '100%' }}>
-        <Table
-          rowKey={'numero'}
-          className={styles.table}
-          size={'small'}
-          fill
-          columns={columns as ColumnsType<DetalleCaja>}
-          dataSource={cajasPendientes.data}
-          loading={cajasPendientes.loading.busqueda}
-          hideRowSelection
-          extraColumns={{ showKeyColumn: false, showActionsColumn: false }}
-          extraComponents={[
-            {
-              key: 'filters',
-              node: <Filtros />,
-              position: 'top',
-            },
-            {
-              key: 'export',
-              node: <ExportButton disabled={disabledExport} loading={cajasPendientes.loading.exportacion} onClick={exportToExcel} />,
-              position: 'top',
-              style: { marginLeft: 'auto' },
-            },
-            /*   {
+      <Table
+        rowKey={'numero'}
+        className={styles.table}
+        size={'small'}
+        fill
+        columns={columns as ColumnsType<DetalleCaja>}
+        dataSource={cajasPendientes.data.cajas}
+        loading={cajasPendientes.loading.busqueda}
+        hideRowSelection
+        extraColumns={{ showKeyColumn: false, showActionsColumn: false }}
+        extraComponents={[
+          {
+            key: 'filters',
+            node: <Filtros />,
+            position: 'top',
+          },
+          {
+            key: 'export',
+            node: <ExportButton disabled={disabledExport} loading={cajasPendientes.loading.exportacion} onClick={exportToExcel} />,
+            position: 'top',
+            style: { marginLeft: 'auto' },
+          },
+          /*   {
               key: 'refresh',
               node: <RefreshButton  />,
               //node: 'export-button',
@@ -130,24 +132,25 @@ export const Cajas: React.FC<CajasProps> = React.memo((props) => {
               position: 'top',
               style: { marginLeft: 'auto' },
             }, */
-            {
-              key: 'records-count-tag',
-              node: 'records-count-tag',
-              position: 'top',
-            },
-          ]}
-          sortable
-          pagination={{ pageSize: 20 }}
-          //  setData={setDataSource}
-        />
-      </Wrapper>
+          {
+            key: 'records-count-tag',
+            node: 'records-count-tag',
+            position: 'top',
+          },
+        ]}
+        sortable
+        pagination={{ pageSize: 20 }}
+        //  setData={setDataSource}
+      />
     );
   };
 
   return (
     <Wrapper contentWrapper unselectable direction="column" horizontal="center" style={{ minWidth: 1350 }}>
-      <ContentInfo />
-      {Tabla()}
+      <ContentHeaderWithCart />
+      <Wrapper contentBody direction="row" horizontal="center">
+        <Tabla />
+      </Wrapper>
     </Wrapper>
   );
 });

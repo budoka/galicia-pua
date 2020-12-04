@@ -1,6 +1,6 @@
 import { Breadcrumb, Divider } from 'antd';
 import classNames from 'classnames';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { UNSELECTABLE } from 'src/constants/constants';
 import { BasicComponenetProps, Dictionary } from 'src/types';
@@ -10,11 +10,14 @@ import { siderItems } from '../app';
 import { SiderChildItem, SiderItem, SiderParentItem } from '../sider/types';
 import styles from './style.module.less';
 import { matchPath } from 'react-router';
+import { Wrapper } from '../wrapper';
+import { Cart } from '../cart';
 
-interface ContentInfoProps extends BasicComponenetProps<HTMLDivElement> {}
+interface ContentHeaderProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'className' | 'style'> {}
 
-export const ContentInfo: React.FC<ContentInfoProps> = (props) => {
-  const className = classNames(UNSELECTABLE, props.className, styles.contentInfo);
+export const ContentHeader: React.FC<ContentHeaderProps> = React.memo((props) => {
+  const { children } = props;
+  const className = classNames(UNSELECTABLE, props.className, styles.contentHeader);
 
   //  const router = useSelector((state: RootState) => state.router);
 
@@ -56,7 +59,10 @@ export const ContentInfo: React.FC<ContentInfoProps> = (props) => {
 
   return (
     <>
-      <Breadcrumb className={className}>{renderItem()}</Breadcrumb> <Divider />
+      <Wrapper contentBody direction="row" className={styles.wrapper}>
+        <Breadcrumb className={className}>{renderItem()}</Breadcrumb> {children}
+      </Wrapper>
+      <Divider />
     </>
   );
-};
+});

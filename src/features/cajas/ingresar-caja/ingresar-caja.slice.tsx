@@ -185,7 +185,7 @@ const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 't
       /*   idTipoCaja: +getState().ingresarCajas.inputs.tipoCaja?.value!,
       tipoContenido: getState().ingresarCajas.inputs.tipoContenido?.value.toString()!, */
       idTipoCaja: +inputs.tipoCaja?.value!,
-      tipoContenido: inputs.tipoContenido?.value.toString()!,
+      tipoContenido: inputs.tipoContenido?.label?.toString()!,
     };
 
     // Configuracion del servicio
@@ -207,6 +207,12 @@ const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 't
 const saveCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_NAME + '/saveCaja', async (inputs, thunkApi) => {
   const { dispatch, getState } = thunkApi;
 
+  const fechaDesde = inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()) : null;
+  const fechaHasta = inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()) : null;
+
+  const añosVencimiento = getState().cajas.creacion.data.añosVencimiento!;
+  const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format() : null;
+
   // Mapeo de la solicitud
   const requestData: GuardarCajaRequestBody = {
     idTipoCaja: +inputs.tipoCaja?.value!,
@@ -216,12 +222,11 @@ const saveCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_
     idSectorOrigen: getState().sesion.data?.idSector!,
     descripcion: inputs.descripcion!,
     restringida: inputs.restringida!,
+    //fechaGeneracion: dayjs().format('YYYY-MM-DD HH:mm:ss.SSS'),
     fechaGeneracion: dayjs().format('YYYY-MM-DD HH:mm:ss.SSS'),
-    fechaVencimiento: dayjs().add(10, 'year').format('YYYY-MM-DD'),
-    fechaDesde:
-      inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()).format('YYYY-MM-DD') : null,
-    fechaHasta:
-      inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()).format('YYYY-MM-DD') : null,
+    fechaVencimiento,
+    fechaDesde: fechaDesde && fechaDesde.format(),
+    fechaHasta: fechaHasta && fechaHasta.format(),
   };
 
   // Configuracion del servicio

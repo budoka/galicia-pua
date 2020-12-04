@@ -6,10 +6,11 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { Link } from 'react-router-dom';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { BasicComponenetProps } from 'src/types';
+import { Loading } from '../loading';
 import { IListCardItem } from './interfaces';
 import styles from './style.module.less';
 
-interface ListCardProps extends BasicComponenetProps<HTMLDivElement> {
+interface ListCardProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'className' | 'style'> {
   items?: IListCardItem[];
   header?: React.ReactNode;
   headerStyle?: React.CSSProperties;
@@ -47,10 +48,16 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
   };
 
   const renderCard = (item: IListCardItem) => {
+    const { hoverable, showZero } = props;
+
     return (
-      <Card.Grid className={styles.cardGrid} hoverable={props.hoverable}>
+      <Card.Grid className={styles.cardGrid} hoverable={hoverable}>
         <span>{item.description}</span>
-        {item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={props.showZero} />}
+        {item.loading ? (
+          <Loading />
+        ) : (
+          item?.count! >= 0 && <Badge className={getBadgeClass(item.count)} count={item.count} showZero={showZero} />
+        )}
       </Card.Grid>
     );
   };

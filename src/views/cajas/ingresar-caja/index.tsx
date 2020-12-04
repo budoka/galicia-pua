@@ -1,4 +1,4 @@
-import { PayloadAction, unwrapResult } from '@reduxjs/toolkit';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Checkbox, Col, DatePicker, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
@@ -8,7 +8,7 @@ import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ContentInfo } from 'src/components/content-info';
+import { ContentHeaderWithCart } from 'src/components/app';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
@@ -428,7 +428,7 @@ export const IngresarCaja: React.FC = (props) => {
         <LoadingContent />
       ) : (
         <>
-          <ContentInfo />
+          <ContentHeaderWithCart />
           <Row justify="center" style={{ width: '100%', height: '100%' }}>
             <Col span={layout.labelCol.span}>{renderForm()}</Col>
             <Col>

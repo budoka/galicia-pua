@@ -23,6 +23,8 @@ import './style.less';
 import _ from 'lodash';
 import { version } from '../../../package.json';
 import { Texts } from 'src/constants/texts';
+import { Cart } from '../cart';
+import { ContentHeader } from 'src/components/content-header';
 
 const { Content } = Layout;
 
@@ -103,3 +105,9 @@ export const App = () => {
     </>
   );
 };
+
+export const ContentHeaderWithCart = () => (
+  <ContentHeader>
+    <Cart count={7} />
+  </ContentHeader>
+);

@@ -1,3 +1,4 @@
+import { Pattern } from 'src/constants/constants';
 import { DataType } from 'src/features/cajas/editar-caja/types';
 
 export function getLegajo(email: string) {
@@ -15,7 +16,20 @@ export function inferType(dataType: DataType) {
     case 'boolean':
       return 'checkbox';
     case 'texto':
+    case 'entero':
     default:
       return 'text';
+  }
+}
+
+export function inferPattern(dataType: DataType) {
+  console.log(dataType);
+  switch (dataType) {
+    case 'texto':
+      return Pattern.OnlyWords;
+    case 'entero':
+      return Pattern.OnlyNumbers;
+    default:
+      return undefined;
   }
 }

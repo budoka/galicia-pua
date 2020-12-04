@@ -30,12 +30,12 @@ export const Filtros: React.FC = (props) => {
     dispatch(setFilters(form.getFieldsValue()));
   }; */
 
-  const onFilter = (values: FiltrosCajas) => {
+  const handleFilter = (values: FiltrosCajas) => {
     dispatch(setFilters(values)); // TODO revisar moment al guardar en redux como no serializable
     dispatch(fetchCajas());
   };
 
-  const onReset = () => {
+  const handleReset = () => {
     form.resetFields();
     dispatch(clearFilters());
   };
@@ -45,7 +45,7 @@ export const Filtros: React.FC = (props) => {
       form={form}
       name="filter"
       style={{ display: 'flex', width: '100%' }}
-      onFinish={onFilter}
+      onFinish={handleFilter}
       /*  onFieldsChange={(changedFields: any[], allFields: any[]) => onChangeFilter(changedFields, allFields)} */
     >
       <Form.Item name="estado" style={{ width: 190, paddingRight: 10 }}>
@@ -59,10 +59,12 @@ export const Filtros: React.FC = (props) => {
         <RangePicker
           format={DATE_DD_MM_YYYY_FORMAT}
           ranges={{
-            [Texts.TODAY]: [moment(), moment()],
+            [Texts.TODAY]: [moment().startOf('day'), moment().endOf('day')],
             [Texts.CURRENT_MONTH]: [moment().startOf('month'), moment().endOf('month')],
             [Texts.LATEST_MONTH]: [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
           }}
+          defaultPickerValue={[moment().startOf('day'), moment().endOf('day')]}
+          onChange={(values) => console.log(values)}
           allowClear
         />
       </Form.Item>
@@ -82,7 +84,7 @@ export const Filtros: React.FC = (props) => {
           {Texts.FILTER}
         </Button>
 
-        <Button htmlType="button" onClick={onReset}>
+        <Button htmlType="button" onClick={handleReset}>
           {Texts.CLEAN}
         </Button>
       </Form.Item>

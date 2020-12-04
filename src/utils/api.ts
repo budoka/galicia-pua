@@ -1,8 +1,7 @@
-import dayjs from 'dayjs';
-import { getVar } from './environment';
-import { apis } from 'src/api/setup-apis';
 import { AxiosRequestConfig } from 'axios';
-import { APIs, API, Resource } from 'src/api/types';
+import dayjs from 'dayjs';
+import { API, Resource } from 'src/api/types';
+import { getVar } from './environment';
 
 /**
  * Build the url of an API.

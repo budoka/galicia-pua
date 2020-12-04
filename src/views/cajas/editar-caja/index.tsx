@@ -9,8 +9,7 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-
-import { ContentInfo } from 'src/components/content-info';
+import { ContentHeaderWithCart } from 'src/components/app';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
@@ -51,7 +50,7 @@ import {
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
 import { Reglas } from 'src/types';
-import { inferType } from 'src/utils/galicia';
+import { inferPattern, inferType } from 'src/utils/galicia';
 import { compare, splitStringByWords } from 'src/utils/string';
 import styles from './style.module.less';
 
@@ -217,15 +216,16 @@ export const EditarCaja: React.FC = React.memo((props) => {
       const columns: IColumn<ContenidoCaja>[] = previewDocumento[0].inclusiones.map((preview, index) => {
         const description = preview.descripcion.split('Inclusion')[1];
         const title = splitStringByWords(description)?.join(' ');
-        const id = _.camelCase(description);
+        const key = _.camelCase(description);
 
         return {
-          id,
-          dataIndex: id,
+          key,
+          dataIndex: key,
           title,
           inputType: inferType(preview.tipoDato),
-          rules: [{ required: preview.requerido === 'R' }],
+          rules: [{ required: preview.requerido === 'R', pattern: inferPattern(preview.tipoDato) }],
           editable: true,
+          width: 200,
           //required: !preview.requerido,
           //length: preview.longitud,
           //order: preview.orden,
@@ -667,7 +667,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
         <NotFound />
       ) : (
         <>
-          <ContentInfo />
+          <ContentHeaderWithCart />
           <Row justify="center" style={{ width: '100%', height: '100%' }}>
             <Col span={layout.labelCol.span}>{renderForm()}</Col>
             <Col>

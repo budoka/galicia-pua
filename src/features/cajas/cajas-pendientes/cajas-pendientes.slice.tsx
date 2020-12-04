@@ -4,7 +4,9 @@ import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
 import { apis } from 'src/api/setup-apis';
+import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
+import { ExtractStringPropertyNames } from 'src/types';
 import { buildAxiosRequestConfig } from 'src/utils/api';
 import { splitStringByWords } from 'src/utils/string';
 import { sleep } from 'src/utils/various';
@@ -13,6 +15,8 @@ import {
   CajasPendientesRequestBody,
   CajasPendientesResponseBody,
   CajasPendientesSliceState,
+  CantidadCajas,
+  CantidadCajasRequestBody,
   DetalleCaja,
   FiltrosCajas,
 } from './types';
@@ -20,6 +24,71 @@ import {
 const FEATURE_NAME = 'cajasPendientes';
 
 // Async actions
+
+/* const fetchCantidadCajasDashboard = createAsyncThunk<number, void, { state: RootState }>(
+  FEATURE_NAME + '/fetchCantidadCajasDashboard',
+  async (_, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+
+    // Mapeo de la solicitud
+    const requestData: CantidadCajasRequestBody[] = [
+      {
+        idEstado: 'PendienteCierre',
+        idEstadoFiltro: 'Igual',
+      },
+      {
+        idEstado: 'PendienteRecepcion',
+        idEstadoFiltro: 'Igual',
+      }
+    ]
+
+    // Configuracion del servicio
+    const api = apis['CAJA'];
+    const resource = api.resources['CANTIDAD_CAJAS'];
+    const config1 = buildAxiosRequestConfig(api, resource, requestData[0]);
+    const config2 = buildAxiosRequestConfig(api, resource, requestData[1]);
+
+    // Respuesta del servicio
+    const response = await axios.request<number>(config1);
+    const responseData = response.data;
+
+    // Mapeo de la respuesta
+    const cantidadCajas = responseData;
+
+    return cantidadCajas;
+  },
+);
+ */
+
+const fetchCantidadCajas = createAsyncThunk<
+  CantidadCajas | number,
+  { filters: FiltrosCajas; key?: keyof CantidadCajas }, // Cambiar FiltrosCajas por CantidadCajasRequestBody
+  { state: RootState }
+>(FEATURE_NAME + '/fetchCantidadCajas', async (params, thunkApi) => {
+  const { dispatch, getState } = thunkApi;
+
+  const filters: FiltrosCajas = getState().cajas.pendientes.filters;
+
+  // Mapeo de la solicitud
+  const requestData: CantidadCajasRequestBody = {
+    idEstado: params.filters.estado,
+    idEstadoFiltro: 'Igual',
+  };
+
+  // Configuracion del servicio
+  const api = apis['CAJA'];
+  const resource = api.resources['CANTIDAD_CAJAS'];
+  const config = buildAxiosRequestConfig(api, resource, requestData);
+
+  // Respuesta del servicio
+  const response = await axios.request<number>(config);
+  const responseData = response.data;
+
+  // Mapeo de la respuesta
+  const cantidadCajas: CantidadCajas | number = params.key ? Object.assign({}, { [params.key]: responseData }) : responseData;
+
+  return cantidadCajas;
+});
 
 const fetchCajas = createAsyncThunk<CajasPendientes, void, { state: RootState }>(FEATURE_NAME + '/fetchCajas', async (_, thunkApi) => {
   const { dispatch, getState } = thunkApi;
@@ -31,8 +100,8 @@ const fetchCajas = createAsyncThunk<CajasPendientes, void, { state: RootState }>
     idUsuario: getState().sesion.data?.idUsuario!,
     roles: [getState().sesion.data?.perfil!],
     estado: filters.estado,
-    fechaDesde: filters.fecha && filters.fecha.length > 0 ? filters.fecha[0].format('YYYY-MM-DD') : undefined,
-    fechaHasta: filters.fecha && filters.fecha.length > 0 ? filters.fecha[1].format('YYYY-MM-DD') : undefined,
+    fechaDesde: filters.fecha && filters.fecha.length > 0 ? filters.fecha[0].format() : undefined,
+    fechaHasta: filters.fecha && filters.fecha.length > 1 ? moment(filters.fecha[1]).add(1, 'day').format() : undefined, // workaround  moment(...).add(1, 'day')
     centroCosto: filters.sector,
     nombre: filters.usuario,
   };
@@ -52,7 +121,7 @@ const fetchCajas = createAsyncThunk<CajasPendientes, void, { state: RootState }>
       numero: caja.numero,
       descripcion: caja.descripcion,
       estado: splitStringByWords(caja.estado)?.join(' '),
-      fechaEmision: moment(caja.fechaEmision).format('DD/MM/YYYY'),
+      fechaEmision: moment(caja.fechaEmision).format(DATE_DD_MM_YYYY_FORMAT),
       sector: caja.sector,
       usuario: caja.usuario,
     } as DetalleCaja;
@@ -87,7 +156,7 @@ const exportCajas = createAsyncThunk<void, void, { state: RootState }>(FEATURE_N
   ];
 
   // Filas
-  const data = getState().cajas.pendientes.data;
+  const data = getState().cajas.pendientes.data.cajas;
   sheet.addRows(data);
 
   // Creacion de archivo
@@ -100,7 +169,7 @@ const exportCajas = createAsyncThunk<void, void, { state: RootState }>(FEATURE_N
 // Slice
 
 const initialState: CajasPendientesSliceState = {
-  data: [],
+  data: { cajas: [] },
   filters: {},
   loading: {},
   error: null,
@@ -116,17 +185,34 @@ const slice = createSlice({
     clearFilters(state) {
       state.filters = {};
     },
+    clearState() {
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchCantidadCajas.pending, (state) => {
+        state.loading.cantidadCajas = true;
+        state.data = { ...state.data, cantidad: 0 };
+        state.error = null;
+      })
+      .addCase(fetchCantidadCajas.fulfilled, (state, action) => {
+        state.loading.cantidadCajas = false;
+        state.data = { ...state.data, cantidad: { ...(state.data.cantidad as CantidadCajas), ...(action.payload as CantidadCajas) } };
+      })
+      .addCase(fetchCantidadCajas.rejected, (state, action) => {
+        state.loading.cantidadCajas = false;
+        state.error = action.error.message ?? null;
+      });
+    builder
       .addCase(fetchCajas.pending, (state) => {
         state.loading.busqueda = true;
-        state.data = [];
+        state.data = { ...state.data, cajas: [] };
         state.error = null;
       })
       .addCase(fetchCajas.fulfilled, (state, action) => {
         state.loading.busqueda = false;
-        state.data = action.payload;
+        state.data = { ...state.data, cajas: action.payload };
       })
       .addCase(fetchCajas.rejected, (state, action) => {
         state.loading.busqueda = false;
@@ -147,9 +233,9 @@ const slice = createSlice({
   },
 });
 
-const { setFilters, clearFilters } = slice.actions;
+const { setFilters, clearFilters, clearState } = slice.actions;
 
-export { fetchCajas, exportCajas, setFilters, clearFilters };
+export { fetchCantidadCajas, fetchCajas, exportCajas, setFilters, clearFilters, clearState };
 
 //export default slice.reducer;
 export default slice.reducer as Reducer<typeof initialState>;

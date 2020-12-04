@@ -237,7 +237,7 @@ const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATUR
   const fechaHasta = inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()) : null;
 
   const añosVencimiento = getState().cajas.edicion.data.añosVencimiento!;
-  const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format('YYYY-MM-DD') : null;
+  const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format() : null;
 
   // Mapeo de la solicitud
   const requestData: ModificarCajaRequestBody = {
@@ -249,8 +249,8 @@ const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATUR
     descripcion: inputs.descripcion!,
     restringida: inputs.restringida!,
     fechaVencimiento,
-    fechaDesde: fechaDesde && fechaDesde.format('YYYY-MM-DD'),
-    fechaHasta: fechaHasta && fechaHasta.format('YYYY-MM-DD'),
+    fechaDesde: fechaDesde && fechaDesde.format(),
+    fechaHasta: fechaHasta && fechaHasta.format(),
   };
 
   // Configuracion del servicio
@@ -332,15 +332,6 @@ const slice = createSlice({
       .addCase(fetchInfoCaja.fulfilled, (state, action) => {
         state.loading = { ...state.loading, caja: false };
         state.data.caja = action.payload;
-        /*   state.info = {
-          caja: state.data.caja.id,
-          estado: state.data.caja.estado,
-          usuario: { nombre: state.data.caja.nombre, legajo: state.data.caja.legajo },
-          sector: { nombre: state.data.caja.nombreSector, id: state.data.caja.idSectorOrigen },
-          fechaGeneracion: state.data.caja.fechaGeneracion,
-          fechaModificacion: state.data.caja.fechaUltimaTransicion,
-          fechaVencimiento: state.data.caja.fechaVencimiento,
-        }; */
       })
       .addCase(fetchInfoCaja.rejected, (state, action) => {
         state.loading = { ...state.loading, caja: false, datos: false };

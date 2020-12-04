@@ -3,7 +3,11 @@
 @import (reference) '~src/styles/global.less';
 @import (reference) '~src/components/app/style.module.less';
 
-.contentInfo {
-  align-self: flex-start;
-  // margin-bottom: 15px !important;
+.badge {
+  :global(.ant-badge-count) {
+    background-color: @primary-color !important;
+  }
+}
+
+.cart {
 }

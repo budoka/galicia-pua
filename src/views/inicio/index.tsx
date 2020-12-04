@@ -2,28 +2,58 @@ import { Col, Row } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { ReactNode, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { ContentHeaderWithCart } from 'src/components/app';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/interfaces';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
+import { clearState, fetchCantidadCajas } from 'src/features/cajas/cajas-pendientes/cajas-pendientes.slice';
+import { CantidadCajas } from 'src/features/cajas/cajas-pendientes/types';
+import { RootState } from 'src/reducers';
+import { useAppDispatch } from 'src/store';
 import { views } from 'src/views';
 import styles from './style.module.less';
 
-export const Inicio: React.FC = (props) => {
+export const Inicio: React.FC = React.memo((props) => {
   const className = classNames(styles.wrapper, styles.header);
 
+  const dispatch = useAppDispatch();
+  const cajasPendientes = useSelector((state: RootState) => state.cajas.pendientes);
+  const cantidadCajas = cajasPendientes.data.cantidad as CantidadCajas;
+
+  useEffect(() => {
+    dispatch(fetchCantidadCajas({ filters: { estado: 'PendienteCierre' }, key: 'pendientesCierre' }));
+    dispatch(fetchCantidadCajas({ filters: { estado: 'PendienteRecepcion' }, key: 'pendientesDevolucion' }));
+    return () => {
+      dispatch(clearState());
+    };
+  }, []);
+
+  console.log(cajasPendientes.loading.cantidadCajas);
   const cards: IListCard[] = [
     {
       title: Texts.BOXES,
       items: [
-        { description: Texts.PENDING_CLOSE, count: 20, path: views['Cajas'].path, query: '?estado=PendienteCierre' },
-        { description: Texts.PENDING_RETURN, count: 5, path: views['Cajas'].path, query: '?estado=PendienteRecepcion' },
+        {
+          description: Texts.PENDING_CLOSE,
+          loading: cajasPendientes.loading.cantidadCajas,
+          count: cantidadCajas && cantidadCajas.pendientesCierre,
+          path: views['Cajas'].path,
+          query: '?estado=PendienteCierre',
+        },
+        {
+          description: Texts.PENDING_RETURN,
+          loading: cajasPendientes.loading.cantidadCajas,
+          count: cantidadCajas && cantidadCajas.pendientesDevolucion,
+          path: views['Cajas'].path,
+          query: '?estado=PendienteRecepcion',
+        },
       ],
     },
     {
       title: Texts.DOCUMENTS,
-      items: [{ description: Texts.PENDING_RETURN, count: 200 }],
+      items: [{ description: Texts.PENDING_RETURN, loading: true, count: 200 }],
     },
     {
       title: Texts.ORDERS,
@@ -60,16 +90,18 @@ export const Inicio: React.FC = (props) => {
   };
 
   const renderColumn = (card: ReactNode, key: React.Key) => {
+    const className = classNames(styles.column);
     return (
-      <Col key={key} className={styles.column}>
+      <Col key={key} className={className}>
         {card}
       </Col>
     );
   };
 
   const renderRow = (column: ReactNode, key: React.Key) => {
+    const className = classNames(styles.row);
     return (
-      <Row key={key} justify="center" style={{ width: '100%' }}>
+      <Row key={key} gutter={[16, 16]} className={className} justify="center" style={{ width: '100%' }}>
         {column}
       </Row>
     );
@@ -89,8 +121,9 @@ export const Inicio: React.FC = (props) => {
   };
 
   return (
-    <Wrapper contentWrapper className={className} unselectable direction="row" horizontal="center" vertical="full-height">
+    <Wrapper contentWrapper className={className} unselectable horizontal="center" vertical="full-height">
+      <ContentHeaderWithCart />
       {renderCards(2)}
     </Wrapper>
   );
-};
+});

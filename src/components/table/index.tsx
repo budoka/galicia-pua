@@ -5,11 +5,11 @@ import { LabeledValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { SorterResult, TableCurrentDataSource, TablePaginationConfig, TableRowSelection } from 'antd/lib/table/interface';
 import classNames from 'classnames';
-import _ from 'lodash';
+import _, { forEach } from 'lodash';
 import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { Texts } from 'src/constants/texts';
-import { IElement } from 'src/types';
+import { IElement, ObjectLiteral } from 'src/types';
 import { compare } from 'src/utils/string';
 import { Wrapper } from '../wrapper';
 import { Cell, ICellProps } from './cell';
@@ -211,7 +211,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             },
       } as IColumn<RecordType>;
     });
-
+    console.log(columns);
     return columns;
   }, [state, props.columns]);
 
@@ -341,8 +341,29 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       if (state.action.current === 'adding') message.success(Texts.SAVE_REGISTRY_SUCCESS);
       else if (state.action.current === 'editing') message.success(Texts.UPDATE_REGISTRY_SUCCESS);
     } catch (err) {
-      // console.log('Validate Failed:', err);
-      message.error(Texts.FIELDS_VALIDATION_FAILURE + ': ' + err.errorFields.map((f: any) => f.name).join(', '));
+      console.log('Validate Failed:', err);
+
+      const map = new Map<string, string>();
+
+      const columnsKey: string[] = err.errorFields.map((f: any) => f.name[0]);
+
+      columnsKey.forEach((key) => map.set(key, ''));
+
+      columns &&
+        columns.forEach((c) => {
+          const hasKey = map.has(`${c.key}`);
+          if (hasKey) map.set(`${c.key}`, c.title?.toString()!);
+        });
+
+      const columnsName = Array.from(map.values());
+      const renderColumns = columnsName.map((column) => <Tag color="red">{column}</Tag>);
+      message.error(
+        <>
+          {Texts.FIELDS_VALIDATION_FAILURE + ': '}
+          {renderColumns}
+        </>,
+      );
+      //  message.error(Texts.FIELDS_VALIDATION_FAILURE + ': ' + columnsName.join(', '));
     }
   };
 

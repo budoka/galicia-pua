@@ -9,8 +9,9 @@ type Horizontal = 'left' | 'center' | 'right' | 'full-width';
 type Vertical = 'top' | 'middle' | 'bottom' | 'full-height';
 type Visible = 'auto' | 'show' | 'hide';
 
-interface WrapperProps extends BasicComponenetProps<HTMLDivElement> {
+interface WrapperProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'className' | 'style'> {
   contentWrapper?: boolean;
+  contentBody?: boolean;
   unselectable?: boolean;
   direction?: Direction;
   horizontal?: Horizontal;
@@ -22,10 +23,24 @@ interface WrapperProps extends BasicComponenetProps<HTMLDivElement> {
 }
 
 export const Wrapper: React.FC<WrapperProps> = (props) => {
-  const { contentWrapper, className, unselectable, direction, horizontal, vertical, scroll, shadow, fixed, sticky, ...restProps } = props;
+  const {
+    contentWrapper,
+    contentBody,
+    className,
+    unselectable,
+    direction,
+    horizontal,
+    vertical,
+    scroll,
+    shadow,
+    fixed,
+    sticky,
+    ...restProps
+  } = props;
 
   const wrapperClassName = classNames(
     contentWrapper && styles.wrapper,
+    contentBody && styles.body,
     className,
     unselectable && 'unselectable',
     direction ? styles[direction] : styles.column,

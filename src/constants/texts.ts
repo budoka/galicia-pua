@@ -56,7 +56,7 @@ export enum Texts {
   SAVE_REGISTRY_SUCCESS = 'Registro agregado correctamente',
   UPDATE_REGISTRY_SUCCESS = 'Registro actualizado correctamente',
   SAVE_REGISTRY_FAILURE = 'Registro agregado correctamente',
-  FIELDS_VALIDATION_FAILURE = 'Error al validar los campos',
+  FIELDS_VALIDATION_FAILURE = 'Error al validar',
   YEAR = 'Año',
   YEARS = 'Años',
   MONTH = 'Mes',
