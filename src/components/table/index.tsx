@@ -1,7 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Button, Form, message, Popconfirm, Tag } from 'antd';
 import { Rule } from 'antd/lib/form';
-import { LabeledValue } from 'antd/lib/select';
+import { LabeledValue, SelectValue } from 'antd/lib/select';
 import TableAnt, { ColumnsType, ColumnType, TableProps } from 'antd/lib/table';
 import { SorterResult, TableCurrentDataSource, TablePaginationConfig, TableRowSelection } from 'antd/lib/table/interface';
 import classNames from 'classnames';
@@ -33,6 +33,7 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
   inputType?: InputType;
   options?: LabeledValue[];
   rules?: Rule[];
+  onSelectChange?: (value: SelectValue, option: LabeledValue | any) => void;
   // required?: boolean;
   // order?: number;
   //minWidth?: number;
@@ -185,13 +186,15 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           const dataIndex = col.dataIndex as string;
           const { forceEditing, editable, inputType, options, rules } = col;
 
-          const shouldFocusInput = !isInputFocused && editable && isEditing(record);
+          const value = inputType === 'select' && options && options.length === 1 ? options[0].value : record[dataIndex];
+          const shouldFocusInput = !isInputFocused && !!editable && isEditing(record) && (value === '' || value === undefined);
+
           if (shouldFocusInput) isInputFocused = true;
 
           return {
             key: dataIndex,
-            dataIndex: dataIndex,
-            value: record[dataIndex],
+            dataIndex,
+            value,
             editing: forceEditing || (editable && isEditing(record)),
             inputType,
             options,
@@ -200,6 +203,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             hasFeedback: true,
             form,
             style: col.style,
+            onSelectChange: col.onSelectChange,
           } as ICellProps;
         },
         render: col.render
@@ -218,6 +222,10 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   useEffect(() => {
     // console.log(state);
   }, [state]);
+
+  useEffect(() => {
+    console.log(form);
+  }, [form]);
 
   useEffect(() => {
     if (state.action.current === 'idle') form.resetFields();
@@ -299,13 +307,13 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const isEditing = (record: RecordType) => record.key === state.editingRow.current;
 
   const handleAddRecord = () => {
-    if (dataSource.length === 0) return;
+    if (!setData) return;
 
     const key = dataSource.length + 1;
     const record: RecordType = { key } as RecordType;
     const sort: SorterResult<RecordType> = { columnKey: 'key', order: undefined };
 
-    setData!([...dataSource, record]);
+    setData([...dataSource, record]);
 
     setState((prev) => ({
       ...prev,
@@ -356,7 +364,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         });
 
       const columnsName = Array.from(map.values());
-      const renderColumns = columnsName.map((column) => <Tag color="red">{column}</Tag>);
+      const renderColumns = columnsName.map((column) => (
+        <Tag key={column} color="red">
+          {column}
+        </Tag>
+      ));
       message.error(
         <>
           {Texts.FIELDS_VALIDATION_FAILURE + ': '}

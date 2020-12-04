@@ -64,7 +64,7 @@ const reglas: Reglas = {
       required: true,
     },
   ],
-  fechaVigencia: [
+  fechaContenido: [
     {
       required: true,
     },
@@ -84,6 +84,8 @@ const tailLayout = {
   wrapperCol: { offset: layout.labelCol.span, span: layout.wrapperCol.span },
 };
 
+const columnsConfig = { width: 150 };
+
 export const IngresarCaja: React.FC = (props) => {
   const [form] = useForm<Inputs>();
 
@@ -93,6 +95,18 @@ export const IngresarCaja: React.FC = (props) => {
 
   const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
+
+  const documentColumn = {
+    key: 'document',
+    dataIndex: 'document',
+    title: 'Documento',
+    inputType: 'select',
+    rules: [{ required: true }],
+    editable: true,
+    width: columnsConfig.width,
+    align: 'center',
+    sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
+  } as IColumn<ContenidoCaja>;
 
   // useEffects
 
@@ -117,15 +131,18 @@ export const IngresarCaja: React.FC = (props) => {
     if ('inclusiones' in preview[0]) {
       const previewDocumento: VistaPreviaCajaDocumento[] = preview as VistaPreviaCajaDocumento[];
 
-      const columns: IColumn<ContenidoCaja>[] = previewDocumento[0].inclusiones.map((preview, index) => {
+      let columns: IColumn<ContenidoCaja>[] = previewDocumento[0].inclusiones.map((preview, index) => {
         const title = splitStringByWords(preview.descripcion.split('Inclusion')[1])?.join(' ');
 
         return {
           id: preview.descripcion,
           title,
+          width: columnsConfig.width,
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
         } as IColumn<ContenidoCaja>;
       });
+
+      columns = [documentColumn, ...columns];
 
       setColumns(columns);
     } else if ('idPlantilla' in preview[0]) {
@@ -160,7 +177,7 @@ export const IngresarCaja: React.FC = (props) => {
   const handleTipoCaja = () => {
     const tipoCaja: Filtro = form.getFieldsValue().tipoCaja!;
 
-    const fieldsToReset = ['tipoContenido', 'tipoPlantilla', 'fechaVigencia', 'descripcion', 'restringida'];
+    const fieldsToReset = ['tipoContenido', 'tipoPlantilla', 'fechaContenido', 'descripcion', 'restringida'];
     form.resetFields(fieldsToReset);
 
     dispatch(setInputs({ tipoCaja }));
@@ -177,7 +194,7 @@ export const IngresarCaja: React.FC = (props) => {
     else if (label === CAJA_DETALLE) tipoContenido.value = 1;
     else if (label === CAJA_DOCUMENTO) tipoContenido.value = 2;
 
-    const fieldsToReset = ['tipoPlantilla', 'fechaVigencia', 'descripcion', 'restringida'];
+    const fieldsToReset = ['tipoPlantilla', 'fechaContenido', 'descripcion', 'restringida'];
     form.resetFields(fieldsToReset);
 
     const { tipoCaja } = ingresarCajas.inputs;
@@ -188,7 +205,7 @@ export const IngresarCaja: React.FC = (props) => {
         setUI({
           ...ingresarCajas.ui,
           selectTipoPlantilla: { visible: true },
-          datePickerFechaVigencia: { visible: false },
+          datePickerFechaContenido: { visible: false },
           inputDescripcion: { visible: false },
           checkboxRestringida: { visible: false },
           vistaPrevia: { visible: false },
@@ -201,7 +218,7 @@ export const IngresarCaja: React.FC = (props) => {
         setUI({
           ...ingresarCajas.ui,
           selectTipoPlantilla: { visible: false },
-          datePickerFechaVigencia: { visible: true },
+          datePickerFechaContenido: { visible: true },
           inputDescripcion: { visible: false },
           checkboxRestringida: { visible: false },
           vistaPrevia: { visible: true },
@@ -213,7 +230,7 @@ export const IngresarCaja: React.FC = (props) => {
         setUI({
           ...ingresarCajas.ui,
           selectTipoPlantilla: { visible: false },
-          datePickerFechaVigencia: { visible: false },
+          datePickerFechaContenido: { visible: false },
           inputDescripcion: { visible: true },
           checkboxRestringida: { visible: true },
           vistaPrevia: { visible: true },
@@ -226,21 +243,21 @@ export const IngresarCaja: React.FC = (props) => {
   const handleTipoPlantilla = (fieldValue: any) => {
     const tipoPlantilla: Filtro = form.getFieldsValue().tipoPlantilla!;
 
-    const { tipoCaja, tipoContenido, fechaVigencia } = ingresarCajas.inputs;
-    dispatch(setInputs({ tipoCaja, tipoContenido, tipoPlantilla, fechaVigencia }));
+    const { tipoCaja, tipoContenido, fechaContenido } = ingresarCajas.inputs;
+    dispatch(setInputs({ tipoCaja, tipoContenido, tipoPlantilla, fechaContenido }));
     dispatch(
       setUI({
         ...ingresarCajas.ui,
-        datePickerFechaVigencia: { visible: true },
+        datePickerFechaContenido: { visible: true },
         vistaPrevia: { visible: true },
       }),
     );
   };
 
-  const handleFechaVigencia = (fieldValue: any) => {
-    const fechaVigencia = fieldValue ? (fieldValue as moment.Moment[]).map((f) => f.toISOString()) : null;
+  const handleFechaContenido = (fieldValue: any) => {
+    const fechaContenido = fieldValue ? (fieldValue as moment.Moment[]).map((f) => f.toISOString()) : null;
     const { tipoCaja, tipoContenido, tipoPlantilla } = ingresarCajas.inputs;
-    dispatch(setInputs({ tipoCaja, tipoContenido, tipoPlantilla, fechaVigencia }));
+    dispatch(setInputs({ tipoCaja, tipoContenido, tipoPlantilla, fechaContenido }));
     dispatch(
       setUI({
         ...ingresarCajas.ui,
@@ -250,7 +267,7 @@ export const IngresarCaja: React.FC = (props) => {
         buttonCrear: { visible: true },
       }),
     );
-    if (fechaVigencia) dispatch(fetchAñosVencimiento({ tipoCaja, tipoContenido }));
+    if (fechaContenido) dispatch(fetchAñosVencimiento({ tipoCaja, tipoContenido }));
   };
 
   const handleForm = () => {
@@ -330,8 +347,8 @@ export const IngresarCaja: React.FC = (props) => {
           </Form.Item>
         )}
 
-        {ingresarCajas.ui?.datePickerFechaVigencia?.visible && (
-          <Form.Item label={Texts.EFFECTIVE_DATE} name={'fechaVigencia'} rules={reglas['fechaVigencia']} required>
+        {ingresarCajas.ui?.datePickerFechaContenido?.visible && (
+          <Form.Item label={Texts.CONTENT_DATE} name={'fechaContenido'} rules={reglas['fechaContenido']} required>
             <RangePicker
               style={{ width: '100%' }}
               format={DATE_DD_MM_YYYY_FORMAT}
@@ -343,22 +360,23 @@ export const IngresarCaja: React.FC = (props) => {
                 [`1 ${Texts.YEAR}`]: [moment(), moment().add(1, 'year')],
               }}
               allowClear
-              onChange={handleFechaVigencia}
+              onChange={handleFechaContenido}
             />
           </Form.Item>
         )}
 
-        {ingresarCajas.ui?.labelFechaVencimiento?.visible && (ingresarCajas.inputs.fechaVigencia || ingresarCajas.loading.añosVencimiento) && (
-          <Form.Item name={'fechaVigencia'} wrapperCol={{ offset: layout.labelCol.span }}>
-            {ingresarCajas.loading.añosVencimiento ? (
-              <Loading text={Texts.GET_EXPIRATION_DATE} />
-            ) : (
-              <Text strong>{`${Texts.EXPIRATION_DATE}:  ${moment(ingresarCajas.inputs.fechaVigencia![1])
-                .add(ingresarCajas.data.añosVencimiento, 'year')
-                .format(DATE_DD_MM_YYYY_FORMAT)}`}</Text>
-            )}
-          </Form.Item>
-        )}
+        {ingresarCajas.ui?.labelFechaVencimiento?.visible &&
+          (ingresarCajas.inputs.fechaContenido || ingresarCajas.loading.añosVencimiento) && (
+            <Form.Item name={'fechaContenido'} wrapperCol={{ offset: layout.labelCol.span }}>
+              {ingresarCajas.loading.añosVencimiento ? (
+                <Loading text={Texts.GET_EXPIRATION_DATE} />
+              ) : (
+                <Text strong>{`${Texts.EXPIRATION_DATE}:  ${moment(ingresarCajas.inputs.fechaContenido![1])
+                  .add(ingresarCajas.data.añosVencimiento, 'year')
+                  .format(DATE_DD_MM_YYYY_FORMAT)}`}</Text>
+              )}
+            </Form.Item>
+          )}
 
         {ingresarCajas.ui?.inputDescripcion?.visible && (
           <Form.Item label={Texts.DESCRIPTION} name={'descripcion'}>

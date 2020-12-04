@@ -23,13 +23,12 @@ export function inferType(dataType: DataType) {
 }
 
 export function inferPattern(dataType: DataType) {
-  console.log(dataType);
   switch (dataType) {
     case 'texto':
-      return Pattern.OnlyWords;
+      return Pattern.ONLY_WORDS;
     case 'entero':
-      return Pattern.OnlyNumbers;
+      return Pattern.ONLY_NUMBERS;
     default:
-      return undefined;
+      return Pattern.ANY;
   }
 }

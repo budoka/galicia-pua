@@ -35,7 +35,7 @@ export enum Texts {
   EXPIRATION_DATE = 'Fecha de vencimiento',
   CREATION_DATE = 'Fecha de generación',
   MODIFICATION_DATE = 'Fecha de modificación',
-  EFFECTIVE_DATE = 'Fecha de vigencia',
+  CONTENT_DATE = 'Fecha de Contenido',
   BOX = 'Caja',
   BOXES = 'Cajas',
   NA = 'N/A',

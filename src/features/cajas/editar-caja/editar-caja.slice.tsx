@@ -233,8 +233,8 @@ const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 't
 const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_NAME + '/updateCaja', async (inputs, thunkApi) => {
   const { dispatch, getState } = thunkApi;
 
-  const fechaDesde = inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()) : null;
-  const fechaHasta = inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()) : null;
+  const fechaDesde = inputs.fechaContenido && inputs.fechaContenido.length > 0 ? dayjs(inputs.fechaContenido[0].toString()) : null;
+  const fechaHasta = inputs.fechaContenido && inputs.fechaContenido.length > 1 ? dayjs(inputs.fechaContenido[1].toString()) : null;
 
   const añosVencimiento = getState().cajas.edicion.data.añosVencimiento!;
   const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format() : null;

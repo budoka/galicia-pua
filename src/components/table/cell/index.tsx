@@ -2,6 +2,7 @@ import { CheckOutlined, MinusOutlined } from '@ant-design/icons';
 import { Checkbox, DatePicker, Input, Select } from 'antd';
 import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
+import { SelectValue } from 'antd/lib/tree-select';
 import classNames from 'classnames';
 import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
@@ -22,18 +23,36 @@ export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElemen
   hasFocus?: boolean;
   hasFeedback?: boolean;
   rules?: Rule[];
+  onSelectChange?: (value: SelectValue, option: LabeledValue | any) => void;
 }
 
-export const Cell = (props: ICellProps) => {
-  const { dataIndex, value, title, editing, inputType, options, hasFocus, hasFeedback, rules, children, ...restProps } = props;
+export const Cell = React.memo((props: ICellProps) => {
+  const {
+    dataIndex,
+    value,
+    title,
+    editing,
+    inputType,
+    options,
+    hasFocus,
+    hasFeedback,
+    rules,
+    children,
+    onSelectChange,
+    ...restProps
+  } = props;
 
   const cellRef = useRef<HTMLTableDataCellElement>(null);
 
   const className = classNames(styles.cell, props.className);
 
-  /* useEffect(() => {
+  /*   useEffect(() => {
     console.log('rendering cell');
-  });*/
+  }); */
+
+  useEffect(() => {
+    console.log(value);
+  }, [value]);
 
   useEffect(() => {
     if (hasFocus) {
@@ -86,7 +105,7 @@ export const Cell = (props: ICellProps) => {
   const renderSelect = () => {
     if (editing)
       return (
-        <Select showSearch showAction={['focus', 'click']} optionFilterProp="title">
+        <Select showSearch showAction={['focus', 'click']} optionFilterProp="title" onChange={onSelectChange}>
           {renderOptions()}
         </Select>
       );
@@ -146,6 +165,7 @@ export const Cell = (props: ICellProps) => {
     <td {...restProps} className={className} title={title} ref={cellRef} onFocus={scrollOnFocus}>
       {editing ? (
         <Form.Item
+          initialValue={inputType === 'select' && options && options.length === 1 ? options[0].value : undefined}
           name={dataIndex}
           style={{ margin: 0, padding: 0 }}
           rules={rules}
@@ -158,4 +178,4 @@ export const Cell = (props: ICellProps) => {
       )}
     </td>
   );
-};
+});

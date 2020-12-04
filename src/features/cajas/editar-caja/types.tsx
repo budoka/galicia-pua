@@ -68,7 +68,7 @@ export interface CajaDetalleColumna {
 }
 
 export interface CajaEtiqueta extends IElement {
-  id: number; // Se va a quitar
+  // id: number; // Se va a quitar
   idEtiqueta: number;
 }
 
@@ -107,7 +107,7 @@ export interface VistaPreviaCajaEtiqueta {
   version: number;
 }
 
-export type FechaVigencia = (string | moment.Moment)[];
+export type FechaContenido = (string | moment.Moment)[];
 
 export interface FetchedData {
   caja?: Caja | null;
@@ -123,7 +123,7 @@ export interface Inputs {
   tipoCaja?: Filtro | null;
   tipoContenido?: Filtro | null;
   tipoPlantilla?: Filtro | null;
-  fechaVigencia?: FechaVigencia | null;
+  fechaContenido?: FechaContenido | null;
   descripcion?: string | null;
   restringida?: number | null;
 }
@@ -152,7 +152,7 @@ export interface Loading {
 export interface UIState {
   selectTipoContenido?: { visible: boolean };
   selectTipoPlantilla?: { visible: boolean };
-  datePickerFechaVigencia?: { visible: boolean };
+  datePickerFechaContenido?: { visible: boolean };
   labelFechaVencimiento?: { visible: boolean };
   inputDescripcion?: { visible: boolean };
   checkboxRestringida?: { visible: boolean };

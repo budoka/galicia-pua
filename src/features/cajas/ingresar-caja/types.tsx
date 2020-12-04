@@ -49,7 +49,7 @@ export interface VistaPreviaCajaEtiqueta {
   version: number;
 }
 
-export type FechaVigencia = string[];
+export type FechaContenido = string[];
 
 export interface FetchedData {
   tiposCaja?: TiposCaja;
@@ -63,7 +63,7 @@ export interface Inputs {
   tipoCaja?: Filtro | null;
   tipoContenido?: Filtro | null;
   tipoPlantilla?: Filtro | null;
-  fechaVigencia?: FechaVigencia | null;
+  fechaContenido?: FechaContenido | null;
   descripcion?: string | null;
   restringida?: number | null;
 }
@@ -80,7 +80,7 @@ export interface Loading {
 export interface UIState {
   selectTipoContenido?: { visible: boolean };
   selectTipoPlantilla?: { visible: boolean };
-  datePickerFechaVigencia?: { visible: boolean };
+  datePickerFechaContenido?: { visible: boolean };
   labelFechaVencimiento?: { visible: boolean };
   inputDescripcion?: { visible: boolean };
   checkboxRestringida?: { visible: boolean };

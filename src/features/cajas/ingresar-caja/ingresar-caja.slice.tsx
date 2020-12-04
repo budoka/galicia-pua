@@ -10,7 +10,7 @@ import { goTo } from 'src/utils/history';
 import { splitStringByWords } from 'src/utils/string';
 import {
   AñosVencimiento,
-  FechaVigencia,
+  FechaContenido,
   Filtro,
   GuardarCajaRequestBody,
   GuardarCajaResponseBody,
@@ -207,8 +207,8 @@ const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 't
 const saveCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_NAME + '/saveCaja', async (inputs, thunkApi) => {
   const { dispatch, getState } = thunkApi;
 
-  const fechaDesde = inputs.fechaVigencia && inputs.fechaVigencia.length > 0 ? dayjs(inputs.fechaVigencia[0].toString()) : null;
-  const fechaHasta = inputs.fechaVigencia && inputs.fechaVigencia.length > 1 ? dayjs(inputs.fechaVigencia[1].toString()) : null;
+  const fechaDesde = inputs.fechaContenido && inputs.fechaContenido.length > 0 ? dayjs(inputs.fechaContenido[0].toString()) : null;
+  const fechaHasta = inputs.fechaContenido && inputs.fechaContenido.length > 1 ? dayjs(inputs.fechaContenido[1].toString()) : null;
 
   const añosVencimiento = getState().cajas.creacion.data.añosVencimiento!;
   const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format() : null;
@@ -366,7 +366,7 @@ const slice = createSlice({
 });
 
 const {
-  /* setTipoCaja, setTipoContenido, setTipoPlantilla, setFechaVigencia, */ setInputs,
+  /* setTipoCaja, setTipoContenido, setTipoPlantilla, setFechaContenido, */ setInputs,
   clearInputs,
   setUI,
   clearUI,
@@ -377,7 +377,7 @@ export {
   /*   setTipoCaja,
   setTipoContenido,
   setTipoPlantilla,
-  setFechaVigencia, */
+  setFechaContenido, */
   setInputs,
   clearInputs,
   setUI,
