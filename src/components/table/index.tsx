@@ -11,8 +11,9 @@ import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
 import { Texts } from 'src/constants/texts';
 import { IElement, ObjectLiteral } from 'src/types';
 import { compare } from 'src/utils/string';
+import { isMoment } from 'moment';
 import { Wrapper } from '../wrapper';
-import { Cell, ICellProps } from './cell';
+import { Cell, CellProps } from './cell';
 import { Column } from './column';
 import { AddButton } from './extra/add-button';
 import { DeleteButton } from './extra/delete-button';
@@ -20,14 +21,16 @@ import { ExportButton } from './extra/export-button';
 import { RecordsCounter } from './extra/record-counter-tag';
 import { RefreshButton } from './extra/refresh-button';
 import styles from './style.module.less';
+import moment from 'moment';
 
 export type InputType = 'text' | 'date' | 'select' | 'checkbox';
-export type Action = 'idle' | 'adding' | 'editing' | 'deleting';
+export type TableAction = 'idle' | 'adding' | 'editing' | 'deleting';
 export type ActionNode = 'add-button' | 'delete-button' | 'refresh-button' | 'records-count-tag';
 export type Position = 'top' | 'bottom' | 'both';
 
 // Column properties
-export interface IColumn<RecordType> extends ColumnType<RecordType> {
+export interface ColumnTypeEx<RecordType> extends ColumnType<RecordType> {
+  validationTitle?: string;
   editable?: boolean;
   forceEditing?: boolean;
   inputType?: InputType;
@@ -41,7 +44,7 @@ export interface IColumn<RecordType> extends ColumnType<RecordType> {
 }
 
 // Table properties
-export interface ITableProps<RecordType> extends TableProps<RecordType> {
+export interface TablePropsEx<RecordType> extends TableProps<RecordType> {
   sortable?: boolean;
   hideRowSelection?: boolean;
   hidePagination?: boolean;
@@ -57,11 +60,12 @@ export interface ITableProps<RecordType> extends TableProps<RecordType> {
     order?: (number | null)[];
     style?: CSSProperties;
   }[];
-  setData?: React.Dispatch<React.SetStateAction<RecordType[]>>;
+  onDataChange?: (records: RecordType[]) => void;
+  onActionChange?: (action: TableAction, data: RecordType[], columnKey?: React.Key) => void;
 }
 
 interface TableState<RecordType> {
-  action: { previous?: Action; current?: Action };
+  action: { previous?: TableAction; current: TableAction };
   currentPage: number;
   editingRow: { previous?: React.Key; current?: React.Key };
   pageSize: number;
@@ -69,7 +73,7 @@ interface TableState<RecordType> {
   sort: SorterResult<RecordType>[];
 }
 
-export const Table = <RecordType extends IElement = any>(props: ITableProps<RecordType>) => {
+export const Table = <RecordType extends IElement = any>(props: TablePropsEx<RecordType>) => {
   const [form] = Form.useForm();
 
   const [state, setState] = useState<TableState<RecordType>>({
@@ -94,7 +98,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           compare: (a, b) => compare(+a.key, +b.key),
           multiple: -1,
         },
-      } as IColumn<RecordType>),
+      } as ColumnTypeEx<RecordType>),
     [],
   );
 
@@ -106,13 +110,14 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
         title: Texts.ACTIONS,
         fixed: 'right',
         width: 210,
-      } as IColumn<RecordType>),
+      } as ColumnTypeEx<RecordType>),
     [],
   );
 
   const className = classNames(styles.tableWrapper, UNSELECTABLE, SHADOW, props.className);
   const {
-    setData,
+    onDataChange,
+    onActionChange,
     extraColumns,
     extraComponents,
     sortable,
@@ -126,7 +131,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
   const dataSource = props.dataSource ?? [];
 
   const columns = React.useMemo(() => {
-    let columns = props.columns;
+    let columns: ColumnTypeEx<RecordType>[] = props.columns as ColumnTypeEx<RecordType>[];
     if (!columns || columns.length === 0) return;
 
     if (extraColumns?.showKeyColumn) columns = [keyColumn, ...columns];
@@ -139,12 +144,12 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           style: {
             /*  border: 'none' backgroundColor: '#fafafa'*/
           },
-        } as IColumn<RecordType>,
+        } as ColumnTypeEx<RecordType>,
       ];
 
     let isInputFocused = false;
 
-    columns = (columns as IColumn<RecordType>[]).map((col, index) => {
+    columns = (columns as ColumnTypeEx<RecordType>[]).map((col, index) => {
       return {
         ...col,
         align: 'center',
@@ -177,7 +182,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
           return shouldUpdate;
         },
-        onHeaderCell: (column: IColumn<RecordType>) => {
+        onHeaderCell: (column: ColumnTypeEx<RecordType>) => {
           return {
             style: { fontWeight: 'bold' },
           };
@@ -186,7 +191,11 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
           const dataIndex = col.dataIndex as string;
           const { forceEditing, editable, inputType, options, rules } = col;
 
-          const value = inputType === 'select' && options && options.length === 1 ? options[0].value : record[dataIndex];
+          // Change focus to next empty field on select element has been selected.
+          const value =
+            inputType === 'select' && options && options.length === 1
+              ? options[0].value
+              : record[dataIndex] ?? form.getFieldValue(dataIndex);
           const shouldFocusInput = !isInputFocused && !!editable && isEditing(record) && (value === '' || value === undefined);
 
           if (shouldFocusInput) isInputFocused = true;
@@ -204,7 +213,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
             form,
             style: col.style,
             onSelectChange: col.onSelectChange,
-          } as ICellProps;
+          } as CellProps;
         },
         render: col.render
           ? col.render
@@ -213,15 +222,15 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
               else if (col.key === 'actions') return renderActionsColumn(record);
               else return value;
             },
-      } as IColumn<RecordType>;
+      } as ColumnTypeEx<RecordType>;
     });
     console.log(columns);
     return columns;
   }, [state, props.columns]);
 
   useEffect(() => {
-    // console.log(state);
-  }, [state]);
+    onActionChange && onActionChange(state.action.current, dataSource, state.editingRow.current);
+  }, [state.action.current]);
 
   useEffect(() => {
     console.log(form);
@@ -303,17 +312,17 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       });
   };
 
-  const isEditable = !!setData;
+  const isEditable = !!onDataChange;
   const isEditing = (record: RecordType) => record.key === state.editingRow.current;
 
   const handleAddRecord = () => {
-    if (!setData) return;
+    if (!onDataChange) return;
 
     const key = dataSource.length + 1;
     const record: RecordType = { key } as RecordType;
     const sort: SorterResult<RecordType> = { columnKey: 'key', order: undefined };
 
-    setData([...dataSource, record]);
+    onDataChange([...dataSource, record]);
 
     setState((prev) => ({
       ...prev,
@@ -338,7 +347,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       const records = [...dataSource];
       records[index] = { ...records[index], ...record };
 
-      setData!(records);
+      onDataChange!(records);
 
       setState((prev) => ({
         ...prev,
@@ -360,15 +369,19 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
       columns &&
         columns.forEach((c) => {
           const hasKey = map.has(`${c.key}`);
-          if (hasKey) map.set(`${c.key}`, c.title?.toString()!);
+          if (hasKey) map.set(`${c.key}`, c.validationTitle!);
         });
 
       const columnsName = Array.from(map.values());
-      const renderColumns = columnsName.map((column) => (
-        <Tag key={column} color="red">
-          {column}
-        </Tag>
-      ));
+      console.log(columnsName);
+      const renderColumns = columnsName.map((column, index) => {
+        console.log(column);
+        return (
+          <Tag key={index} color="red">
+            {column}
+          </Tag>
+        );
+      });
       message.error(
         <>
           {Texts.FIELDS_VALIDATION_FAILURE + ': '}
@@ -394,7 +407,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     if (dataSource.length === 0 || !isEditable) return;
     const records = _.reject(dataSource, (e) => _.includes(keys, e.key));
 
-    setData!(records);
+    onDataChange!(records);
 
     setState((prev) => ({
       ...prev,
@@ -409,7 +422,7 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
 
     if (state.action.current === 'adding') {
       const records = dataSource.slice(0, dataSource.length - 1);
-      setData!(records);
+      onDataChange!(records);
     }
 
     setState((prev) => ({
@@ -645,5 +658,3 @@ export const Table = <RecordType extends IElement = any>(props: ITableProps<Reco
     </Wrapper>
   );
 };
-
-export const MemoizedTable = React.memo<any>(Table);

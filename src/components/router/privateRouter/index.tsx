@@ -1,18 +1,23 @@
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router';
-import { getUser } from '../../../utils/store';
+import { InfoSesion } from 'src/features/sesion/types';
 
-export const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
+export interface PrivateRouteProps extends RouteProps {
+  session: InfoSesion;
+  loginRedirect: string;
+}
+
+export const PrivateRoute: React.FC<PrivateRouteProps> = ({ session, loginRedirect, children, ...rest }) => {
   return (
     <Route
       {...rest}
       render={({ location }) =>
-        getUser().user ? (
+        session.idUsuario ? (
           children
         ) : (
           <Redirect
             to={{
-              pathname: '/login',
+              pathname: loginRedirect,
               state: { from: location },
             }}
           />

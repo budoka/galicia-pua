@@ -3,8 +3,8 @@ import { message, Tag } from 'antd';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { ContentHeaderWithCart } from 'src/components/app';
-import { IColumn, Table } from 'src/components/table';
+import { ContentHeaderWithCart } from 'src/components/content-header';
+import { ColumnTypeEx, Table } from 'src/components/table';
 import { ExportButton } from 'src/components/table/extra/export-button';
 import { Wrapper } from 'src/components/wrapper';
 import { Texts } from 'src/constants/texts';
@@ -63,7 +63,7 @@ const columns = [
     width: 250,
     sorter: { compare: (a, b) => compare(a.usuario, b.usuario), multiple: -1 },
   },
-] as IColumn<DetalleCaja>[];
+] as ColumnTypeEx<DetalleCaja>[];
 
 export const Cajas: React.FC<CajasProps> = React.memo((props) => {
   const query = useQuery();

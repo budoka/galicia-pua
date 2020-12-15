@@ -2,10 +2,10 @@ import { ShoppingCartOutlined } from '@ant-design/icons';
 import { Badge, Button } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
-import { BasicComponenetProps } from 'src/types';
+import { BasicComponentProps } from 'src/types';
 import styles from './style.module.less';
 
-interface CartProps extends Pick<BasicComponenetProps<HTMLButtonElement>, 'className' | 'style' | 'onClick'> {
+interface CartProps extends Pick<BasicComponentProps<HTMLButtonElement>, 'className' | 'style' | 'onClick'> {
   count?: number;
 }
 

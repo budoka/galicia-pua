@@ -1,4 +1,4 @@
-import { Size } from 'src/types';
+import { Size } from './hooks';
 
 export type ScreenOrientation = 'portrait' | 'landscape';
 

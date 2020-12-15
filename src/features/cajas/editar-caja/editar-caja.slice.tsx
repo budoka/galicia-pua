@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction, Reducer } from '@reduxjs/toolkit';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { apis } from 'src/api/setup-apis';
+import { apis } from 'src/api/setup/setup-apis';
+import { RequestOptions } from 'src/api/types';
 import { CAJA_ETIQUETA, CAJA_DETALLE, CAJA_DOCUMENTO } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/utils/api';
@@ -40,20 +41,21 @@ const FEATURE_NAME = 'editarCaja';
 
 // Async actions
 
-const fetchInfoCaja = createAsyncThunk<Caja, string | number, { state: RootState }>(
+const fetchInfoCaja = createAsyncThunk<Caja, RequestOptions<string | number>, { state: RootState }>(
   FEATURE_NAME + '/fetchInfoCaja',
-  async (idCaja, thunkApi) => {
+  async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
+    const data = options.data!;
 
     // Mapeo de la solicitud
     const requestData: InfoCajaRequestBody = {
-      idCaja: +idCaja,
+      idCaja: +data,
     };
 
     // Configuracion del servicio
     const api = apis['CAJA'];
     const resource = api.resources['INFO_CAJA'];
-    const config = buildAxiosRequestConfig(api, resource, requestData);
+    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
     // Respuesta del servicio
     const response = await axios.request<InfoCajaResponseBody>(config);
@@ -66,44 +68,48 @@ const fetchInfoCaja = createAsyncThunk<Caja, string | number, { state: RootState
   },
 );
 
-const fetchTiposCaja = createAsyncThunk<TiposCaja, void, { state: RootState }>(FEATURE_NAME + '/fetchTiposCaja', async (_, thunkApi) => {
-  const { dispatch, getState } = thunkApi;
-
-  // Configuracion del servicio
-  const api = apis['TIPO_CAJA'];
-  const resource = api.resources['TIPO_CAJA'];
-  const config = buildAxiosRequestConfig(api, resource);
-
-  // Respuesta del servicio
-  const response = await axios.request<TiposCajaResponseBody>(config);
-  const responseData = response.data;
-
-  // Mapeo de la respuesta
-  const tiposCaja = responseData.map((tipoCaja) => {
-    return {
-      key: tipoCaja.id,
-      value: tipoCaja.id,
-      label: tipoCaja.descripcion,
-    };
-  }) as TiposCaja;
-
-  return tiposCaja;
-});
-
-const fetchTiposContenido = createAsyncThunk<TiposContenido, Filtro, { state: RootState }>(
-  FEATURE_NAME + '/fetchTiposContenido',
-  async (tipoCaja, thunkApi) => {
+const fetchTiposCaja = createAsyncThunk<TiposCaja, RequestOptions | undefined, { state: RootState }>(
+  FEATURE_NAME + '/fetchTiposCaja',
+  async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
+
+    // Configuracion del servicio
+    const api = apis['TIPO_CAJA'];
+    const resource = api.resources['TIPO_CAJA'];
+    const config = buildAxiosRequestConfig(api, resource, options);
+
+    // Respuesta del servicio
+    const response = await axios.request<TiposCajaResponseBody>(config);
+    const responseData = response.data;
+
+    // Mapeo de la respuesta
+    const tiposCaja = responseData.map((tipoCaja) => {
+      return {
+        key: tipoCaja.id,
+        value: tipoCaja.id,
+        label: tipoCaja.descripcion,
+      };
+    }) as TiposCaja;
+
+    return tiposCaja;
+  },
+);
+
+const fetchTiposContenido = createAsyncThunk<TiposContenido, RequestOptions<Filtro>, { state: RootState }>(
+  FEATURE_NAME + '/fetchTiposContenido',
+  async (options, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+    const data = options.data!;
 
     // Mapeo de la solicitud
     const requestData: TiposContenidoRequestBody = {
-      tipoCaja: tipoCaja.label?.toString()!, //|| getState().editarCajas.inputs.tipoCaja?.label?.toString()!,
+      tipoCaja: data.label?.toString()!, //|| getState().editarCajas.inputs.tipoCaja?.label?.toString()!,
     };
 
     // Configuracion del servicio
     const api = apis['TIPO_CAJA'];
     const resource = api.resources['TIPO_CONTENIDO'];
-    const config = buildAxiosRequestConfig(api, resource, requestData);
+    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
     // Respuesta del servicio
     const response = await axios.request<TiposContenidoResponseBody>(config);
@@ -127,9 +133,9 @@ const fetchTiposContenido = createAsyncThunk<TiposContenido, Filtro, { state: Ro
   },
 );
 
-const fetchTiposPlantilla = createAsyncThunk<TiposContenido, void, { state: RootState }>(
+const fetchTiposPlantilla = createAsyncThunk<TiposContenido, RequestOptions | undefined, { state: RootState }>(
   FEATURE_NAME + '/fetchTiposPlantilla',
-  async (_, thunkApi) => {
+  async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
 
     // Mapeo de la solicitud
@@ -140,7 +146,7 @@ const fetchTiposPlantilla = createAsyncThunk<TiposContenido, void, { state: Root
     // Configuracion del servicio
     const api = apis['PLANTILLAS_SECTOR'];
     const resource = api.resources['PLANTILLAS_SECTOR'];
-    const config = buildAxiosRequestConfig(api, resource, requestData);
+    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
     // Respuesta del servicio
     const response = await axios.request<TiposPlantillaResponseBody>(config);
@@ -159,116 +165,163 @@ const fetchTiposPlantilla = createAsyncThunk<TiposContenido, void, { state: Root
   },
 );
 
-const fetchVistaPrevia = createAsyncThunk<VistaPrevia, Pick<Inputs, 'tipoCaja' | 'tipoContenido' | 'tipoPlantilla'>, { state: RootState }>(
-  FEATURE_NAME + '/fetchVistaPrevia',
-  async (inputs, thunkApi) => {
-    const { dispatch, getState, rejectWithValue } = thunkApi;
-
-    // Mapeo de la solicitud
-    const requestData: VistaPreviaRequestBody = {
-      /*   idTipoCaja: +getState().editarCajas.inputs.tipoCaja?.value!,
-      idTipoContenido: +getState().editarCajas.inputs.tipoContenido?.value!,
-      idPlantilla: +getState().editarCajas.inputs.tipoPlantilla?.value!, */
-      idTipoCaja: +inputs.tipoCaja?.value!,
-      idTipoContenido: +inputs.tipoContenido?.value!,
-      idPlantilla: +inputs.tipoPlantilla?.value!,
-    };
-
-    // Configuracion del servicio
-    const api = apis['CAJA'];
-    const resource = api.resources['PREVIEW'];
-    const config = buildAxiosRequestConfig(api, resource, requestData);
-
-    // Respuesta del servicio
-    const response = await axios.request<VistaPreviaResponseBody>(config);
-    const responseData = response.data;
-
-    // Mapeo de la respuesta
-    // Type Guards # Cuando las response devuelvan el tipoContenido y idPlanilla, se debería corregir.
-
-    if (!responseData || !Array.isArray(responseData) || responseData.length === 0) {
-    } else if ('inclusiones' in responseData[0]) {
-      const vistaPreviaDocumento: VistaPreviaCajaDocumento[] = responseData as VistaPreviaCajaDocumento[];
-      return vistaPreviaDocumento;
-    } else if ('idPlantilla' in responseData[0]) {
-      const vistaPreviaDetalle: VistaPreviaCajaDetalle[] = responseData as VistaPreviaCajaDetalle[];
-      return vistaPreviaDetalle;
-    } else if ('legacy' in responseData[0]) {
-      const vistaPreviaEtiquetas: VistaPreviaCajaEtiqueta[] = responseData as VistaPreviaCajaEtiqueta[];
-      return vistaPreviaEtiquetas;
-    }
-    return rejectWithValue(null);
-  },
-);
-
-const fetchAñosVencimiento = createAsyncThunk<AñosVencimiento, Pick<Inputs, 'tipoCaja' | 'tipoContenido'>, { state: RootState }>(
-  FEATURE_NAME + '/fetchAñosVencimiento',
-  async (inputs, thunkApi) => {
-    const { dispatch, getState } = thunkApi;
-
-    // Mapeo de la solicitud
-    const requestData: VencimientoCajaRequestBody = {
-      /*   idTipoCaja: +getState().editarCajas.inputs.tipoCaja?.value!,
-      tipoContenido: getState().editarCajas.inputs.tipoContenido?.value.toString()!, */
-      idTipoCaja: +inputs.tipoCaja?.value!,
-      tipoContenido: inputs.tipoContenido?.label?.toString()!,
-    };
-
-    // Configuracion del servicio
-    const api = apis['TIPO_CAJA'];
-    const resource = api.resources['VENCIMIENTO_CAJA'];
-    const config = buildAxiosRequestConfig(api, resource, requestData);
-
-    // Respuesta del servicio
-    const response = await axios.request<VencimientoCajaResponseBody>(config);
-    const responseData = response.data;
-
-    // Mapeo de la respuesta
-    const añosVencimiento = responseData;
-
-    return añosVencimiento;
-  },
-);
-
-const updateCaja = createAsyncThunk<number, Inputs, { state: RootState }>(FEATURE_NAME + '/updateCaja', async (inputs, thunkApi) => {
-  const { dispatch, getState } = thunkApi;
-
-  const fechaDesde = inputs.fechaContenido && inputs.fechaContenido.length > 0 ? dayjs(inputs.fechaContenido[0].toString()) : null;
-  const fechaHasta = inputs.fechaContenido && inputs.fechaContenido.length > 1 ? dayjs(inputs.fechaContenido[1].toString()) : null;
-
-  const añosVencimiento = getState().cajas.edicion.data.añosVencimiento!;
-  const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format() : null;
+const fetchVistaPrevia = createAsyncThunk<
+  VistaPrevia,
+  RequestOptions<Pick<Inputs, 'tipoCaja' | 'tipoContenido' | 'tipoPlantilla'>>,
+  { state: RootState }
+>(FEATURE_NAME + '/fetchVistaPrevia', async (options, thunkApi) => {
+  const { dispatch, getState, rejectWithValue } = thunkApi;
+  const data = options.data!;
 
   // Mapeo de la solicitud
-  const requestData: ModificarCajaRequestBody = {
-    numero: getState().cajas.edicion.data.caja?.id!,
-    idTipoCaja: +inputs.tipoCaja?.value!,
-    //idTipoContenido: +inputs.tipoContenido?.value!,
-    tipoContenido: inputs.tipoContenido?.label?.toString()!,
-    idPlantilla: +inputs.tipoPlantilla?.value!,
-    descripcion: inputs.descripcion!,
-    restringida: inputs.restringida!,
-    fechaVencimiento,
-    fechaDesde: fechaDesde && fechaDesde.format(),
-    fechaHasta: fechaHasta && fechaHasta.format(),
+  const requestData: VistaPreviaRequestBody = {
+    /*   idTipoCaja: +getState().editarCajas.inputs.tipoCaja?.value!,
+      idTipoContenido: +getState().editarCajas.inputs.tipoContenido?.value!,
+      idPlantilla: +getState().editarCajas.inputs.tipoPlantilla?.value!, */
+    idTipoCaja: +data.tipoCaja?.value!,
+    idTipoContenido: +data.tipoContenido?.value!,
+    idPlantilla: +data.tipoPlantilla?.value!,
   };
 
   // Configuracion del servicio
   const api = apis['CAJA'];
-  const resource = api.resources['MODIFICAR_CAJA'];
-  const config = buildAxiosRequestConfig(api, resource, requestData);
+  const resource = api.resources['PREVIEW'];
+  const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
   // Respuesta del servicio
-  const response = await axios.request<ModificarCajaResponseBody>(config);
+  const response = await axios.request<VistaPreviaResponseBody>(config);
   const responseData = response.data;
 
   // Mapeo de la respuesta
-  const idCaja = responseData.numero;
+  // Type Guards # Cuando las response devuelvan el tipoContenido y idPlanilla, se debería corregir.
 
-  dispatch(setInfo({ ...getState().cajas.edicion.info, fechaModificacion: dayjs().format('DD/MM/YYYY HH:mm:ss'), fechaVencimiento }));
-
-  return idCaja;
+  if (!responseData || !Array.isArray(responseData) || responseData.length === 0) {
+  } else if ('inclusiones' in responseData[0]) {
+    const vistaPreviaDocumento: VistaPreviaCajaDocumento[] = responseData as VistaPreviaCajaDocumento[];
+    return vistaPreviaDocumento;
+  } else if ('idPlantilla' in responseData[0]) {
+    const vistaPreviaDetalle: VistaPreviaCajaDetalle[] = responseData as VistaPreviaCajaDetalle[];
+    return vistaPreviaDetalle;
+  } else if ('legacy' in responseData[0]) {
+    const vistaPreviaEtiquetas: VistaPreviaCajaEtiqueta[] = responseData as VistaPreviaCajaEtiqueta[];
+    return vistaPreviaEtiquetas;
+  }
+  return rejectWithValue(null);
 });
+
+const fetchAñosVencimiento = createAsyncThunk<
+  AñosVencimiento,
+  RequestOptions<Pick<Inputs, 'tipoCaja' | 'tipoContenido'>>,
+  { state: RootState }
+>(FEATURE_NAME + '/fetchAñosVencimiento', async (options, thunkApi) => {
+  const { dispatch, getState } = thunkApi;
+  const data = options.data!;
+
+  // Mapeo de la solicitud
+  const requestData: VencimientoCajaRequestBody = {
+    /*   idTipoCaja: +getState().editarCajas.inputs.tipoCaja?.value!,
+      tipoContenido: getState().editarCajas.inputs.tipoContenido?.value.toString()!, */
+    idTipoCaja: +data.tipoCaja?.value!,
+    tipoContenido: data.tipoContenido?.label?.toString()!,
+  };
+
+  // Configuracion del servicio
+  const api = apis['TIPO_CAJA'];
+  const resource = api.resources['VENCIMIENTO_CAJA'];
+  const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
+
+  // Respuesta del servicio
+  const response = await axios.request<VencimientoCajaResponseBody>(config);
+  const responseData = response.data;
+
+  // Mapeo de la respuesta
+  const añosVencimiento = responseData;
+
+  return añosVencimiento;
+});
+
+const updateCaja = createAsyncThunk<number, RequestOptions<Inputs>, { state: RootState }>(
+  FEATURE_NAME + '/updateCaja',
+  async (options, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+    const data = options.data!;
+
+    const fechaDesde = data.fechaContenido && data.fechaContenido.length > 0 ? dayjs(data.fechaContenido[0].toString()) : null;
+    const fechaHasta = data.fechaContenido && data.fechaContenido.length > 1 ? dayjs(data.fechaContenido[1].toString()) : null;
+
+    const añosVencimiento = getState().cajas.edicion.data.añosVencimiento!;
+    const fechaVencimiento = fechaHasta && añosVencimiento >= 0 ? dayjs(fechaHasta).add(añosVencimiento, 'year').format() : null;
+
+    // Mapeo de la solicitud
+    const requestData: ModificarCajaRequestBody = {
+      numero: getState().cajas.edicion.data.caja?.id!,
+      idTipoCaja: +data.tipoCaja?.value!,
+      //idTipoContenido: +inputs.tipoContenido?.value!,
+      tipoContenido: data.tipoContenido?.label?.toString()!,
+      idPlantilla: +data.tipoPlantilla?.value!,
+      descripcion: data.descripcion!,
+      restringida: data.restringida!,
+      fechaVencimiento,
+      fechaDesde: fechaDesde && fechaDesde.format(),
+      fechaHasta: fechaHasta && fechaHasta.format(),
+    };
+
+    // Configuracion del servicio
+    const api = apis['CAJA'];
+    const resource = api.resources['MODIFICAR_CAJA'];
+    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
+
+    // Respuesta del servicio
+    const response = await axios.request<ModificarCajaResponseBody>(config);
+    const responseData = response.data;
+
+    // Mapeo de la respuesta
+    const idCaja = responseData.numero;
+
+    dispatch(setInfo({ ...getState().cajas.edicion.info, fechaModificacion: dayjs().format('DD/MM/YYYY HH:mm:ss'), fechaVencimiento }));
+
+    return idCaja;
+  },
+);
+
+const updateContenido = createAsyncThunk<number, RequestOptions<Inputs>, { state: RootState }>(
+  FEATURE_NAME + '/updateContenido',
+  async (options, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
+    const data = options.data!;
+
+    /* 
+    // Mapeo de la solicitud
+    const requestData: ModificarCajaRequestBody = {
+      numero: getState().cajas.edicion.data.caja?.id!,
+      idTipoCaja: +inputs.tipoCaja?.value!,
+      //idTipoContenido: +inputs.tipoContenido?.value!,
+      tipoContenido: inputs.tipoContenido?.label?.toString()!,
+      idPlantilla: +inputs.tipoPlantilla?.value!,
+      descripcion: inputs.descripcion!,
+      restringida: inputs.restringida!,
+
+    };
+
+    // Configuracion del servicio
+    const api = apis['CAJA'];
+    const resource = api.resources['MODIFICAR_CAJA'];
+    const config = buildAxiosRequestConfig(api, resource, {...options, data: requestData}););
+
+    // Respuesta del servicio
+    const response = await axios.request<ModificarCajaResponseBody>(config);
+    const responseData = response.data;
+
+    // Mapeo de la respuesta
+    const idCaja = responseData.numero;
+
+    dispatch(setInfo({ ...getState().cajas.edicion.info, fechaModificacion: dayjs().format('DD/MM/YYYY HH:mm:ss'), fechaVencimiento }));
+
+    return idCaja; */
+
+    return 1;
+  },
+);
 
 // Slice
 /* 
@@ -430,6 +483,19 @@ const slice = createSlice({
         state.loading = { ...state.loading, guardandoCaja: false };
         state.error = action.error.message ?? null;
       });
+    builder
+      .addCase(updateContenido.pending, (state) => {
+        state.loading = { ...state.loading, guardandoContenido: true };
+        state.error = null;
+      })
+      .addCase(updateContenido.fulfilled, (state) => {
+        state.loading = { ...state.loading, guardandoContenido: false };
+        //state.content.
+      })
+      .addCase(updateContenido.rejected, (state, action) => {
+        state.loading = { ...state.loading, guardandoContenido: false };
+        state.error = action.error.message ?? null;
+      });
   },
 });
 
@@ -451,7 +517,7 @@ export {
   fetchVistaPrevia,
   fetchAñosVencimiento,
   updateCaja,
+  updateContenido,
 };
 
-//export default slice.reducer;
-export default slice.reducer as Reducer<typeof initialState>;
+export default slice.reducer;

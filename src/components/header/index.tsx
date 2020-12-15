@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { APP_TITLE, FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { APP_TITLE, FIXED, SHADOW, STICKY, UNSELECTABLE } from 'src/constants/constants';
 import { Texts } from 'src/constants/texts';
 import { setOrientation } from 'src/features/configuracion/configuracion.slice';
 import { toggleButtonVisible, setOpenMenu, toggleCollapse, toggleForcedCollapse } from 'src/features/menu/menu.slice';
@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   const [rotate, setRotate] = useState(false);
 
-  const headerClassName = classNames(FIXED, UNSELECTABLE, SHADOW, props.className, styles.header);
+  const headerClassName = classNames(STICKY, UNSELECTABLE, SHADOW, props.className, styles.header);
 
   /* Icon rotation effect */
   useEffect(() => {

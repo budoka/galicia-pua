@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { IElement, Opcion } from 'src/types';
 
 export interface EditarCajaSliceState {
-  data: FetchedData;
+  data: Data;
   inputs: Inputs;
   info: Info;
   loading: Loading;
@@ -42,19 +42,23 @@ export interface Caja {
 export type ContenidoCaja = CajaDocumento | CajaDetalle | CajaEtiqueta;
 
 export interface CajaDocumento extends IElement {
-  id: number | null;
-  idTipoDocumento: number | null;
-  tipoDocumental: string | null;
-  numeroProducto: string | null;
-  detalle: string | null;
-  dniCuitTitular: number | null;
-  nombreTitular: string | null;
-  idSectorPropietario: number | null;
-  claveExterna: number | null;
-  fechaDocumental: string | null;
-  fechaCierre: string | null;
-  fechaDesde: string | null;
-  fechaHasta: string | null;
+  id?: number | null;
+  idTipoDocumento?: number | null;
+  tipoDocumental?: string | null;
+  numeroProducto?: string | null;
+  detalle?: string | null;
+  dniCuitTitular?: number | null;
+  nombreTitular?: string | null;
+  idSectorPropietario?: number | null;
+  claveExterna?: number | null;
+  fechaDocumental?: string | moment.Moment | null;
+  fechaCierre?: string | moment.Moment | null;
+  fechaDesde?: string | moment.Moment | null;
+  fechaHasta?: string | moment.Moment | null;
+
+  // revisar
+  idUsuarioAlta?: string | null;
+  idSectorOrigen?: number | null;
 }
 
 export interface CajaDetalle extends IElement {
@@ -109,7 +113,7 @@ export interface VistaPreviaCajaEtiqueta {
 
 export type FechaContenido = (string | moment.Moment)[];
 
-export interface FetchedData {
+export interface Data {
   caja?: Caja | null;
   tiposCaja?: TiposCaja;
   tiposContenido?: TiposContenido; // TODO Se debería cambiar el servicio tipoDeContenido (request y response)
@@ -147,6 +151,7 @@ export interface Loading {
   añosVencimiento?: boolean;
   vistaPrevia?: boolean;
   guardandoCaja?: boolean;
+  guardandoContenido?: boolean;
 }
 
 export interface UIState {

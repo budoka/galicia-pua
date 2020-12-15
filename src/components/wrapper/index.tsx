@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
-import { BasicComponenetProps } from 'src/types';
+import { BasicComponentProps } from 'src/types';
 import styles from './style.module.less';
 
 type Direction = 'row' | 'column';
@@ -9,7 +9,7 @@ type Horizontal = 'left' | 'center' | 'right' | 'full-width';
 type Vertical = 'top' | 'middle' | 'bottom' | 'full-height';
 type Visible = 'auto' | 'show' | 'hide';
 
-interface WrapperProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'className' | 'style'> {
+interface WrapperProps extends Pick<BasicComponentProps<HTMLDivElement>, 'className' | 'style'> {
   contentWrapper?: boolean;
   contentBody?: boolean;
   unselectable?: boolean;

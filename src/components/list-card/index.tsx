@@ -5,12 +5,12 @@ import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Link } from 'react-router-dom';
 import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
-import { BasicComponenetProps } from 'src/types';
+import { BasicComponentProps } from 'src/types';
 import { Loading } from '../loading';
 import { IListCardItem } from './interfaces';
 import styles from './style.module.less';
 
-interface ListCardProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'className' | 'style'> {
+interface ListCardProps extends Pick<BasicComponentProps<HTMLDivElement>, 'className' | 'style'> {
   items?: IListCardItem[];
   header?: React.ReactNode;
   headerStyle?: React.CSSProperties;

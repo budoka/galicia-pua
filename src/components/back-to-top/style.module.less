@@ -1,0 +1,11 @@
+/* back to top */
+
+@import (reference) '~src/styles/global.less';
+@import (reference) '~src/components/app/style.module.less';
+
+@distance: 20px;
+
+.backToTop {
+  bottom: @distance !important;
+  right: calc(@distance + @scrollbar) !important;
+}

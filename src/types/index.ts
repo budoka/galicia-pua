@@ -1,7 +1,7 @@
 import { Rule } from 'antd/lib/form';
 import { LabeledValue, SelectValue } from 'antd/lib/select';
 
-export interface BasicComponenetProps<HTMLElement>
+export interface BasicComponentProps<HTMLElement>
   extends React.DetailedHTMLProps<Omit<React.HTMLAttributes<HTMLElement>, 'unselectable'>, HTMLElement> {}
 
 /* export interface BasicComponenetProps2<HTMLElement>
@@ -12,26 +12,20 @@ export type ExtractStringPropertyNames<T> = {
   [K in keyof T]: T[K] extends string ? K : never;
 }[keyof T];
 
-export interface IElement {
-  key: React.Key;
-  [key: string]: any;
-}
-
-export interface Reglas {
-  [key: string]: Rule[];
-}
-
-export interface Size {
-  width: number;
-  height: number;
-}
-
 export interface Dictionary<T> {
   [key: string]: T;
 }
 
 export interface ObjectLiteral {
   [key: string]: any;
+}
+
+export interface IElement extends ObjectLiteral {
+  key: React.Key;
+}
+
+export interface Rules {
+  [key: string]: Rule[];
 }
 
 export interface QueryParams {
@@ -42,10 +36,10 @@ export interface QueryParams {
   order?: { [P in keyof any]?: 'ASC' | 'DESC' };
 }
 
-export interface RequestOptions {
+/* export interface RequestOptions {
   expiration?: number;
   force?: boolean;
-}
+} */
 
 export interface Opcion extends LabeledValue {
   /*   key?: React.Key;

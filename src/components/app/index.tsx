@@ -1,10 +1,10 @@
 import { FileOutlined, HomeOutlined, InboxOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Layout } from 'antd';
+import { BackTop, Layout } from 'antd';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, matchPath } from 'react-router-dom';
-import 'src/api/setup-axios';
+import 'src/api/setup/setup-axios';
 import { useAzureAuth } from 'src/auth/azure/useAzureAuth';
 import { Footer } from 'src/components/footer';
 import { Header } from 'src/components/header';
@@ -19,12 +19,12 @@ import { RootState } from 'src/reducers';
 import { getLegajo } from 'src/utils/galicia';
 import { views } from 'src/views';
 import styles from './style.module.less';
-import './style.less';
 import _ from 'lodash';
 import { version } from '../../../package.json';
 import { Texts } from 'src/constants/texts';
 import { Cart } from '../cart';
 import { ContentHeader } from 'src/components/content-header';
+import { BackToTop } from '../back-to-top';
 
 const { Content } = Layout;
 
@@ -69,7 +69,7 @@ export const App = () => {
     if (!auth.data || !_.isEmpty(sesion)) return;
     const nombreUsuario = auth.data.account.name;
     const legajo = getLegajo(auth.data.account.username)!;
-    dispatch(fetchInfoSesion({ nombreUsuario, legajo }));
+    dispatch(fetchInfoSesion({ data: { nombreUsuario, legajo } }));
   }, [auth.data]);
 
   const getTitle = () => {
@@ -96,18 +96,13 @@ export const App = () => {
         <Header className={styles.header} />
         <Layout className={styles.main}>
           <Sider items={siderItems} />
-          <Content className={styles.content}>
+          <Content className={styles.content} id={'content'}>
             <Router views={views} />
-            <Footer info={<Link to="#">Portal Unificado v{version}</Link>} />
+            {/*   <Footer info={<Link to="#">Portal Unificado v{version}</Link>} /> */}
           </Content>
         </Layout>
       </Layout>
+      {/*    <BackToTop visibilityHeight={80} target={() => document.getElementById('content') || window} /> */}
     </>
   );
 };
-
-export const ContentHeaderWithCart = () => (
-  <ContentHeader>
-    <Cart count={7} />
-  </ContentHeader>
-);

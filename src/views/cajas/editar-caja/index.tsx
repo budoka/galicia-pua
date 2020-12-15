@@ -1,5 +1,22 @@
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Badge, Button, Checkbox, Col, DatePicker, Descriptions, Divider, Empty, Form, message, Row, Select, Typography } from 'antd';
+import { ClearOutlined } from '@ant-design/icons';
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Col,
+  DatePicker,
+  Descriptions,
+  Divider,
+  Empty,
+  Form,
+  message,
+  Popconfirm,
+  Row,
+  Select,
+  Space,
+  Typography,
+} from 'antd';
 import { ColProps } from 'antd/lib/col';
 import { useForm } from 'antd/lib/form/Form';
 import TextArea from 'antd/lib/input/TextArea';
@@ -10,12 +27,12 @@ import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { ContentHeaderWithCart } from 'src/components/app';
+import { ContentHeaderWithCart } from 'src/components/content-header';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
 import { NotFound } from 'src/components/not-found';
-import { IColumn, Table } from 'src/components/table';
+import { TableAction, ColumnTypeEx, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATETIME_HH_MM_SS_FORMAT, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import { Texts } from 'src/constants/texts';
@@ -36,6 +53,7 @@ import {
   updateCaja,
 } from 'src/features/cajas/editar-caja/editar-caja.slice';
 import {
+  CajaDocumento,
   CajaEtiqueta,
   ContenidoCaja,
   FechaContenido,
@@ -50,7 +68,7 @@ import {
 } from 'src/features/cajas/editar-caja/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
-import { Reglas } from 'src/types';
+import { Rules } from 'src/types';
 import { inferPattern, inferType } from 'src/utils/galicia';
 import { compare, splitStringByWords } from 'src/utils/string';
 import styles from './style.module.less';
@@ -59,7 +77,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
-const reglas: Reglas = {
+const reglas: Rules = {
   tipoCaja: [
     {
       required: true,
@@ -84,10 +102,10 @@ const reglas: Reglas = {
 
 const layout = {
   labelCol: {
-    span: 8,
+    span: 9,
   } as ColProps,
   wrapperCol: {
-    span: 15,
+    span: 14,
   } as ColProps,
 };
 
@@ -105,18 +123,24 @@ export const EditarCaja: React.FC = React.memo((props) => {
   const editarCajas = useSelector((state: RootState) => state.cajas.edicion);
 
   // pasar a slice
-  const [data, setData] = useState<any[]>([{ key: 1, dniCuitTitular: 'asd', nombreTitular: 'asd' }]);
+  const [data, setData] = useState<ContenidoCaja[]>([
+    { key: 'A', detalle: 'detalle a', fechaCierre: moment('10/12/2020') },
+    { key: 'B', idTipoDocumento: 1000, detalle: 'detalle b', fechaCierre: moment('10/12/2022') },
+    { key: 'C', idTipoDocumento: 1011, detalle: 'detalle c', fechaCierre: moment('10/12/2022'), fechaDocumental: moment('12/12/2022') },
+  ] as CajaDocumento[]);
   const [documentType, setDocumentType] = useState<number>();
+  const [editingContent, setEditingContent] = useState<{ action: TableAction; data: ContenidoCaja[]; columnKey?: React.Key }>();
 
-  const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
+  const [columns, setColumns] = useState<ColumnTypeEx<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
 
   const { id } = useParams<Record<string, string | undefined>>();
 
   let documentColumn = {
-    key: 'documento',
-    dataIndex: 'documento',
+    key: 'idTipoDocumento',
+    dataIndex: 'idTipoDocumento',
     title: 'Documento',
+    validationTitle: 'Documento',
     inputType: 'select',
     rules: [{ required: true }],
     editable: true,
@@ -131,7 +155,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
       console.log(documentType);
       setDocumentType(documentType);
     },
-  } as IColumn<ContenidoCaja>;
+  } as ColumnTypeEx<ContenidoCaja>;
 
   // useEffects
 
@@ -141,7 +165,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   useEffect(() => {
     dispatch(loading(true));
-    dispatch(fetchInfoCaja(id!));
+    dispatch(fetchInfoCaja({ data: id! }));
     /*  (async () => {
       await dispatch(fetchInfoCaja(id!));
     })(); */
@@ -151,6 +175,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
   }, []);
 
   useEffect(() => {
+    // Loading data
     if (editarCajas.data.caja) {
       const {
         id,
@@ -186,7 +211,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
           const tipoCaja = tiposCaja.find((t) => t.value === editarCajas.data.caja?.idTipoCaja);
           inputs = { tipoCaja };
           // Fetch Tipo Contenido
-          await dispatch(fetchTiposContenido(tipoCaja as Filtro)).then(async (action) => {
+          await dispatch(fetchTiposContenido({ data: tipoCaja as Filtro })).then(async (action) => {
             const tiposContenido = action.payload as TiposContenido;
             const tipoContenido = tiposContenido.find((t) => t.value === editarCajas.data.caja?.tipoContenido);
             inputs = { ...inputs, tipoContenido };
@@ -203,7 +228,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
             const fechaContenido = fechaDesde ? [fechaDesde!, fechaHasta!] : null;
             const fechaContenidoMoment: FechaContenido = fechaContenido?.map((f) => moment(f))!;
 
-            if (fechaContenido) dispatch(fetchAñosVencimiento({ tipoCaja, tipoContenido }));
+            if (fechaContenido) dispatch(fetchAñosVencimiento({ data: { tipoCaja, tipoContenido } }));
 
             dispatch(setInputs({ ...inputs, fechaContenido, descripcion, restringida }));
             form.setFieldsValue({ ...inputs, fechaContenido: fechaContenidoMoment, descripcion, restringida });
@@ -230,40 +255,47 @@ export const EditarCaja: React.FC = React.memo((props) => {
   useEffect(() => {
     const { tipoCaja, tipoContenido, tipoPlantilla } = editarCajas.inputs;
     if (editarCajas.ui.vistaPrevia?.visible || editarCajas.ui.vistaContenido?.visible)
-      dispatch(fetchVistaPrevia({ tipoCaja, tipoContenido, tipoPlantilla }));
+      dispatch(fetchVistaPrevia({ data: { tipoCaja, tipoContenido, tipoPlantilla } }));
   }, [editarCajas.ui.vistaPrevia, editarCajas.ui.vistaContenido]);
 
   useEffect(() => {
+    // Actualizar columnas de la tabla
     console.log('useEffect --- ' + documentType);
     const preview = editarCajas.data.vistaPrevia;
 
     if (!preview || _.isEmpty(preview)) return;
 
-    const isEditing = editarCajas.ui.vistaContenido;
+    // console.log(preview);
+
+    //const isEditing = editarCajas.ui.vistaContenido;
     const documentIndex = documentType ?? 0;
 
     if ('inclusiones' in preview[documentIndex]) {
       const previewDocumento: VistaPreviaCajaDocumento[] = preview as VistaPreviaCajaDocumento[];
       console.log(previewDocumento);
 
-      let columns: IColumn<ContenidoCaja>[] = previewDocumento[documentIndex].inclusiones.map((preview, index) => {
+      let columns: ColumnTypeEx<ContenidoCaja>[] = previewDocumento[documentIndex].inclusiones.map((preview, index) => {
         const description = preview.descripcion.split('Inclusion')[1];
         const title = splitStringByWords(description)?.join(' ');
         const key = _.camelCase(description);
         console.log(preview);
+
+        const isChangingContent = editingContent?.action === 'adding' || editingContent?.action === 'editing';
+
         return {
           key,
           dataIndex: key,
           title:
-            isEditing && preview.requerido === 'R' ? (
+            isChangingContent && preview.requerido === 'R' ? (
               <Badge size="small" count={'R'} offset={[10, 0]}>
                 {title}
               </Badge>
             ) : (
               title
             ),
+          validationTitle: title,
           inputType: inferType(preview.tipoDato),
-          rules: isEditing ? [{ required: preview.requerido === 'R', pattern: inferPattern(preview.tipoDato) }] : undefined,
+          rules: isChangingContent ? [{ required: preview.requerido === 'R', pattern: inferPattern(preview.tipoDato) }] : undefined,
           editable: true,
           width: columnsConfig.width,
           //required: !preview.requerido,
@@ -271,7 +303,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
           //order: preview.orden,
           align: 'center',
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
-        } as IColumn<ContenidoCaja>;
+        } as ColumnTypeEx<ContenidoCaja>;
       });
 
       const documents = previewDocumento.map((doc) => {
@@ -286,7 +318,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
     } else if ('idPlantilla' in preview[0]) {
       const previewDetale: VistaPreviaCajaDetalle[] = preview as VistaPreviaCajaDetalle[];
 
-      const columns: IColumn<ContenidoCaja>[] = previewDetale.map((preview) => {
+      const columns: ColumnTypeEx<ContenidoCaja>[] = previewDetale.map((preview) => {
         return {
           key: preview.id,
           title: preview.titulo,
@@ -294,7 +326,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
           rules: [{ required: !preview.opcional, len: preview.longitud }],
           order: preview.orden,
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 }, */
-        } as IColumn<ContenidoCaja>;
+        } as ColumnTypeEx<ContenidoCaja>;
       });
 
       setColumns(columns);
@@ -338,6 +370,32 @@ export const EditarCaja: React.FC = React.memo((props) => {
   }, [editarCajas.data.vistaPrevia, documentType]);
 
   useEffect(() => {
+    // Validacions (Rules) dinámicas para Caja Documento
+    // Si no se está editando entonces el tipo documental es 'undefined'.
+    if (editingContent?.action === 'idle') {
+      setDocumentType(undefined);
+      return;
+    }
+
+    const preview = editarCajas.data.vistaPrevia;
+
+    if (!preview || _.isEmpty(preview)) return;
+
+    if (editingContent?.action === 'editing' && 'inclusiones' in preview[0]) {
+      console.log(editingContent);
+      const { data, columnKey } = editingContent;
+      const value = data.find((row) => (row as CajaDocumento).key === columnKey)?.idTipoDocumento;
+      console.log(value);
+      if (value) {
+        const previewDocumento: VistaPreviaCajaDocumento[] = preview as VistaPreviaCajaDocumento[];
+        const documentType = previewDocumento.findIndex((doc) => doc.id === value);
+        console.log(documentType);
+        setDocumentType(documentType);
+      }
+    }
+  }, [editingContent]);
+
+  useEffect(() => {
     console.table(columns);
   }, [columns]);
 
@@ -363,7 +421,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
     dispatch(setInputs({ tipoCaja }));
     dispatch(setUI({ selectTipoContenido: { visible: true } }));
-    dispatch(fetchTiposContenido(tipoCaja));
+    dispatch(fetchTiposContenido({ data: tipoCaja }));
   };
 
   const handleTipoContenido = (fieldValue: any) => {
@@ -452,7 +510,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
         buttonCrear: { visible: true },
       }),
     );
-    if (fechaContenido) dispatch(fetchAñosVencimiento({ tipoCaja, tipoContenido }));
+    if (fechaContenido) dispatch(fetchAñosVencimiento({ data: { tipoCaja, tipoContenido } }));
   };
 
   const handleForm = () => {
@@ -461,7 +519,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
     const inputs = { ...editarCajas.inputs, descripcion, restringida };
     dispatch(setInputs(inputs));
 
-    dispatch(updateCaja(inputs))
+    dispatch(updateCaja({ data: inputs }))
       .then(unwrapResult)
       .then(() => {
         dispatch(setUI({ ...editarCajas.ui, vistaContenido: { visible: true }, vistaPrevia: { visible: false } }));
@@ -474,6 +532,16 @@ export const EditarCaja: React.FC = React.memo((props) => {
     form.resetFields();
     dispatch(clearUI());
     dispatch(clearInputs());
+  };
+
+  const onDataChange = (data: any[]) => {
+    console.log('onDataChange ....');
+    setData(data);
+  };
+
+  const onActionChange = (action: TableAction, data: ContenidoCaja[], columnKey?: React.Key) => {
+    // console.log('onActionChange ....', action, data, columnKey);
+    setEditingContent({ action, data, columnKey });
   };
 
   // renders
@@ -489,6 +557,8 @@ export const EditarCaja: React.FC = React.memo((props) => {
   };
 
   const renderForm = () => {
+    const hasContent = data.length > 0;
+
     return (
       <Form {...layout} className={styles.form} form={form} name="ingresarCaja" onFinish={handleForm}>
         <Form.Item label={Texts.BOX_TYPE} name={'tipoCaja'} rules={reglas['tipoCaja']} required>
@@ -496,7 +566,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
             labelInValue
             loading={editarCajas.loading.tiposCaja}
             placeholder={Texts.SELECT_BOX_TYPE}
-            disabled={editarCajas.loading.tiposCaja || data.length > 0}
+            disabled={editarCajas.loading.tiposCaja || hasContent}
             onChange={handleTipoCaja}>
             {renderOptions(editarCajas.data.tiposCaja)}
           </Select>
@@ -510,7 +580,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
               placeholder={Texts.SELECT_CONTENT_TYPE}
               optionFilterProp="children"
               filterOption={(input, option) => option && option.value && option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              disabled={editarCajas.loading.tiposContenido || data.length > 0}
+              disabled={editarCajas.loading.tiposContenido || hasContent}
               onChange={handleTipoContenido}>
               {renderOptions(editarCajas.data.tiposContenido)}
             </Select>
@@ -524,7 +594,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
               loading={editarCajas.loading.tiposPlantilla}
               placeholder={Texts.SELECT_TEMPLATE}
               optionFilterProp="children"
-              disabled={editarCajas.loading.tiposPlantilla || data.length > 0}
+              disabled={editarCajas.loading.tiposPlantilla || hasContent}
               onChange={handleTipoPlantilla}>
               {renderOptions(editarCajas.data.tiposPlantilla)}
             </Select>
@@ -575,13 +645,22 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
         {editarCajas.ui?.buttonCrear?.visible && (
           <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit">
-              {Texts.UPDATE}
-            </Button>
-
-            <Button type="link" htmlType="button" onClick={handleReset}>
-              {Texts.CLEAN}
-            </Button>
+            <Space>
+              <Button type="primary" htmlType="submit">
+                {Texts.UPDATE}
+              </Button>
+              <Popconfirm
+                placement="rightBottom"
+                disabled={hasContent}
+                title={Texts.CLEAN_FIELDS}
+                okText={Texts.YES}
+                cancelText={Texts.NO}
+                onConfirm={handleReset}>
+                <Button type="default" htmlType="button" disabled={hasContent} icon={<ClearOutlined />}>
+                  {Texts.CLEAN}
+                </Button>
+              </Popconfirm>
+            </Space>
           </Form.Item>
         )}
       </Form>
@@ -620,7 +699,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   const renderPreview = () => {
     return (
-      <Wrapper direction="row" horizontal="center">
+      <Wrapper contentBody direction="row" horizontal="center">
         {editarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
           <ListCard
             scrollHeight={326}
@@ -645,6 +724,9 @@ export const EditarCaja: React.FC = React.memo((props) => {
             hideFooter
             hidePagination
             locale={{ emptyText: <Empty description={Texts.PREVIEW} /> }}
+            onChange={() => {
+              console.log('*********************');
+            }}
           />
         )}
       </Wrapper>
@@ -653,7 +735,7 @@ export const EditarCaja: React.FC = React.memo((props) => {
 
   const renderEditableContent = () => {
     return (
-      <Wrapper direction="row" horizontal="center">
+      <Wrapper contentBody direction="row" horizontal="center">
         {editarCajas.inputs.tipoContenido?.label === CAJA_ETIQUETA ? (
           <ListCard
             scrollHeight={326}
@@ -671,10 +753,12 @@ export const EditarCaja: React.FC = React.memo((props) => {
             className={styles.previewTable}
             size={'small'}
             // fill={true}
+
             columns={columns as ColumnsType<ContenidoCaja>}
             dataSource={data}
             loading={editarCajas.loading.vistaPrevia}
-            setData={setData}
+            onDataChange={onDataChange}
+            onActionChange={onActionChange}
             extraColumns={{ showKeyColumn: true, showActionsColumn: true }}
             extraComponents={[
               {
@@ -708,41 +792,43 @@ export const EditarCaja: React.FC = React.memo((props) => {
   const loadingContent = _.isEmpty(editarCajas.loading) || editarCajas.loading.datos;
 
   return (
-    <Wrapper
-      contentWrapper
-      unselectable
-      direction="column"
-      horizontal="center"
-      style={{ minWidth: loadingContent || editarCajas.ui.notFound || editarCajas.ui.unavailable ? '100%' : 1460 }}>
-      {loadingContent ? (
-        <LoadingContent />
-      ) : editarCajas.ui.notFound ? (
-        <NotFound />
-      ) : editarCajas.ui.unavailable ? (
-        <NotFound />
-      ) : (
-        <>
-          <ContentHeaderWithCart />
-          <Row justify="center" style={{ width: '100%', height: '100%' }}>
-            <Col span={layout.labelCol.span}>{renderForm()}</Col>
-            <Col>
-              <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
-            </Col>
-            <Col span={layout.wrapperCol.span}>{renderInfo()}</Col>
-          </Row>
+    <>
+      <Wrapper
+        contentWrapper
+        unselectable
+        direction="column"
+        horizontal="center"
+        style={{ minWidth: loadingContent || editarCajas.ui.notFound || editarCajas.ui.unavailable ? '100%' : 1460 }}>
+        {loadingContent ? (
+          <LoadingContent />
+        ) : editarCajas.ui.notFound ? (
+          <NotFound />
+        ) : editarCajas.ui.unavailable ? (
+          <NotFound />
+        ) : (
+          <>
+            <ContentHeaderWithCart />
+            <Row justify="center" style={{ width: '100%', height: '100%' }}>
+              <Col span={layout.labelCol.span}>{renderForm()}</Col>
+              <Col span={1}>
+                <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
+              </Col>
+              <Col span={layout.wrapperCol.span}>{renderInfo()}</Col>
+            </Row>
 
-          <Divider />
+            <Divider />
 
-          <Row style={{ minWidth: '50%' }}>
-            <Col offset={2} span={20}>
-              <Wrapper contentBody style={{ alignItems: 'normal' }}>
-                {editarCajas.ui?.vistaPrevia?.visible && renderPreview()}
-                {editarCajas.ui?.vistaContenido?.visible && renderEditableContent()}
-              </Wrapper>
-            </Col>
-          </Row>
-        </>
-      )}
-    </Wrapper>
+            <Row justify="center" style={{ width: '100%', height: '100%' }}>
+              <Col span={20}>
+                <Wrapper contentBody>
+                  {editarCajas.ui?.vistaPrevia?.visible && renderPreview()}
+                  {editarCajas.ui?.vistaContenido?.visible && renderEditableContent()}
+                </Wrapper>
+              </Col>
+            </Row>
+          </>
+        )}
+      </Wrapper>
+    </>
   );
 });

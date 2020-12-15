@@ -8,11 +8,11 @@ import moment from 'moment';
 import { ColumnsType } from 'rc-table/lib/interface';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ContentHeaderWithCart } from 'src/components/app';
+import { ContentHeaderWithCart } from 'src/components/content-header';
 import { ListCard } from 'src/components/list-card';
 import { IListCardItem } from 'src/components/list-card/interfaces';
 import { Loading, LoadingContent } from 'src/components/loading';
-import { IColumn, Table } from 'src/components/table';
+import { ColumnTypeEx, Table } from 'src/components/table';
 import { Wrapper } from 'src/components/wrapper';
 import { CAJA_DETALLE, CAJA_DOCUMENTO, CAJA_ETIQUETA, DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import { Texts } from 'src/constants/texts';
@@ -39,7 +39,7 @@ import {
 } from 'src/features/cajas/ingresar-caja/types';
 import { RootState } from 'src/reducers';
 import { useAppDispatch } from 'src/store';
-import { Reglas } from 'src/types';
+import { Rules } from 'src/types';
 import { goTo } from 'src/utils/history';
 import { compare, splitStringByWords } from 'src/utils/string';
 import styles from './style.module.less';
@@ -48,7 +48,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { Text, Link } = Typography;
 
-const reglas: Reglas = {
+const reglas: Rules = {
   tipoCaja: [
     {
       required: true,
@@ -73,10 +73,10 @@ const reglas: Reglas = {
 
 const layout = {
   labelCol: {
-    span: 8,
+    span: 9,
   } as ColProps,
   wrapperCol: {
-    span: 15,
+    span: 14,
   } as ColProps,
 };
 
@@ -93,7 +93,7 @@ export const IngresarCaja: React.FC = (props) => {
 
   const ingresarCajas = useSelector((state: RootState) => state.cajas.creacion);
 
-  const [columns, setColumns] = useState<IColumn<ContenidoCaja>[]>([]);
+  const [columns, setColumns] = useState<ColumnTypeEx<ContenidoCaja>[]>([]);
   const [list, setList] = useState<CajaEtiqueta[]>([]);
 
   const documentColumn = {
@@ -106,7 +106,7 @@ export const IngresarCaja: React.FC = (props) => {
     width: columnsConfig.width,
     align: 'center',
     sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
-  } as IColumn<ContenidoCaja>;
+  } as ColumnTypeEx<ContenidoCaja>;
 
   // useEffects
 
@@ -119,7 +119,7 @@ export const IngresarCaja: React.FC = (props) => {
 
   useEffect(() => {
     const { tipoCaja, tipoContenido, tipoPlantilla } = ingresarCajas.inputs;
-    if (ingresarCajas.ui.vistaPrevia?.visible) dispatch(fetchVistaPrevia({ tipoCaja, tipoContenido, tipoPlantilla }));
+    if (ingresarCajas.ui.vistaPrevia?.visible) dispatch(fetchVistaPrevia({ data: { tipoCaja, tipoContenido, tipoPlantilla } }));
   }, [ingresarCajas.ui.vistaPrevia]);
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export const IngresarCaja: React.FC = (props) => {
     if ('inclusiones' in preview[0]) {
       const previewDocumento: VistaPreviaCajaDocumento[] = preview as VistaPreviaCajaDocumento[];
 
-      let columns: IColumn<ContenidoCaja>[] = previewDocumento[0].inclusiones.map((preview, index) => {
+      let columns: ColumnTypeEx<ContenidoCaja>[] = previewDocumento[0].inclusiones.map((preview, index) => {
         const title = splitStringByWords(preview.descripcion.split('Inclusion')[1])?.join(' ');
 
         return {
@@ -139,7 +139,7 @@ export const IngresarCaja: React.FC = (props) => {
           title,
           width: columnsConfig.width,
           sorter: { compare: (a, b) => compare(a.id, b.id), multiple: -1 },
-        } as IColumn<ContenidoCaja>;
+        } as ColumnTypeEx<ContenidoCaja>;
       });
 
       columns = [documentColumn, ...columns];
@@ -148,11 +148,11 @@ export const IngresarCaja: React.FC = (props) => {
     } else if ('idPlantilla' in preview[0]) {
       const previewDetale: VistaPreviaCajaDetalle[] = preview as VistaPreviaCajaDetalle[];
 
-      const columns: IColumn<ContenidoCaja>[] = previewDetale.map((preview) => {
+      const columns: ColumnTypeEx<ContenidoCaja>[] = previewDetale.map((preview) => {
         return {
           id: preview.id,
           title: preview.titulo,
-        } as IColumn<ContenidoCaja>;
+        } as ColumnTypeEx<ContenidoCaja>;
       });
 
       setColumns(columns);
@@ -182,7 +182,7 @@ export const IngresarCaja: React.FC = (props) => {
 
     dispatch(setInputs({ tipoCaja }));
     dispatch(setUI({ selectTipoContenido: { visible: true } }));
-    dispatch(fetchTiposContenido(tipoCaja));
+    dispatch(fetchTiposContenido({ data: tipoCaja }));
   };
 
   const handleTipoContenido = (fieldValue: any) => {
@@ -267,7 +267,7 @@ export const IngresarCaja: React.FC = (props) => {
         buttonCrear: { visible: true },
       }),
     );
-    if (fechaContenido) dispatch(fetchAñosVencimiento({ tipoCaja, tipoContenido }));
+    if (fechaContenido) dispatch(fetchAñosVencimiento({ data: { tipoCaja, tipoContenido } }));
   };
 
   const handleForm = () => {
@@ -275,7 +275,7 @@ export const IngresarCaja: React.FC = (props) => {
     const restringida = form.getFieldsValue().restringida ? 1 : 0;
     const inputs = { ...ingresarCajas.inputs, descripcion, restringida };
     dispatch(setInputs(inputs));
-    dispatch(saveCaja(inputs))
+    dispatch(saveCaja({ data: inputs }))
       .then(unwrapResult)
       .then((id) => {
         goTo(`/editar-caja/${id}`);
@@ -449,8 +449,8 @@ export const IngresarCaja: React.FC = (props) => {
           <ContentHeaderWithCart />
           <Row justify="center" style={{ width: '100%', height: '100%' }}>
             <Col span={layout.labelCol.span}>{renderForm()}</Col>
-            <Col>
-              <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />
+            <Col span={1}>
+              {ingresarCajas.ui.vistaPrevia && <Divider style={{ height: '100%', marginLeft: 20, marginRight: 20 }} type="vertical" />}
             </Col>
             <Col span={layout.wrapperCol.span}>{ingresarCajas.ui?.vistaPrevia?.visible && renderPreview()}</Col>
           </Row>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { View } from 'src/views/types';
-import { Inicio } from 'src/views/inicio';
 import { NotFound } from 'src/components/not-found';
-import { IngresarCaja } from 'src/views/cajas/ingresar-caja';
 import { Unavailable } from 'src/components/unavailable';
+import { IngresarCaja } from 'src/views/cajas/ingresar-caja';
+import { Inicio } from 'src/views/inicio';
+import { View } from 'src/views/types';
 import { Cajas } from './cajas/cajas';
 import { EditarCaja } from './cajas/editar-caja';
 
@@ -24,36 +24,34 @@ export interface Views {
 }
 
 const views: Views = {
-  Inicio: { title: 'Inicio', path: '/', component: <Inicio />, private: true, scope: 'inicio' },
+  Inicio: { title: 'Inicio', path: '/', component: <Inicio />, scope: 'user.read' },
   // Documentos
-  Buscar_Legajo: { title: 'Buscar Legajo', path: '/buscar-legajo', component: <Unavailable />, private: true, scope: 'full' },
+  Buscar_Legajo: { title: 'Buscar Legajo', path: '/buscar-legajo', component: <Unavailable />, scope: 'user.read' },
   // Cajas
-  Buscar_Caja: { title: 'Buscar Caja', path: '/buscar-caja', component: <Unavailable />, private: true, scope: 'full' },
-  Ingresar_Caja: { title: 'Ingresar Caja', path: '/ingresar-caja', component: <IngresarCaja />, private: true, scope: 'full' },
-  Editar_Caja: { title: 'Editar Caja', path: '/editar-caja/:id', component: <EditarCaja />, private: true, scope: 'full' },
-  Retirar_Caja: { title: 'Retirar Caja', path: '/retirar-caja', component: <Unavailable />, private: true, scope: 'full' },
+  Buscar_Caja: { title: 'Buscar Caja', path: '/buscar-caja', component: <Unavailable />, scope: 'user.read' },
+  Ingresar_Caja: { title: 'Ingresar Caja', path: '/ingresar-caja', component: <IngresarCaja />, scope: 'user.read' },
+  Editar_Caja: { title: 'Editar Caja', path: '/editar-caja/:id', component: <EditarCaja />, scope: 'user.read' },
+  Retirar_Caja: { title: 'Retirar Caja', path: '/retirar-caja', component: <Unavailable />, scope: 'user.read' },
   // Pedidos
-  Buscar_Caja2: { title: 'Buscar Caja', path: '/buscar-caja2', component: <Unavailable />, private: true, scope: 'full' },
+  Buscar_Caja2: { title: 'Buscar Caja', path: '/buscar-caja2', component: <Unavailable />, scope: 'user.read' },
   Buscar_Legajo_Doc: {
     title: 'Buscar Legajo / Doc',
     path: '/buscar-legajo-doc',
     component: <Unavailable />,
-    private: true,
-    scope: 'full',
+
+    scope: 'user.read',
   },
-  Buscar_Pedido: { title: 'Buscar Pedido', path: '/buscar-pedidos', component: <Unavailable />, private: true, scope: 'full' },
+  Buscar_Pedido: { title: 'Buscar Pedido', path: '/buscar-pedidos', component: <Unavailable />, scope: 'user.read' },
   // Cajas
   Cajas: {
     title: 'Cajas',
     path: '/cajas',
     component: <Cajas />,
-    private: true,
-    scope: 'full',
+    scope: 'user.read',
   },
   // Not Found
-  Not_Found: { title: 'No Encontrado', path: undefined, component: <NotFound />, private: false, scope: 'full' },
+  Not_Found: { title: 'No Encontrado', path: undefined, component: <NotFound /> },
 };
 
-export { views };
-
 export * from 'src/views/types';
+export { views };

@@ -4,17 +4,18 @@ import Form, { Rule } from 'antd/lib/form';
 import { LabeledValue } from 'antd/lib/select';
 import { SelectValue } from 'antd/lib/tree-select';
 import classNames from 'classnames';
+import moment from 'moment';
 import { Moment, isMoment } from 'moment';
 import React, { ReactElement, useEffect, useRef } from 'react';
 
 import { DATE_DD_MM_YYYY_FORMAT, ELLIPSIS } from 'src/constants/constants';
-import { BasicComponenetProps } from 'src/types';
+import { BasicComponentProps } from 'src/types';
 import { InputType } from '..';
 import styles from './style.module.less';
 
 const { Option } = Select;
 
-export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElement> {
+export interface CellProps extends BasicComponentProps<HTMLTableDataCellElement> {
   dataIndex: string;
   value: string | number | boolean | Moment;
   editing: boolean;
@@ -26,7 +27,7 @@ export interface ICellProps extends BasicComponenetProps<HTMLTableDataCellElemen
   onSelectChange?: (value: SelectValue, option: LabeledValue | any) => void;
 }
 
-export const Cell = React.memo((props: ICellProps) => {
+export const Cell = React.memo((props: CellProps) => {
   const {
     dataIndex,
     value,
@@ -49,10 +50,6 @@ export const Cell = React.memo((props: ICellProps) => {
   /*   useEffect(() => {
     console.log('rendering cell');
   }); */
-
-  useEffect(() => {
-    console.log(value);
-  }, [value]);
 
   useEffect(() => {
     if (hasFocus) {
@@ -161,11 +158,24 @@ export const Cell = React.memo((props: ICellProps) => {
     }
   };
 
+  const getInitialValue = () => {
+    if (inputType === 'select' && options?.length === 1) return options[0].value;
+  };
+
+  /*   const normalizeValue = (value: any) => {
+    console.log('normalize value');
+    if (inputType === 'date' && typeof value === 'string') {
+      console.log(value);
+      return moment(value);
+    }
+  }; */
+
   return (
     <td {...restProps} className={className} title={title} ref={cellRef} onFocus={scrollOnFocus}>
       {editing ? (
         <Form.Item
-          initialValue={inputType === 'select' && options && options.length === 1 ? options[0].value : undefined}
+          // normalize={(value, prevValue, allValues) => normalizeValue(value)}
+          initialValue={getInitialValue()}
           name={dataIndex}
           style={{ margin: 0, padding: 0 }}
           rules={rules}

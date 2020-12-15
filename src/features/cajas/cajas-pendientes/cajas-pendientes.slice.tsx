@@ -2,8 +2,10 @@ import { createAsyncThunk, createSlice, PayloadAction, Reducer } from '@reduxjs/
 import axios from 'axios';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
+
 import moment from 'moment';
-import { apis } from 'src/api/setup-apis';
+import { apis } from 'src/api/setup/setup-apis';
+import { RequestOptions } from 'src/api/types';
 import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { ExtractStringPropertyNames } from 'src/types';
@@ -62,73 +64,77 @@ const FEATURE_NAME = 'cajasPendientes';
 
 const fetchCantidadCajas = createAsyncThunk<
   CantidadCajas | number,
-  { filters: FiltrosCajas; key?: keyof CantidadCajas }, // Cambiar FiltrosCajas por CantidadCajasRequestBody
+  RequestOptions<{ filters: FiltrosCajas; key?: keyof CantidadCajas }>, // Cambiar FiltrosCajas por CantidadCajasRequestBody
   { state: RootState }
->(FEATURE_NAME + '/fetchCantidadCajas', async (params, thunkApi) => {
+>(FEATURE_NAME + '/fetchCantidadCajas', async (options, thunkApi) => {
   const { dispatch, getState } = thunkApi;
+  const data = options.data!;
 
   const filters: FiltrosCajas = getState().cajas.pendientes.filters;
 
   // Mapeo de la solicitud
   const requestData: CantidadCajasRequestBody = {
-    idEstado: params.filters.estado,
+    idEstado: data.filters.estado,
     idEstadoFiltro: 'Igual',
   };
 
   // Configuracion del servicio
   const api = apis['CAJA'];
   const resource = api.resources['CANTIDAD_CAJAS'];
-  const config = buildAxiosRequestConfig(api, resource, requestData);
+  const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
   // Respuesta del servicio
   const response = await axios.request<number>(config);
   const responseData = response.data;
 
   // Mapeo de la respuesta
-  const cantidadCajas: CantidadCajas | number = params.key ? Object.assign({}, { [params.key]: responseData }) : responseData;
+  const cantidadCajas: CantidadCajas | number = data.key ? Object.assign({}, { [data.key]: responseData }) : responseData;
 
   return cantidadCajas;
 });
 
-const fetchCajas = createAsyncThunk<CajasPendientes, void, { state: RootState }>(FEATURE_NAME + '/fetchCajas', async (_, thunkApi) => {
-  const { dispatch, getState } = thunkApi;
+const fetchCajas = createAsyncThunk<CajasPendientes, RequestOptions | undefined, { state: RootState }>(
+  FEATURE_NAME + '/fetchCajas',
+  async (options, thunkApi) => {
+    const { dispatch, getState } = thunkApi;
 
-  const filters: FiltrosCajas = getState().cajas.pendientes.filters;
+    const filters: FiltrosCajas = getState().cajas.pendientes.filters;
 
-  // Mapeo de la solicitud
-  const requestData: CajasPendientesRequestBody = {
-    idUsuario: getState().sesion.data?.idUsuario!,
-    roles: [getState().sesion.data?.perfil!],
-    estado: filters.estado,
-    fechaDesde: filters.fecha && filters.fecha.length > 0 ? filters.fecha[0].format() : undefined,
-    fechaHasta: filters.fecha && filters.fecha.length > 1 ? moment(filters.fecha[1]).add(1, 'day').format() : undefined, // workaround  moment(...).add(1, 'day')
-    centroCosto: filters.sector,
-    nombre: filters.usuario,
-  };
+    // Mapeo de la solicitud
+    const requestData: CajasPendientesRequestBody = {
+      idUsuario: getState().sesion.data?.idUsuario!,
+      roles: [getState().sesion.data?.perfil!],
+      estado: filters.estado,
+      fechaDesde: filters.fecha && filters.fecha.length > 0 ? filters.fecha[0].format() : undefined,
+      fechaHasta: filters.fecha && filters.fecha.length > 1 ? moment(filters.fecha[1]).add(1, 'day').format() : undefined, // workaround  moment(...).add(1, 'day')
+      centroCosto: filters.sector,
+      nombre: filters.usuario,
+    };
 
-  // Configuracion del servicio
-  const api = apis['CAJA'];
-  const resource = api.resources['DETALLE_CAJA'];
-  const config = buildAxiosRequestConfig(api, resource, requestData);
+    // Configuracion del servicio
+    const api = apis['CAJA'];
+    const resource = api.resources['DETALLE_CAJA'];
+    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
-  // Respuesta del servicio
-  const response = await axios.request<CajasPendientesResponseBody>(config);
-  const responseData = response.data;
+    // Respuesta del servicio
+    const response = await axios.request<CajasPendientesResponseBody>(config);
+    const responseData = response.data;
 
-  // Mapeo de la respuesta
-  const cajas = responseData.map((caja) => {
-    return {
-      numero: caja.numero,
-      descripcion: caja.descripcion,
-      estado: splitStringByWords(caja.estado)?.join(' '),
-      fechaEmision: moment(caja.fechaEmision).format(DATE_DD_MM_YYYY_FORMAT),
-      sector: caja.sector,
-      usuario: caja.usuario,
-    } as DetalleCaja;
-  });
+    // Mapeo de la respuesta
+    const cajas = responseData.map((caja) => {
+      return {
+        numero: caja.numero,
+        descripcion: caja.descripcion,
+        estado: splitStringByWords(caja.estado)?.join(' '),
+        fechaEmision: moment(caja.fechaEmision).format(DATE_DD_MM_YYYY_FORMAT),
+        sector: caja.sector,
+        usuario: caja.usuario,
+      } as DetalleCaja;
+    });
 
-  return cajas;
-});
+    return cajas;
+  },
+);
 
 const exportCajas = createAsyncThunk<void, void, { state: RootState }>(FEATURE_NAME + '/exportCajas', async (_, thunkApi) => {
   const { dispatch, getState } = thunkApi;

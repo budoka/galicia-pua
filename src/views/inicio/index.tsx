@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { ReactNode, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { ContentHeaderWithCart } from 'src/components/app';
+import { ContentHeaderWithCart } from 'src/components/content-header';
 import { ListCard } from 'src/components/list-card';
 import { IListCard } from 'src/components/list-card/interfaces';
 import { Wrapper } from 'src/components/wrapper';
@@ -23,8 +23,8 @@ export const Inicio: React.FC = React.memo((props) => {
   const cantidadCajas = cajasPendientes.data.cantidad as CantidadCajas;
 
   useEffect(() => {
-    dispatch(fetchCantidadCajas({ filters: { estado: 'PendienteCierre' }, key: 'pendientesCierre' }));
-    dispatch(fetchCantidadCajas({ filters: { estado: 'PendienteRecepcion' }, key: 'pendientesDevolucion' }));
+    dispatch(fetchCantidadCajas({ data: { filters: { estado: 'PendienteCierre' }, key: 'pendientesCierre' } }));
+    dispatch(fetchCantidadCajas({ data: { filters: { estado: 'PendienteRecepcion' }, key: 'pendientesDevolucion' } }));
     return () => {
       dispatch(clearState());
     };

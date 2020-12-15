@@ -1,16 +1,30 @@
-/* content info */
+/* content header */
 
 @import (reference) '~src/styles/global.less';
 @import (reference) '~src/components/app/style.module.less';
 
 .wrapper {
+  transition: width 0.4s ease, top 0.4s ease, box-shadow 0.4s ease-out, box-shadow 0s ease-in;
+  width: 100%;
+  top: 20px !important;
+  padding: 0 20px;
+  background: @layout-body-background;
+  z-index: 8 !important;
+}
+
+.wrapperPinned {
+  //  padding: 0 40px;
+  width: calc(100% + 40px);
+  top: 0px !important;
+  .shadow();
+}
+
+.wrapperContent {
+  height: 64px;
   justify-content: space-between !important;
 }
 
 .contentHeader {
-  align-self: flex-end;
-  // margin-bottom: 15px !important;
-
   :global(.ant-breadcrumb-link) {
     font-size: 16px;
     font-weight: 500;

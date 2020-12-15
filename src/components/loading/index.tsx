@@ -3,10 +3,10 @@ import { Spin } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import { Texts } from 'src/constants/texts';
-import { BasicComponenetProps } from 'src/types';
+import { BasicComponentProps } from 'src/types';
 import { Wrapper } from '../wrapper';
 
-interface LoadingProps extends Pick<BasicComponenetProps<HTMLDivElement>, 'style'> {
+interface LoadingProps extends Pick<BasicComponentProps<HTMLDivElement>, 'style'> {
   className?: string;
   spinClass?: string;
   color?: string;

@@ -1,7 +1,8 @@
 import { Action, createAsyncThunk, createSlice, PayloadAction, Reducer, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
 import axios from 'axios';
 import moment from 'moment';
-import { apis } from 'src/api/setup-apis';
+import { apis } from 'src/api/setup/setup-apis';
+import { RequestOptions } from 'src/api/types';
 import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/utils/api';
 import { splitStringByWords } from 'src/utils/string';
@@ -11,10 +12,11 @@ const FEATURE_NAME = 'sesion';
 
 // Async actions
 
-const fetchInfoSesion = createAsyncThunk<InfoSesion, InfoAzure, { state: RootState }>(
+const fetchInfoSesion = createAsyncThunk<InfoSesion, RequestOptions<InfoAzure>, { state: RootState }>(
   FEATURE_NAME + '/fetchInfoSesion',
-  async (data: InfoAzure, thunkApi) => {
+  async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
+    const data = options.data!;
 
     // Mapeo de la solicitud
     const requestData: InfoAzure = {
@@ -24,7 +26,7 @@ const fetchInfoSesion = createAsyncThunk<InfoSesion, InfoAzure, { state: RootSta
     // Configuracion del servicio
     const api = apis['INFO_SESION'];
     const resource = api.resources['INFO_SESION'];
-    const config = buildAxiosRequestConfig(api, resource, requestData);
+    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
     // Respuesta del servicio
     const response = await axios.request<SesionResponseBody>(config);

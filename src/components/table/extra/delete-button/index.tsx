@@ -1,7 +1,7 @@
 import { Button, Popconfirm } from 'antd';
 import React, { useEffect } from 'react';
 import { Texts } from 'src/constants/texts';
-import { Action } from '../..';
+import { TableAction } from '../..';
 
 interface DeleteButtonProps {
   disabled: boolean;

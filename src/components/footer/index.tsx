@@ -4,14 +4,14 @@ import classNames from 'classnames';
 import React, { ReactNode, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FIXED, SHADOW, UNSELECTABLE } from 'src/constants/constants';
-import { BasicComponenetProps } from 'src/types';
+import { BasicComponentProps } from 'src/types';
 import { useWindowSize } from 'src/utils/hooks';
 import { Wrapper } from '../wrapper';
 import styles from './style.module.less';
 
 const { Footer: FooterAnt } = Layout;
 
-export interface FooterProps extends BasicComponenetProps<HTMLDivElement> {
+export interface FooterProps extends BasicComponentProps<HTMLDivElement> {
   hide?: boolean;
   info?: ReactNode;
 }

@@ -1,9 +1,8 @@
-export type Scope = 'full' | 'inicio';
+export type Scope = 'user.read' | 'user.write';
 
 export interface View {
   title: string;
   path?: string;
   component: JSX.Element;
-  private: boolean;
   scope?: Scope;
 }

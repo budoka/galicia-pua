@@ -1,11 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Size } from 'src/types';
+
+export interface Size {
+  width: number;
+  height: number;
+}
 
 export function useWindowSize() {
-  const [size, setSize] = React.useState<Size>({
+  const [size, setSize] = useState<Size>({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   function handleResize() {
     setSize({
@@ -14,36 +26,38 @@ export function useWindowSize() {
     });
   }
 
-  useEffect(() => {
-    window.addEventListener('resize', handleResize);
-
-    //handleResize();
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [size]);
-
   return size;
 }
 
-export interface FormInput {
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  isValid: boolean | null;
-  setIsValid: React.Dispatch<React.SetStateAction<boolean | null>>;
+export interface Scroll {
+  x: number;
+  y: number;
 }
 
-export function useFormInput(initialValue?: string) {
-  const [value, setValue] = useState(initialValue || '');
-  const [isValid, setIsValid] = useState(true);
+export function useScroll(target?: Element) {
+  const [scroll, setScroll] = useState<Scroll>({
+    x: target?.scrollLeft ?? window.scrollX,
+    y: target?.scrollTop ?? window.scrollX,
+  });
 
-  return {
-    value,
-    setValue,
-    isValid,
-    setIsValid,
-  } as FormInput;
+  useEffect(() => {
+    (target ?? window).addEventListener('scroll', handleResize);
+
+    return () => {
+      (target ?? window).removeEventListener('scroll', handleResize);
+    };
+  }, []);
+
+  function handleResize() {
+    console.log(scroll);
+
+    setScroll({
+      x: target?.scrollLeft ?? window.scrollX,
+      y: target?.scrollTop ?? window.scrollX,
+    });
+  }
+
+  return scroll;
 }
 
 export function useTimeout(callback: Function, delay: number) {
