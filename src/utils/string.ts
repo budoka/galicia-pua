@@ -56,3 +56,7 @@ export function splitStringByWords(value: string) {
   const result = value.match(/[A-Z]+[^A-Z]*|[^A-Z]+/g);
   return result;
 }
+
+export function firstLetterLower(str: string) {
+  return str.charAt(0).toLowerCase() + str.slice(1);
+}

@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import dayjs from 'dayjs';
-import { API, Placeholders, RequestOptions, Resource } from 'src/api/types';
+import { API, Placeholders, RequestConfig, Resource } from 'src/api/types';
 import { getVar } from './environment';
 
 /**
@@ -11,7 +11,7 @@ export function buildBaseURL(apiId: string) {
   const PREFIX_API = 'API_';
   const prefix = getVar(PREFIX_API + 'PREFIX');
   const suffix = getVar(PREFIX_API + 'SUFFIX');
-  apiId = getVar(PREFIX_API + apiId);
+  apiId = getVar(PREFIX_API + apiId).toString();
 
   return prefix + apiId + suffix;
 }
@@ -33,24 +33,22 @@ export function buildEndpoint(baseURL: string, path: string, placeholders?: Plac
  * Build the axios request config.
  * @param api API
  * @param resource request's resource
- * @param options request's options
+ * @param config request's configuration
  */
-export function buildAxiosRequestConfig<ResourceType, Data>(
-  api: API<ResourceType>,
-  resource: Resource,
-  options: RequestOptions<Data> = {},
-) {
+export function buildAxiosRequestConfig<ResourceType, Data>(api: API<ResourceType>, resource: Resource, config: RequestConfig<Data> = {}) {
   const { baseURL } = api;
-  const { verb, path, options: defaultOptions } = resource;
-  const { placeholders, cancelToken } = options!;
+  const { path, config: defaultOptions } = resource;
+  const { placeholders, cancelToken } = config!;
   const endpoint = buildEndpoint(baseURL, path, placeholders);
-  const headers = { ...defaultOptions?.headers, ...options?.headers };
-  const params = { ...defaultOptions?.params, ...options?.params };
-  const data = { ...defaultOptions?.data, ...options?.data };
+  const verb = config?.verb ?? defaultOptions?.verb;
+  const headers = { ...defaultOptions?.headers, ...config?.headers };
+  const params = { ...defaultOptions?.params, ...config?.params };
+  const data = { ...defaultOptions?.data, ...config?.data };
+  const timeout = config?.timeout ?? defaultOptions?.timeout;
 
-  const config: AxiosRequestConfig = { method: verb, url: endpoint, headers, params, data, cancelToken };
+  const axiosConfig: AxiosRequestConfig = { method: verb, url: endpoint, headers, params, data, cancelToken, timeout };
 
-  return config;
+  return axiosConfig;
 }
 
 /**

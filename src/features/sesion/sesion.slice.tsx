@@ -2,7 +2,7 @@ import { Action, createAsyncThunk, createSlice, PayloadAction, Reducer, ThunkAct
 import axios from 'axios';
 import moment from 'moment';
 import { apis } from 'src/api/setup/setup-apis';
-import { RequestOptions } from 'src/api/types';
+import { RequestConfig } from 'src/api/types';
 import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/utils/api';
 import { splitStringByWords } from 'src/utils/string';
@@ -12,24 +12,23 @@ const FEATURE_NAME = 'sesion';
 
 // Async actions
 
-const fetchInfoSesion = createAsyncThunk<InfoSesion, RequestOptions<InfoAzure>, { state: RootState }>(
+const fetchInfoSesion = createAsyncThunk<InfoSesion, RequestConfig<InfoAzure>, { state: RootState }>(
   FEATURE_NAME + '/fetchInfoSesion',
-  async (options, thunkApi) => {
+  async (config, thunkApi) => {
     const { dispatch, getState } = thunkApi;
-    const data = options.data!;
 
     // Mapeo de la solicitud
     const requestData: InfoAzure = {
-      ...data,
+      ...config.data,
     };
 
     // Configuracion del servicio
     const api = apis['INFO_SESION'];
     const resource = api.resources['INFO_SESION'];
-    const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
+    const axiosConfig = buildAxiosRequestConfig(api, resource, { ...config, data: requestData });
 
     // Respuesta del servicio
-    const response = await axios.request<SesionResponseBody>(config);
+    const response = await axios.request<SesionResponseBody>(axiosConfig);
     const responseData = response.data;
 
     // Mapeo de la respuesta
@@ -38,8 +37,8 @@ const fetchInfoSesion = createAsyncThunk<InfoSesion, RequestOptions<InfoAzure>, 
       idSector: responseData.idSector,
       nombreSector: responseData.descripcionSector,
       perfil: responseData.roles && responseData.roles.length > 0 ? responseData.roles[0].descripcion : undefined,
-      legajo: data.legajo,
-      nombreUsuario: data.nombreUsuario,
+      legajo: config.data?.legajo,
+      nombreUsuario: config.data?.nombreUsuario,
     };
 
     return infoSesion;

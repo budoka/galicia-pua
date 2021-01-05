@@ -3,7 +3,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import moment from 'moment';
 import { apis } from 'src/api/setup/setup-apis';
-import { RequestOptions } from 'src/api/types';
+import { RequestConfig } from 'src/api/types';
 import { CAJA_ETIQUETA, CAJA_DETALLE, CAJA_DOCUMENTO } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { buildAxiosRequestConfig } from 'src/utils/api';
@@ -40,13 +40,13 @@ const FEATURE_NAME = 'ingresarCaja';
 
 // Async actions
 
-const fetchTiposCaja = createAsyncThunk<TiposCaja, RequestOptions | undefined, { state: RootState }>(
+const fetchTiposCaja = createAsyncThunk<TiposCaja, RequestConfig | undefined, { state: RootState }>(
   FEATURE_NAME + '/fetchTiposCaja',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
 
     // Configuracion del servicio
-    const api = apis['TIPO_CAJA'];
+    const api = apis['TIPOS_CAJA'];
     const resource = api.resources['TIPO_CAJA'];
     const config = buildAxiosRequestConfig(api, resource, options);
 
@@ -69,7 +69,7 @@ const fetchTiposCaja = createAsyncThunk<TiposCaja, RequestOptions | undefined, {
   },
 );
 
-const fetchTiposContenido = createAsyncThunk<TiposContenido, RequestOptions<Filtro>, { state: RootState }>(
+const fetchTiposContenido = createAsyncThunk<TiposContenido, RequestConfig<Filtro>, { state: RootState }>(
   FEATURE_NAME + '/fetchTiposContenido',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
@@ -81,7 +81,7 @@ const fetchTiposContenido = createAsyncThunk<TiposContenido, RequestOptions<Filt
     };
 
     // Configuracion del servicio
-    const api = apis['TIPO_CAJA'];
+    const api = apis['TIPOS_CAJA'];
     const resource = api.resources['TIPO_CONTENIDO'];
     const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
@@ -107,7 +107,7 @@ const fetchTiposContenido = createAsyncThunk<TiposContenido, RequestOptions<Filt
   },
 );
 
-const fetchTiposPlantilla = createAsyncThunk<TiposContenido, RequestOptions | undefined, { state: RootState }>(
+const fetchTiposPlantilla = createAsyncThunk<TiposContenido, RequestConfig | undefined, { state: RootState }>(
   FEATURE_NAME + '/fetchTiposPlantilla',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;
@@ -141,7 +141,7 @@ const fetchTiposPlantilla = createAsyncThunk<TiposContenido, RequestOptions | un
 
 const fetchVistaPrevia = createAsyncThunk<
   VistaPrevia,
-  RequestOptions<Pick<Inputs, 'tipoCaja' | 'tipoContenido' | 'tipoPlantilla'>>,
+  RequestConfig<Pick<Inputs, 'tipoCaja' | 'tipoContenido' | 'tipoPlantilla'>>,
   { state: RootState }
 >(FEATURE_NAME + '/fetchVistaPrevia', async (options, thunkApi) => {
   const { dispatch, getState, rejectWithValue } = thunkApi;
@@ -186,7 +186,7 @@ const fetchVistaPrevia = createAsyncThunk<
 
 const fetchAñosVencimiento = createAsyncThunk<
   AñosVencimiento,
-  RequestOptions<Pick<Inputs, 'tipoCaja' | 'tipoContenido'>>,
+  RequestConfig<Pick<Inputs, 'tipoCaja' | 'tipoContenido'>>,
   { state: RootState }
 >(FEATURE_NAME + '/fetchAñosVencimiento', async (options, thunkApi) => {
   const { dispatch, getState } = thunkApi;
@@ -201,7 +201,7 @@ const fetchAñosVencimiento = createAsyncThunk<
   };
 
   // Configuracion del servicio
-  const api = apis['TIPO_CAJA'];
+  const api = apis['TIPOS_CAJA'];
   const resource = api.resources['VENCIMIENTO_CAJA'];
   const config = buildAxiosRequestConfig(api, resource, { ...options, data: requestData });
 
@@ -215,7 +215,7 @@ const fetchAñosVencimiento = createAsyncThunk<
   return añosVencimiento;
 });
 
-const saveCaja = createAsyncThunk<number, RequestOptions<Inputs>, { state: RootState }>(
+const saveCaja = createAsyncThunk<number, RequestConfig<Inputs>, { state: RootState }>(
   FEATURE_NAME + '/saveCaja',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;

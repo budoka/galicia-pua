@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 
 import moment from 'moment';
 import { apis } from 'src/api/setup/setup-apis';
-import { RequestOptions } from 'src/api/types';
+import { RequestConfig } from 'src/api/types';
 import { DATE_DD_MM_YYYY_FORMAT } from 'src/constants/constants';
 import { RootState } from 'src/reducers';
 import { ExtractStringPropertyNames } from 'src/types';
@@ -64,7 +64,7 @@ const FEATURE_NAME = 'cajasPendientes';
 
 const fetchCantidadCajas = createAsyncThunk<
   CantidadCajas | number,
-  RequestOptions<{ filters: FiltrosCajas; key?: keyof CantidadCajas }>, // Cambiar FiltrosCajas por CantidadCajasRequestBody
+  RequestConfig<{ filters: FiltrosCajas; key?: keyof CantidadCajas }>, // Cambiar FiltrosCajas por CantidadCajasRequestBody
   { state: RootState }
 >(FEATURE_NAME + '/fetchCantidadCajas', async (options, thunkApi) => {
   const { dispatch, getState } = thunkApi;
@@ -93,7 +93,7 @@ const fetchCantidadCajas = createAsyncThunk<
   return cantidadCajas;
 });
 
-const fetchCajas = createAsyncThunk<CajasPendientes, RequestOptions | undefined, { state: RootState }>(
+const fetchCajas = createAsyncThunk<CajasPendientes, RequestConfig | undefined, { state: RootState }>(
   FEATURE_NAME + '/fetchCajas',
   async (options, thunkApi) => {
     const { dispatch, getState } = thunkApi;

@@ -10,8 +10,8 @@ interface ICache<T> {
   [key: string]: T;
 }
 
-interface EnvironmentData {
-  cache: ICache<any>;
+interface EnvironmentData<T = string | number | boolean> {
+  cache: ICache<T>;
   env?: string;
 }
 
@@ -31,14 +31,14 @@ export function getVar(variableName: string) {
   // Check if the variable is cached and return it.
   if (environmentData.cache[variableName]) return environmentData.cache[variableName];
 
-  let value: string | number | boolean | undefined = process.env[PREFIX_REACT_APP + variableName];
+  const value = process.env[PREFIX_REACT_APP + variableName];
 
   if (value === undefined) throw new EnviromentError(`Unable to get environment variable: '${variableName}'.`);
 
-  value = parseValue(value);
+  const parsedValue = parseValue(value);
 
   // Cache the value and return it.
-  return (environmentData.cache[variableName] = value);
+  return (environmentData.cache[variableName] = parsedValue);
 }
 
 /**
@@ -46,7 +46,14 @@ export function getVar(variableName: string) {
  */
 export function getEnvironment() {
   if (environmentData.env) return environmentData.env;
-  else return (environmentData.env = getVar('NODE_ENV').toLowerCase());
+  else return (environmentData.env = getVar('NODE_ENV').toString().toLowerCase());
+}
+
+/**
+ * Check if the current environment is a local environment.
+ */
+export function isLocal() {
+  return getEnvironment() === 'local';
 }
 
 /**
@@ -54,6 +61,20 @@ export function getEnvironment() {
  */
 export function isDevelopment() {
   return getEnvironment() === 'development';
+}
+
+/**
+ * Check if the current environment is a integration environment.
+ */
+export function isIntegration() {
+  return getEnvironment() === 'integration';
+}
+
+/**
+ * Check if the current environment is a QAS environment.
+ */
+export function isQAS() {
+  return getEnvironment() === 'qas';
 }
 
 /**

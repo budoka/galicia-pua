@@ -1,7 +1,7 @@
 import { Pattern } from 'src/constants/constants';
 import { DataType } from 'src/features/cajas/editar-caja/types';
 
-export function getLegajo(email: string) {
+export function getLegajoFromMail(email: string) {
   if (!email) return;
   const legajo = email.split('@')[0].toUpperCase();
   return legajo;

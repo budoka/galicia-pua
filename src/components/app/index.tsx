@@ -16,7 +16,7 @@ import { SiderChildItem, SiderItem } from 'src/components/sider/types';
 import { APP_TITLE } from 'src/constants/constants';
 import { fetchInfoSesion } from 'src/features/sesion/sesion.slice';
 import { RootState } from 'src/reducers';
-import { getLegajo } from 'src/utils/galicia';
+import { getLegajoFromMail } from 'src/utils/galicia';
 import { views } from 'src/views';
 import styles from './style.module.less';
 import _ from 'lodash';
@@ -25,6 +25,7 @@ import { Texts } from 'src/constants/texts';
 import { Cart } from '../cart';
 import { ContentHeader } from 'src/components/content-header';
 import { BackToTop } from '../back-to-top';
+import { useAppDispatch } from 'src/store';
 
 const { Content } = Layout;
 
@@ -60,7 +61,7 @@ export const siderItems: SiderItem[] = [
 });
 
 export const App = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const auth = useAzureAuth();
   const router = useSelector((state: RootState) => state.router);
   const sesion = useSelector((state: RootState) => state.sesion.data);
@@ -68,7 +69,7 @@ export const App = () => {
   useEffect(() => {
     if (!auth.data || !_.isEmpty(sesion)) return;
     const nombreUsuario = auth.data.account.name;
-    const legajo = getLegajo(auth.data.account.username)!;
+    const legajo = getLegajoFromMail(auth.data.account.username)!;
     dispatch(fetchInfoSesion({ data: { nombreUsuario, legajo } }));
   }, [auth.data]);
 

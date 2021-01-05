@@ -158,7 +158,10 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
         sortOrder: sortable && state.sort.length > 0 && state.sort.find((s) => s.columnKey === col.key)?.order,
         shouldCellUpdate: (record, prevRecord) => {
           // Ignore fill cell
-          if (record.key === undefined) return false;
+          const rowKey = props.rowKey;
+          if (typeof rowKey === 'string' && record[rowKey] === undefined) return false;
+          //if (record.key === undefined) return false;
+
           // Update cell when a record was deleted.
           if (state.action.previous === 'deleting') return true;
 

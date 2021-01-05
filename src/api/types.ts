@@ -17,9 +17,10 @@ interface DataDictionary {
 export interface Headers extends HeadersParamsDictionary {}
 export interface Params extends HeadersParamsDictionary {}
 export interface Placeholders extends PlaceholdersDictionary {}
-export type Data<T> = DataDictionary | T;
+export type Data<T> = T;
 
-export interface RequestOptions<T = void> {
+export interface RequestConfig<T = DataDictionary | void> {
+  verb?: HttpVerb;
   headers?: Headers;
   placeholders?: Placeholders;
   params?: Params;
@@ -36,7 +37,6 @@ export interface API<ResourcesType> {
 }
 
 export interface Resource {
-  verb: HttpVerb;
   path: string;
-  options?: RequestOptions;
+  config?: RequestConfig;
 }
