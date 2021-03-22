@@ -46,7 +46,7 @@ export function getVar(variableName: string) {
  */
 export function getEnvironment() {
   if (environmentData.env) return environmentData.env;
-  else return (environmentData.env = getVar('NODE_ENV').toString().toLowerCase());
+  else return (environmentData.env = getVar('ENVIRONMENT').toString().toLowerCase());
 }
 
 /**

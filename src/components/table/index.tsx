@@ -611,7 +611,6 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
     <Wrapper direction="column" horizontal="center" style={{ width: '100%' }}>
       <Form form={form} component={false}>
         <TableAnt
-          {...restProps}
           loading={restProps.loading ? { indicator: <Loading />, tip: Texts.LOADING } : restProps.loading}
           className={className}
           components={{
@@ -624,7 +623,6 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
           }}
           columns={columns}
           dataSource={dataSource}
-          scroll={{ y: 0 }}
           showSorterTooltip={false}
           title={hideHeader ? undefined : renderTitle}
           footer={hideFooter ? undefined : renderFooter}
@@ -656,6 +654,7 @@ export const Table = <RecordType extends IElement = any>(props: TablePropsEx<Rec
           onChange={(pagination, filters, sorter, extra) => {
             handleChangeTable(pagination, filters, sorter, extra);
           }}
+          {...restProps}
         />
       </Form>
     </Wrapper>

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Link } from 'react-router-dom';
-import { SHADOW, UNSELECTABLE } from 'src/constants/constants';
+import { SHADOW, UNSELECTABLE, ELLIPSIS } from 'src/constants/constants';
 import { BasicComponentProps } from 'src/types';
 import { Loading } from '../loading';
 import { IListCardItem } from './interfaces';
@@ -25,6 +25,7 @@ interface ListCardProps extends Pick<BasicComponentProps<HTMLDivElement>, 'class
 
 export const ListCard: React.FC<ListCardProps> = (props) => {
   const className = classNames(styles.content, UNSELECTABLE, SHADOW, props.className);
+  const ellipsisClassName = classNames(ELLIPSIS);
 
   const setBadgeStatus = (count: number) => {
     const { theme } = props;
@@ -52,7 +53,7 @@ export const ListCard: React.FC<ListCardProps> = (props) => {
 
     return (
       <Card.Grid className={styles.cardGrid} hoverable={hoverable}>
-        <span>{item.description}</span>
+        <span className={ellipsisClassName}>{item.description}</span>
         {item.loading ? (
           <Loading />
         ) : (

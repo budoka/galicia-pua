@@ -1,8 +1,5 @@
 'use strict';
 
-const keysTransformer = require('ts-transformer-keys/transformer').default;
-const transformer = require('ts-reflection/transformer').default;
-
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
